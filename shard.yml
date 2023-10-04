@@ -1,0 +1,23 @@
+name: julibox-tv
+version: 0.1.0
+
+# authors:
+#   - name <email@example.com>
+
+# description: |
+#   Short description of julibox-tv
+
+# dependencies:
+#   pg:
+#     github: will/crystal-pg
+#     version: "~> 0.5"
+
+# development_dependencies:
+#   webmock:
+#     github: manastech/webmock.cr
+
+# license: MIT
+
+targets:
+  julibox-tv:
+    main: src/julibox.cr
