@@ -32266,7 +32266,7 @@ __p+='`), Z;
                 '__scopeId',
                 'data-v-d4d4738c'
             ]
-        ]), j2e = [
+        ]), laneMappings = [
             {
                 hotKeys: [],
                 degrees: [],
@@ -32414,24 +32414,24 @@ __p+='`), Z;
                 hit: 0.12
             }
         ];
-    function l2(t) {
-        const e = j2e[t];
-        if (!e) {
+    function getLaneInfo(laneCount) {
+        const laneMapping = laneMappings[laneCount];
+        if (!laneMapping) {
             return null;
         }
-        const n = [];
-        for (let r = 1; r < e.lanes.length; r += 2) {
-            n.push({
-                left: e.lanes[r - 1],
-                center: e.lanes[r],
-                right: e.lanes[r + 1]
+        const lanesInfo = [];
+        for (let i = 1; i < laneMapping.lanes.length; i += 2) {
+            lanesInfo.push({
+                left: laneMapping.lanes[i - 1],
+                center: laneMapping.lanes[i],
+                right: laneMapping.lanes[i + 1]
             });
         }
         return {
-            hotKeys: e.hotKeys,
-            degrees: e.degrees,
-            lanes: n,
-            hit: e.hit
+            hotKeys: laneMapping.hotKeys,
+            degrees: laneMapping.degrees,
+            lanes: lanesInfo,
+            hit: laneMapping.hit
         };
     }
     const G2e = defineComponent({
@@ -32457,7 +32457,7 @@ __p+='`), Z;
             },
             computed: {
                 layout() {
-                    return l2(this.beatmap.config.laneCount);
+                    return getLaneInfo(this.beatmap.config.laneCount);
                 },
                 isPercussion() {
                     for (let t = 0; t < this.instrument.config.capabilities.length; t++) {
@@ -33613,7 +33613,7 @@ __p+='`), Z;
                     ]])])
         ], 64);
     }
-    const nTe = createComponent(JEe, [
+    const ContinuousControlsComponent = createComponent(JEe, [
             [
                 'render',
                 tTe
@@ -33836,7 +33836,7 @@ __p+='`), Z;
             ])
         ]);
     }
-    const vTe = createComponent(oTe, [
+    const ContinuousVisualsComponent = createComponent(oTe, [
         [
             'render',
             yTe
@@ -34059,31 +34059,31 @@ __p+='`), Z;
             },
             computed: {
                 layout() {
-                    return l2(this.manager.lanes.length);
+                    return getLaneInfo(this.manager.lanes.length);
                 },
                 scrollStyles() {
                     return { transform: `translateY(${ this.manager.progress * 100 }%)` };
                 },
                 laneLines() {
-                    return this.layout.lanes.map(t => ({
+                    return this.layout.lanes.map(lane => ({
                         classes: [],
-                        styles: { left: `${ t.center * 100 }%` }
+                        styles: { left: `${ lane.center * 100 }%` }
                     }));
                 },
                 hitIndicators() {
-                    return this.manager.lanes.map((t, e) => {
+                    return this.manager.lanes.map((lane, i) => {
                         const n = [];
-                        return this.manager.lanes[e].isActive && n.push('active'), this.manager.lanes[e].isFlubbing && n.push('flubbing'), this.showCta && n.push('alert'), {
+                        return this.manager.lanes[i].isActive && n.push('active'), this.manager.lanes[i].isFlubbing && n.push('flubbing'), this.showCta && n.push('alert'), {
                             classes: n,
-                            text: this.layout.hotKeys[e],
+                            text: this.layout.hotKeys[i],
                             styles: {
                                 width: `${ this.layout.hit * 100 }%`,
-                                left: `${ this.layout.lanes[e].center * 100 }%`
+                                left: `${ this.layout.lanes[i].center * 100 }%`
                             },
-                            items: t.feedback.map(r => r === 0 ? {
+                            items: lane.feedback.map(judge => judge === 0 ? {
                                 textKey: 'QUALITY.PERFECT',
                                 classes: ['perfect']
-                            } : r === 1 ? {
+                            } : judge === 1 ? {
                                 textKey: 'QUALITY.GOOD',
                                 classes: ['good']
                             } : {
@@ -34095,8 +34095,8 @@ __p+='`), Z;
                 },
                 inputs() {
                     const t = [];
-                    return this.manager.inputs.forEach(e => {
-                        e.forEach(n => {
+                    return this.manager.inputs.forEach(input => {
+                        input.forEach(n => {
                             n.isVisible && n.indicators.forEach(r => {
                                 const s = this.layout.lanes[r.lane];
                                 if (s === void 0) {
@@ -34125,7 +34125,7 @@ __p+='`), Z;
                 }
             }
         }), TTe = t => (Di('data-v-1a291824'), t = t(), $i(), t), xTe = TTe(() => createBaseVNode('div', { class: 'tap-indicator' }, null, -1));
-    function $Te(t, e, n, r, s, i) {
+    function renderGameplay(t, e, n, r, s, i) {
         const a = resolveComponent('Beatlines'), c = resolveDirective('t');
         return K(), X('div', STe, [
             createBaseVNode('div', wTe, [Qe(a, {
@@ -34201,10 +34201,10 @@ __p+='`), Z;
             ])
         ]);
     }
-    const LTe = createComponent(ETe, [
+    const DiscreteVisualsComponent = createComponent(ETe, [
             [
                 'render',
-                $Te
+                renderGameplay
             ],
             [
                 '__scopeId',
@@ -34220,7 +34220,7 @@ __p+='`), Z;
             emits: { didProveAsDesktop: () => true },
             computed: {
                 layout() {
-                    return l2(this.manager.lanes.length);
+                    return getLaneInfo(this.manager.lanes.length);
                 }
             },
             mounted() {
@@ -34281,15 +34281,15 @@ __p+='`), Z;
                 }
             ]]);
     }
-    const BTe = createComponent(FTe, [[
+    const DiscreteControlsComponent = createComponent(FTe, [[
                 'render',
                 UTe
             ]]), qTe = defineComponent({
             components: {
-                ContinuousControls: nTe,
-                ContinuousVisuals: vTe,
-                DiscreteControls: BTe,
-                DiscreteVisuals: LTe
+                ContinuousControls: ContinuousControlsComponent,
+                ContinuousVisuals: ContinuousVisualsComponent,
+                DiscreteControls: DiscreteControlsComponent,
+                DiscreteVisuals: DiscreteVisualsComponent
             },
             props: {
                 beatmap: {
