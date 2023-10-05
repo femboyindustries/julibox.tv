@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "body": {
+    "appId": "aae9be40-963a-4758-8b42-296198816cc0",
+    "appTag": "nopus-opus",
+    "audienceEnabled": false,
+    "code": "CCBA",
+    "host": "i-0e6492a86deb0864b.play.jackboxgames.com",
+    "audienceHost": "ecast.jackboxgames.com",
+    "locked": false,
+    "full": false,
+    "maxPlayers": 9,
+    "minPlayers": 1,
+    "moderationEnabled": false,
+    "passwordRequired": false,
+    "twitchLocked": false,
+    "locale": "en",
+    "keepalive": true,
+    "controllerBranch": ""
+  }
+}
