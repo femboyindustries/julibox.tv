@@ -1,0 +1,68 @@
+{
+  "id": 2,
+  "name": "<PLAYER>",
+  "secret": "<SECRET>",
+  "reconnect": false,
+  "deviceId": "<DEVICEID>",
+  "entities": {
+    "hostIsPaused": [
+      "object",
+      {
+        "key": "hostIsPaused",
+        "val": {
+          "hostIsPaused": false
+        },
+        "version": 0,
+        "from": 1
+      },
+      {
+        "locked": false
+      }
+    ],
+    "songSelectSongs": [
+      "object",
+      {
+        "key": "songSelectSongs",
+        "val": {
+          "songs": []
+        },
+        "version": 0,
+        "from": 1
+      },
+      {
+        "locked": false
+      }
+    ],
+    "textDescriptions": [
+      "object",
+      {
+        "key": "textDescriptions",
+        "val": {
+          "data": {},
+          "latestDescriptions": []
+        },
+        "version": 0,
+        "from": 1
+      },
+      {
+        "locked": false
+      }
+    ]
+  },
+  "here": {
+    "1": {
+      "id": 1,
+      "roles": {
+        "host": {}
+      }
+    }
+  },
+  "profile": {
+    "id": 2,
+    "roles": {
+      "player": {
+        "name": "<PLAYER>"
+      }
+    }
+  }
+}
