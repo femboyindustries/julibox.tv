@@ -12,15 +12,11 @@ module JuliboxTV
         q = ctx.request.query_params
       
         role = q["role"]?
-        if role != "player"
-          raise "Role #{role} unsuppored"
-        end
+        raise "Role #{role} unsuppored" if role != "player"
         player_name = q["name"]?.try &.upcase || "PLAYER"
         user_id = q["user-id"]?.try { |s| UUID.new(s) } || UUID.random
         format = q["format"]?
-        if format != "json"
-          raise "Format #{format} unsuppored"
-        end
+        raise "Format #{format} unsuppored" if format != "json"
         
         d = WSSender.new ws
       
