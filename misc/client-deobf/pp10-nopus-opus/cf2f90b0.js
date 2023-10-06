@@ -9900,37 +9900,37 @@ var main = fR((i5e, Rk) => {
                 }
                 return l && d.push('[' + i.slice(l.index) + ']'), NG(d, n, r, s);
             }
-        }, PG = function (e) {
-            if (!e) {
+        }, normalizeParseOptions = function (opts) {
+            if (!opts) {
                 return Rn;
             }
-            if (e.decoder !== null && e.decoder !== void 0 && typeof e.decoder != 'function') {
+            if (opts.decoder !== null && opts.decoder !== void 0 && typeof opts.decoder != 'function') {
                 throw new TypeError('Decoder has to be a function.');
             }
-            if (typeof e.charset < 'u' && e.charset !== 'utf-8' && e.charset !== 'iso-8859-1') {
+            if (typeof opts.charset < 'u' && opts.charset !== 'utf-8' && opts.charset !== 'iso-8859-1') {
                 throw new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined');
             }
-            var n = typeof e.charset > 'u' ? Rn.charset : e.charset;
+            var n = typeof opts.charset > 'u' ? Rn.charset : opts.charset;
             return {
-                allowDots: typeof e.allowDots > 'u' ? Rn.allowDots : !!e.allowDots,
-                allowPrototypes: typeof e.allowPrototypes == 'boolean' ? e.allowPrototypes : Rn.allowPrototypes,
-                allowSparse: typeof e.allowSparse == 'boolean' ? e.allowSparse : Rn.allowSparse,
-                arrayLimit: typeof e.arrayLimit == 'number' ? e.arrayLimit : Rn.arrayLimit,
+                allowDots: typeof opts.allowDots > 'u' ? Rn.allowDots : !!opts.allowDots,
+                allowPrototypes: typeof opts.allowPrototypes == 'boolean' ? opts.allowPrototypes : Rn.allowPrototypes,
+                allowSparse: typeof opts.allowSparse == 'boolean' ? opts.allowSparse : Rn.allowSparse,
+                arrayLimit: typeof opts.arrayLimit == 'number' ? opts.arrayLimit : Rn.arrayLimit,
                 charset: n,
-                charsetSentinel: typeof e.charsetSentinel == 'boolean' ? e.charsetSentinel : Rn.charsetSentinel,
-                comma: typeof e.comma == 'boolean' ? e.comma : Rn.comma,
-                decoder: typeof e.decoder == 'function' ? e.decoder : Rn.decoder,
-                delimiter: typeof e.delimiter == 'string' || Lc.isRegExp(e.delimiter) ? e.delimiter : Rn.delimiter,
-                depth: typeof e.depth == 'number' || e.depth === false ? +e.depth : Rn.depth,
-                ignoreQueryPrefix: e.ignoreQueryPrefix === true,
-                interpretNumericEntities: typeof e.interpretNumericEntities == 'boolean' ? e.interpretNumericEntities : Rn.interpretNumericEntities,
-                parameterLimit: typeof e.parameterLimit == 'number' ? e.parameterLimit : Rn.parameterLimit,
-                parseArrays: e.parseArrays !== false,
-                plainObjects: typeof e.plainObjects == 'boolean' ? e.plainObjects : Rn.plainObjects,
-                strictNullHandling: typeof e.strictNullHandling == 'boolean' ? e.strictNullHandling : Rn.strictNullHandling
+                charsetSentinel: typeof opts.charsetSentinel == 'boolean' ? opts.charsetSentinel : Rn.charsetSentinel,
+                comma: typeof opts.comma == 'boolean' ? opts.comma : Rn.comma,
+                decoder: typeof opts.decoder == 'function' ? opts.decoder : Rn.decoder,
+                delimiter: typeof opts.delimiter == 'string' || Lc.isRegExp(opts.delimiter) ? opts.delimiter : Rn.delimiter,
+                depth: typeof opts.depth == 'number' || opts.depth === false ? +opts.depth : Rn.depth,
+                ignoreQueryPrefix: opts.ignoreQueryPrefix === true,
+                interpretNumericEntities: typeof opts.interpretNumericEntities == 'boolean' ? opts.interpretNumericEntities : Rn.interpretNumericEntities,
+                parameterLimit: typeof opts.parameterLimit == 'number' ? opts.parameterLimit : Rn.parameterLimit,
+                parseArrays: opts.parseArrays !== false,
+                plainObjects: typeof opts.plainObjects == 'boolean' ? opts.plainObjects : Rn.plainObjects,
+                strictNullHandling: typeof opts.strictNullHandling == 'boolean' ? opts.strictNullHandling : Rn.strictNullHandling
             };
-        }, RG = function (t, e) {
-            var n = PG(e);
+        }, parse = function (t, e) {
+            var n = normalizeParseOptions(e);
             if (t === '' || t === null || typeof t > 'u') {
                 return n.plainObjects ? Object.create(null) : {};
             }
@@ -9939,10 +9939,10 @@ var main = fR((i5e, Rk) => {
                 s = Lc.merge(s, l, n);
             }
             return n.allowSparse === true ? s : Lc.compact(s);
-        }, MG = wG, DG = RG, $G = Cv, Q4 = {
-            formats: $G,
-            parse: DG,
-            stringify: MG
+        }, stringify_1 = wG, formats = Cv, qs = {
+            formats: formats,
+            parse: parse,
+            stringify: stringify_1
         };
     let LG = class {
             constructor(e) {
@@ -9991,7 +9991,7 @@ var main = fR((i5e, Rk) => {
         RoomExit: BG,
         RoomLock: qG
     };
-    const mS = GV, VG = Q4, {
+    const mS = GV, VG = qs, {
             CreateRoomReply: jG,
             GetRoomReply: GG
         } = Xp;
@@ -11473,8 +11473,8 @@ var main = fR((i5e, Rk) => {
         });
     }
     var yH = { parseResponseMessage: _H };
-    const bS = YG, vH = Q4, bH = eW, {CallError: EH} = el, {ClientWelcome: TH} = kv, {CountGroup: SH} = Nv, {DoodleEntity: wH} = xv, {GCounter: OH} = Pv, {Notification: ES} = FO, {NumberEntity: AH} = Rv, {ObjectEntity: g_} = Mv, {PNCounter: CH} = Dv, {Reply: IH} = BO, {Request: kH} = EW, {StackEntity: NH} = qO, {TextEntity: __} = $v, {TextMapEntity: xH} = Lv, {TextRing: PH} = Fv, {parseResponseMessage: RH} = yH, MH = 1000 + Math.floor(Math.random() * 500);
-    let DH = class extends bH {
+    const bS = YG, bH = eW, {CallError: EH} = el, {ClientWelcome: TH} = kv, {CountGroup: SH} = Nv, {DoodleEntity: wH} = xv, {GCounter: OH} = Pv, {Notification: ES} = FO, {NumberEntity: AH} = Rv, {ObjectEntity: g_} = Mv, {PNCounter: CH} = Dv, {Reply: IH} = BO, {Request: kH} = EW, {StackEntity: NH} = qO, {TextEntity: __} = $v, {TextMapEntity: xH} = Lv, {TextRing: PH} = Fv, {parseResponseMessage: RH} = yH, MH = 1000 + Math.floor(Math.random() * 500);
+    let WSClient = class extends bH {
         constructor(e) {
             if (super(), this.debug = e.debug || false, !e.host) {
                 throw new Error('unable to create ecast WSClient: no host provided');
@@ -11524,7 +11524,7 @@ var main = fR((i5e, Rk) => {
             ;
         }
         connect() {
-            const e = {
+            const connectInfo = {
                 id: this.id,
                 role: this.role,
                 name: this.name,
@@ -11532,16 +11532,16 @@ var main = fR((i5e, Rk) => {
                 'user-id': this.userId,
                 password: this.password
             };
-            this.deviceId && (e['device-id'] = this.deviceId);
-            this.twitchToken && (e['twitch-token'] = this.twitchToken);
-            this.secret && (e.secret = this.secret);
+            this.deviceId && (connectInfo['device-id'] = this.deviceId);
+            this.twitchToken && (connectInfo['twitch-token'] = this.twitchToken);
+            this.secret && (connectInfo.secret = this.secret);
             if (this.role === 'host') {
-                e['host-token'] = this.token;
-                this.replaySince > 0 && (e['replay-since'] = this.replaySince);
-                this.syncEntities && (e['sync-entities'] = this.syncEntities);
+                connectInfo['host-token'] = this.token;
+                this.replaySince > 0 && (connectInfo['replay-since'] = this.replaySince);
+                this.syncEntities && (connectInfo['sync-entities'] = this.syncEntities);
             }
             ;
-            const n = vH.stringify(e), r = this.role === 'audience' || this.id > 10000000 ? `${ this.scheme }://${ this.host }/api/v2/audience/${ this.code }/play?${ n }` : `${ this.scheme }://${ this.host }/api/v2/rooms/${ this.code }/play?${ n }`;
+            const n = qs.stringify(connectInfo), r = this.role === 'audience' || this.id > 10000000 ? `${ this.scheme }://${ this.host }/api/v2/audience/${ this.code }/play?${ n }` : `${ this.scheme }://${ this.host }/api/v2/rooms/${ this.code }/play?${ n }`;
             return new Promise((s, i) => {
                 let a = false, c = false, l = d => {
                         s(d);
@@ -12082,8 +12082,7 @@ var main = fR((i5e, Rk) => {
             });
         }
     };
-    var $H = { WSClient: DH };
-    const {APIClient: LH} = HG, {WSClient: FH} = $H, {
+    const {APIClient: LH} = HG, {
             CreateRoomReply: UH,
             GetRoomReply: BH
         } = Xp, {
@@ -12092,7 +12091,7 @@ var main = fR((i5e, Rk) => {
         } = kv, {ArtifactEntity: jH} = VO, {GCounter: GH} = Pv, {NumberEntity: WH} = Rv, {TextEntity: HH} = $v, {DoodleEntity: YH} = xv, {ObjectEntity: KH} = Mv, {CountGroup: zH} = Nv, {DropEntity: ZH} = jO, {OK: XH} = GO, {RoomExit: QH} = Xp, {TextRing: JH} = Fv, {TextMapEntity: eY} = Lv, {PNCounter: tY} = Dv;
     var Tr = {
         APIClient: LH,
-        WSClient: FH,
+        WSClient: WSClient,
         ClientWelcome: qH,
         CreateRoomReply: UH,
         DropEntity: ZH,
