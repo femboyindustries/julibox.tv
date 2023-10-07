@@ -1,6 +1,7 @@
 require "http/web_socket"
 
 module JuliboxTV
+  # light abstraction over websockets
   class WSSender
     @pc = 1
     @versions = {} of String => Int32
@@ -20,6 +21,10 @@ module JuliboxTV
       version = version || @versions["key"]? || 0
       send(opcode, {"key" => key, "val" => val, "version" => version, "from" => from})
       @versions["key"] = version + 1
+    end
+
+    def close
+      @ws.close
     end
   end
 end

@@ -1,10 +1,12 @@
 require "option_parser"
 require "./handlers/*"
+require "./mock/*"
 
 module JuliboxTV
   def run()
     mock = false
     mock_game = nil : String?
+    mock_args = [] of String
     proxy = false
     #mods = [] of ???
 
@@ -20,6 +22,7 @@ module JuliboxTV
           #end
 
           mock_game = args[0]
+          mock_args = args[1..]
         end
       end
       parser.on("proxy", "Proxy Jackbox games through this server") do
@@ -38,14 +41,28 @@ module JuliboxTV
     parser.parse
     
     if mock || proxy
-      raise "Proxy mode not implemented" if proxy
-      LOG.info { "Mocking #{mock_game}; join with any code" } if mock
+      if mock
+        # todo: keep a record of lobbies somehow?
+        lobby = LobbyInfo.new "AAAA"
+
+        case mock_game
+        when "nopus-opus"
+          mocker = NopusOpusMocker.new lobby
+        else
+          raise "No mocker found for #{mock_game}"
+        end
+
+        ws_handler = WSMockHandler.new mocker
+        LOG.notice { "Mocking #{mock_game}; join with any code" }
+      else
+        raise "Proxy mode not implemented"
+      end
 
       file_handler = HTTP::StaticFileHandler.new("src/assets/", directory_listing = false)
     
       asset_proxy_handler = ProxyHandler.new("jackbox.tv", "http://127.0.0.1:8080", "127.0.0.1:8080")
 
-      server = HTTP::Server.new [HTTP::ErrorHandler.new, HTTP::LogHandler.new, WSMocker.handler, HTTP::CompressHandler.new, IndexHandler.new, file_handler, asset_proxy_handler]
+      server = HTTP::Server.new [HTTP::ErrorHandler.new, HTTP::LogHandler.new, ws_handler.handler, HTTP::CompressHandler.new, IndexHandler.new, file_handler, asset_proxy_handler]
 
       address = server.bind_tcp 8080
       LOG.info { "Listening on http://#{address}" }
