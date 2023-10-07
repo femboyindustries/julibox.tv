@@ -7,6 +7,15 @@ module JuliboxTV
     @versions = {} of String => Int32
     
     def initialize(@ws : HTTP::WebSocket)
+      @ws.on_message do |msg|
+        # example:
+        # {"seq":1,"opcode":"object/update","params":{"key":"instrumentSelect:2","val":{"selectInstrument":{"beatmapSlug":"signature","instrumentSlug":"tutorial"}}}}
+        json = JSON.parse(msg)
+        @on_message.try &.call(json["opcode"].as_s, json["params"]["key"].as_s, json["params"]["val"])
+      end
+    end
+
+    def on_message(&@on_message : String, String, JSON::Any ->)
     end
 
     def send(opcode : String, result)

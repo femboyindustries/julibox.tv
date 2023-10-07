@@ -5,7 +5,7 @@ require "../ws_sender"
 module JuliboxTV
   record LobbyInfo,
     code : String
-  record GameInfo,
+  record PlayerInfo,
     lobby : LobbyInfo, role : String, player_name : String, user_id : UUID, format : String
 
   # "mocks" how a jackbox game sends packets, for testing
@@ -26,11 +26,21 @@ module JuliboxTV
         
         ws_sender = WSSender.new ws
         lobby = LobbyInfo.new(ctx.request.path.split("/")[-2])
-        game = GameInfo.new(lobby, role, player_name, user_id, format)
+        player = PlayerInfo.new(lobby, role, player_name, user_id, format)
 
-        LOG.info { "Player #{game.player_name} joined game #{lobby.code} as #{role}" }
+        LOG.info { "#{player.player_name} joined game #{lobby.code} as #{role}" }
 
-        @mocker.connect(ws_sender, ctx, game)
+        ws.on_close do |code, reason|
+          LOG.info { "#{player.player_name} left game #{lobby.code} (#{code}, reason: #{(reason != "" && reason) || "<none>"})" }
+          @mocker.disconnect(ctx, player)
+        end
+
+        ws_sender.on_message do |opcode, key, val|
+          LOG.debug { "#{player.player_name}: #{opcode.to_s.colorize(:cyan)} #{key}" }
+          @mocker.message(opcode, key, val)
+        end
+
+        @mocker.connect(ws_sender, ctx, player)
       end
     end
   end

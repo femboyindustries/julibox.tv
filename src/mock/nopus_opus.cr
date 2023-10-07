@@ -1,4 +1,4 @@
-require "./abstract_mocker.cr"
+require "./mocker.cr"
 
 module JuliboxTV
   class NopusOpusMocker < Mocker
@@ -11,11 +11,11 @@ module JuliboxTV
       @beatmap = @chart["beatmaps"][0]
     end
 
-    def connect(ws : WSSender, ctx : HTTP::Server::Context, game : GameInfo)
+    def connect(ws : WSSender, ctx : HTTP::Server::Context, player : PlayerInfo)
       ws.send("client/welcome", JSON.parse(
         File.read("src/assets/lobby-sample.json")
           # this isn't the worst way to do this! but it _is_ close
-          .sub("<PLAYER>", game.player_name)
+          .sub("<PLAYER>", player.player_name)
           # exclusively relevant to reconnections
           .sub("<SECRET>", UUID.random)
           # idk what this is based on
@@ -23,8 +23,8 @@ module JuliboxTV
       ))
     
       # todo: is sending both necessary?
-      ws.send("object", "connectedPlayers", {"2" => {"avatar" => 0, "id" => 2, "inSong" => false, "name" => game.player_name}})
-      ws.send("object", "connectedPlayers", {"2" => {"avatar" => 0, "beatmapSlug" => @beatmap["slug"], "id" => 2, "inSong" => false, "instrumentSlug" => @chart["slug"], "name" => game.player_name}})
+      ws.send("object", "connectedPlayers", {"2" => {"avatar" => 0, "id" => 2, "inSong" => false, "name" => player.player_name}})
+      ws.send("object", "connectedPlayers", {"2" => {"avatar" => 0, "beatmapSlug" => @beatmap["slug"], "id" => 2, "inSong" => false, "instrumentSlug" => @chart["slug"], "name" => player.player_name}})
     
       ws.send("object", "beatmap:#{@beatmap["slug"]}", {
         "config" => @beatmap,

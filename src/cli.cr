@@ -1,9 +1,53 @@
 require "option_parser"
+require "colorize"
+require "log"
 require "./handlers/*"
 require "./mock/*"
 
 module JuliboxTV
+
+  struct LogFormat < Log::StaticFormatter
+    def severity_color(severity : Log::Severity) : Colorize::Object
+      case severity
+      when .trace?
+        Colorize.with.dark_gray
+      when .debug?
+        Colorize.with.dark_gray
+      when .info?
+        Colorize.with.cyan
+      when .notice?
+        Colorize.with.cyan
+      when .warn?
+        Colorize.with.yellow
+      when .error?
+        Colorize.with.red
+      when .fatal?
+        Colorize.with.light_red
+      else
+        Colorize.with.white
+      end
+    end
+
+    def run
+      Colorize.with.light_gray.dim.surround(@io) do
+        timestamp
+      end
+      string "  "
+      severity_color(@entry.severity).surround(@io) do
+        @entry.severity.label.rjust(@io, 6)
+      end
+      string "  "
+      Colorize.with.white.surround(@io) do
+        source
+      end
+      string "  "
+      message
+    end
+  end
+
   def run()
+    Log.setup_from_env(backend: Log::IOBackend.new(formatter: LogFormat), default_level: :debug)
+  
     mock = false
     mock_game = nil : String?
     mock_args = [] of String
@@ -53,19 +97,27 @@ module JuliboxTV
         end
 
         ws_handler = WSMockHandler.new mocker
-        LOG.notice { "Mocking #{mock_game}; join with any code" }
+        LOG.notice { "Mocking #{mock_game.to_s.colorize(:cyan)}, join with any code" }
       else
         raise "Proxy mode not implemented"
       end
 
-      file_handler = HTTP::StaticFileHandler.new("src/assets/", directory_listing = false)
+      file_handler = HTTP::StaticFileHandler.new("src/assets/", directory_listing: false)
     
       asset_proxy_handler = ProxyHandler.new("jackbox.tv", "http://127.0.0.1:8080", "127.0.0.1:8080")
 
-      server = HTTP::Server.new [HTTP::ErrorHandler.new, HTTP::LogHandler.new, ws_handler.handler, HTTP::CompressHandler.new, IndexHandler.new, file_handler, asset_proxy_handler]
+      server = HTTP::Server.new [
+        HTTP::ErrorHandler.new(verbose: true),
+        HTTP::LogHandler.new,
+        ws_handler.handler,
+        HTTP::CompressHandler.new,
+        IndexHandler.new,
+        file_handler,
+        asset_proxy_handler
+      ]
 
       address = server.bind_tcp 8080
-      LOG.info { "Listening on http://#{address}" }
+      LOG.info { "Listening on #{"http://#{address}".colorize(:cyan)}" }
       server.listen
     else
       puts parser
