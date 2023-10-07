@@ -18,35 +18,6 @@
       {
         "locked": false
       }
-    ],
-    "songSelectSongs": [
-      "object",
-      {
-        "key": "songSelectSongs",
-        "val": {
-          "songs": []
-        },
-        "version": 0,
-        "from": 1
-      },
-      {
-        "locked": false
-      }
-    ],
-    "textDescriptions": [
-      "object",
-      {
-        "key": "textDescriptions",
-        "val": {
-          "data": {},
-          "latestDescriptions": []
-        },
-        "version": 0,
-        "from": 1
-      },
-      {
-        "locked": false
-      }
     ]
   },
   "here": {
