@@ -42,6 +42,7 @@ module JuliboxTV
       end
       string "  "
       message
+      exception
     end
   end
 

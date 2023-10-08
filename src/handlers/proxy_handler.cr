@@ -20,6 +20,8 @@ module JuliboxTV
           body = body.sub("scheme:\"https\"", "scheme:\"http\"")
           body = body.sub("e.scheme:this.scheme=\"wss\"", "e.scheme:this.scheme=\"ws\"")
         end
+        body = body.sub("const LTe=ct(ETe", ";const $$penis=#{File.read("mods/nopus-component.js")};const LTe=ct($$penis")
+        body = body.sub("\"render\",$Te", "\"render\",#{File.read("mods/nopus-render.js")}")
       end
   
       if request.path.starts_with?("/api/")
@@ -96,7 +98,7 @@ module JuliboxTV
           # don't pretend to send chunked data
           context.response.headers.delete("Transfer-Encoding")
   
-          IO.copy(response.body_io, context.response)
+          IO.copy(response.body_io, context.response) if response.body_io
   
           context.response.close
         end

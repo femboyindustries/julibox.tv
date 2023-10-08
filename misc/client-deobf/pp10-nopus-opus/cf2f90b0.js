@@ -1122,30 +1122,30 @@ var main = fR((i5e, Rk) => {
     function Mp(t, e) {
         return !t || !Cp(e) ? false : (e = e.slice(2).replace(/Once$/, ''), hasOwn(t, e[0].toLowerCase() + e.slice(1)) || hasOwn(t, ka(e)) || hasOwn(t, e));
     }
-    let currentRenderingInstance = null, Dp = null;
-    function sd(t) {
+    let currentRenderingInstance = null, currentScopeId = null;
+    function setCurrentRenderingInstance(t) {
         const e = currentRenderingInstance;
-        return currentRenderingInstance = t, Dp = t && t.type.__scopeId || null, e;
+        return currentRenderingInstance = t, currentScopeId = t && t.type.__scopeId || null, e;
     }
-    function Di(t) {
-        Dp = t;
+    function pushScopeId(id) {
+        currentScopeId = id;
     }
-    function $i() {
-        Dp = null;
+    function popScopeId() {
+        currentScopeId = null;
     }
-    function cs(t, e = currentRenderingInstance, n) {
+    function withCtx(t, e = currentRenderingInstance, n) {
         if (!e || t._n) {
             return t;
         }
         const r = (...s) => {
-            r._d && aT(-1);
-            const i = sd(e);
+            r._d && setBlockTracking(-1);
+            const i = setCurrentRenderingInstance(e);
             let a;
             try {
                 a = t(...s);
             } finally {
-                sd(i);
-                r._d && aT(1);
+                setCurrentRenderingInstance(i);
+                r._d && setBlockTracking(1);
                 ;
             }
             return a;
@@ -1171,16 +1171,16 @@ var main = fR((i5e, Rk) => {
             inheritAttrs: w
         } = t;
         let g, S;
-        const P = sd(t);
+        const P = setCurrentRenderingInstance(t);
         try {
             if (n.shapeFlag & 4) {
                 const M = s || r;
-                g = Hs(d.call(M, M, p, i, v, m, b));
+                g = normalizeVNode(d.call(M, M, p, i, v, m, b));
                 S = l;
                 ;
             } else {
                 const M = e;
-                g = Hs(M.length > 1 ? M(i, {
+                g = normalizeVNode(M.length > 1 ? M(i, {
                     attrs: l,
                     slots: c,
                     emit: h
@@ -1189,9 +1189,9 @@ var main = fR((i5e, Rk) => {
                 ;
             }
         } catch (M) {
-            zu.length = 0;
+            blockStack.length = 0;
             Rp(M, t, 1);
-            g = Qe(ns);
+            g = createVNode(Comment);
             ;
         }
         let V = g;
@@ -1199,7 +1199,7 @@ var main = fR((i5e, Rk) => {
             const M = Object.keys(S), {shapeFlag: I} = V;
             M.length && I & 7 && (a && M.some(Ay) && (S = _M(S, a)), V = Eo(V, S));
         }
-        return n.dirs && (V = Eo(V), V.dirs = V.dirs ? V.dirs.concat(n.dirs) : n.dirs), n.transition && (V.transition = n.transition), g = V, sd(P), g;
+        return n.dirs && (V = Eo(V), V.dirs = V.dirs ? V.dirs.concat(n.dirs) : n.dirs), n.transition && (V.transition = n.transition), g = V, setCurrentRenderingInstance(P), g;
     }
     const gM = t => {
             let e;
@@ -1548,7 +1548,7 @@ var main = fR((i5e, Rk) => {
                     let a = i[0];
                     if (i.length > 1) {
                         for (const w of i)
-                            if (w.type !== ns) {
+                            if (w.type !== Comment) {
                                 a = w;
                                 break;
                             }
@@ -1570,7 +1570,7 @@ var main = fR((i5e, Rk) => {
                         const w = b();
                         s === void 0 ? s = w : w !== s && (s = w, v = true);
                     }
-                    if (m && m.type !== ns && (!sa(h, m) || v)) {
+                    if (m && m.type !== Comment && (!isSameVNodeType(h, m) || v)) {
                         const w = t1(m, c, r, n);
                         if (n1(m, w), l === 'out-in') {
                             return r.isLeaving = true, w.afterLeave = () => {
@@ -1579,7 +1579,7 @@ var main = fR((i5e, Rk) => {
                                 ;
                             }, Xg(a);
                         }
-                        l === 'in-out' && h.type !== ns && (w.delayLeave = (g, S, P) => {
+                        l === 'in-out' && h.type !== Comment && (w.delayLeave = (g, S, P) => {
                             const V = L5(r, m);
                             V[String(m.key)] = m;
                             ;
@@ -1634,7 +1634,7 @@ var main = fR((i5e, Rk) => {
                     }
                     q._leaveCb && q._leaveCb(true);
                     const ce = M[V];
-                    ce && sa(t, ce) && ce.el._leaveCb && ce.el._leaveCb();
+                    ce && isSameVNodeType(t, ce) && ce.el._leaveCb && ce.el._leaveCb();
                     I(se, [q]);
                     ;
                 },
@@ -1698,7 +1698,7 @@ var main = fR((i5e, Rk) => {
         for (let i = 0; i < t.length; i++) {
             let a = t[i];
             const c = n == null ? a.key : String(n) + String(a.key != null ? a.key : i);
-            a.type === St ? (a.patchFlag & 128 && s++, r = r.concat(F5(a.children, e, c))) : (e || a.type !== ns) && r.push(c != null ? Eo(a, { key: c }) : a);
+            a.type === Fragment ? (a.patchFlag & 128 && s++, r = r.concat(F5(a.children, e, c))) : (e || a.type !== Comment) && r.push(c != null ? Eo(a, { key: c }) : a);
         }
         if (s > 1) {
             for (let i = 0; i < r.length; i++) {
@@ -1790,52 +1790,52 @@ var main = fR((i5e, Rk) => {
     function resolve(t, e) {
         return t && (t[e] || t[camelize(e)] || t[capitalize(camelize(e))]);
     }
-    function Dn(t, e, n, r) {
-        let s;
-        const i = n && n[r];
-        if (isArray(t) || isString(t)) {
-            s = new Array(t.length);
-            for (let a = 0, c = t.length; a < c; a++) {
+    function renderList(source, renderItem, cache, index) {
+        let ret;
+        const cached = cache && cache[index];
+        if (isArray(source) || isString(source)) {
+            ret = new Array(source.length);
+            for (let a = 0, c = source.length; a < c; a++) {
                 ;
             }
         } else {
-            if (typeof t == 'number') {
-                s = new Array(t);
-                for (let a = 0; a < t; a++) {
+            if (typeof source == 'number') {
+                ret = new Array(source);
+                for (let a = 0; a < source; a++) {
                     ;
                 }
             } else {
-                if (isObject(t)) {
-                    if (t[Symbol.iterator]) {
-                        s = Array.from(t, (a, c) => e(a, c, void 0, i && i[c]));
+                if (isObject(source)) {
+                    if (source[Symbol.iterator]) {
+                        ret = Array.from(source, (a, c) => renderItem(a, c, void 0, cached && cached[c]));
                     } else {
-                        const a = Object.keys(t);
-                        s = new Array(a.length);
+                        const a = Object.keys(source);
+                        ret = new Array(a.length);
                         for (let c = 0, l = a.length; c < l; c++) {
                             const h = a[c];
                             ;
                         }
                     }
                 } else {
-                    s = [];
+                    ret = [];
                 }
             }
         }
-        return n && (n[r] = s), s;
+        return cache && (cache[index] = ret), ret;
     }
-    function $M(t, e, n = {}, r, s) {
+    function renderSlot(slots, name, props = {}, fallback, noSlotted) {
         if (currentRenderingInstance.isCE || currentRenderingInstance.parent && isAsyncWrapper(currentRenderingInstance.parent) && currentRenderingInstance.parent.isCE) {
-            return e !== 'default' && (n.name = e), Qe('slot', n, r && r());
+            return name !== 'default' && (props.name = name), createVNode('slot', props, fallback && fallback());
         }
-        let i = t[e];
+        let i = slots[name];
         i && i._c && (i._d = false);
-        K();
+        openBlock();
         ;
-        const a = i && j5(i(n)), c = Lt(St, { key: n.key || a && a.key || `_${ e }` }, a || (r ? r() : []), a && t._ === 1 ? 64 : -2);
-        return !s && c.scopeId && (c.slotScopeIds = [c.scopeId + '-s']), i && i._c && (i._d = true), c;
+        const a = i && ensureValidVNode(i(props)), c = createBlock(Fragment, { key: props.key || a && a.key || `_${ name }` }, a || (fallback ? fallback() : []), a && slots._ === 1 ? 64 : -2);
+        return !noSlotted && c.scopeId && (c.slotScopeIds = [c.scopeId + '-s']), i && i._c && (i._d = true), c;
     }
-    function j5(t) {
-        return t.some(e => ad(e) ? !(e.type === ns || e.type === St && !j5(e.children)) : true) ? t : null;
+    function ensureValidVNode(vnodes) {
+        return vnodes.some(e => isVNode(e) ? !(e.type === Comment || e.type === Fragment && !ensureValidVNode(e.children)) : true) ? vnodes : null;
     }
     const r1 = t => t ? t4(t) ? Bp(t) || t.proxy : r1(t.parent) : null, Ku = extend(Object.create(null), {
             $: t => t,
@@ -2216,7 +2216,7 @@ var main = fR((i5e, Rk) => {
                 },
                 mount(h, d, p) {
                     if (!c) {
-                        const m = Qe(r, s);
+                        const m = createVNode(r, s);
                         return m.appContext = i, d && e ? e(m, h) : t(m, h, p), c = true, l._container = h, h.__vue_app__ = l, Bp(m.component) || m.component.proxy;
                     }
                 },
@@ -2452,11 +2452,11 @@ var main = fR((i5e, Rk) => {
     function oT(t, e) {
         return isArray(e) ? e.findIndex(n => iT(n, t)) : isFunction(e) && iT(e, t) ? 0 : -1;
     }
-    const K5 = t => t[0] === '_' || t === '$stable', Gy = t => isArray(t) ? t.map(Hs) : [Hs(t)], KM = (t, e, n) => {
+    const K5 = t => t[0] === '_' || t === '$stable', Gy = t => isArray(t) ? t.map(normalizeVNode) : [normalizeVNode(t)], KM = (t, e, n) => {
             if (e._n) {
                 return e;
             }
-            const r = cs((...s) => Gy(e(...s)), n);
+            const r = withCtx((...s) => Gy(e(...s)), n);
             return r._c = false, r;
         }, z5 = (t, e, n) => {
             const r = t._ctx;
@@ -2562,7 +2562,7 @@ var main = fR((i5e, Rk) => {
                 if (A === y) {
                     return;
                 }
-                A && !sa(A, y) && (C = tt(A), $e(A, D, Z, true), A = null);
+                A && !isSameVNodeType(A, y) && (C = tt(A), $e(A, D, Z, true), A = null);
                 if (y.patchFlag === -2) {
                     _e = false;
                     y.dynamicChildren = null;
@@ -2577,13 +2577,13 @@ var main = fR((i5e, Rk) => {
                 case Yl:
                     g(A, y, E, C);
                     break;
-                case ns:
+                case Comment:
                     S(A, y, E, C);
                     break;
                 case Wf:
                     A == null && P(y, E, C, oe);
                     break;
-                case St:
+                case Fragment:
                     ee(A, y, E, C, D, Z, oe, pe, _e);
                     break;
                 default:
@@ -2671,7 +2671,7 @@ var main = fR((i5e, Rk) => {
                 }
             }, q = (A, y, E, C, D, Z, oe, pe, _e = 0) => {
                 for (let he = _e; he < A.length; he++) {
-                    const re = A[he] = pe ? so(A[he]) : Hs(A[he]);
+                    const re = A[he] = pe ? cloneIfMounted(A[he]) : normalizeVNode(A[he]);
                     w(null, re, y, E, C, D, Z, oe, pe);
                 }
             }, se = (A, y, E, C, D, Z, oe) => {
@@ -2713,7 +2713,7 @@ var main = fR((i5e, Rk) => {
                 }, C);
             }, ce = (A, y, E, C, D, Z, oe) => {
                 for (let pe = 0; pe < y.length; pe++) {
-                    const _e = A[pe], he = y[pe], re = _e.el && (_e.type === St || !sa(_e, he) || _e.shapeFlag & 70) ? p(_e.el) : E;
+                    const _e = A[pe], he = y[pe], re = _e.el && (_e.type === Fragment || !isSameVNodeType(_e, he) || _e.shapeFlag & 70) ? p(_e.el) : E;
                     w(_e, he, re, null, C, D, Z, oe, true);
                 }
             }, ue = (A, y, E, C, D, Z, oe) => {
@@ -2749,7 +2749,7 @@ var main = fR((i5e, Rk) => {
                 const pe = A.component = oD(A, C, D);
                 if ($p(A) && (pe.ctx.renderer = k), aD(pe), pe.asyncDep) {
                     if (D && D.registerDep(pe, fe), !A.el) {
-                        const _e = pe.subTree = Qe(ns);
+                        const _e = pe.subTree = createVNode(Comment);
                         S(null, _e, y, E);
                     }
                     return;
@@ -2868,7 +2868,7 @@ var main = fR((i5e, Rk) => {
                 const he = A.length, re = y.length, ae = Math.min(he, re);
                 let Re;
                 for (Re = 0; Re < ae; Re++) {
-                    const De = y[Re] = _e ? so(y[Re]) : Hs(y[Re]);
+                    const De = y[Re] = _e ? cloneIfMounted(y[Re]) : normalizeVNode(y[Re]);
                     w(A[Re], De, E, null, D, Z, oe, pe, _e);
                 }
                 he > re ? Xe(A, D, Z, true, false, ae) : q(y, E, C, D, Z, oe, pe, _e, ae);
@@ -2877,8 +2877,8 @@ var main = fR((i5e, Rk) => {
                 const re = y.length;
                 let ae = A.length - 1, Re = re - 1;
                 for (; he <= ae && he <= Re;) {
-                    const De = A[he], Je = y[he] = _e ? so(y[he]) : Hs(y[he]);
-                    if (sa(De, Je)) {
+                    const De = A[he], Je = y[he] = _e ? cloneIfMounted(y[he]) : normalizeVNode(y[he]);
+                    if (isSameVNodeType(De, Je)) {
                         w(De, Je, E, null, D, Z, oe, pe, _e);
                     } else {
                         break;
@@ -2886,8 +2886,8 @@ var main = fR((i5e, Rk) => {
                     he++;
                 }
                 for (; he <= ae && he <= Re;) {
-                    const De = A[ae], Je = y[Re] = _e ? so(y[Re]) : Hs(y[Re]);
-                    if (sa(De, Je)) {
+                    const De = A[ae], Je = y[Re] = _e ? cloneIfMounted(y[Re]) : normalizeVNode(y[Re]);
+                    if (isSameVNodeType(De, Je)) {
                         w(De, Je, E, null, D, Z, oe, pe, _e);
                     } else {
                         break;
@@ -2900,7 +2900,7 @@ var main = fR((i5e, Rk) => {
                     if (he <= Re) {
                         const De = Re + 1, Je = De < re ? y[De].el : C;
                         for (; he <= Re;) {
-                            w(null, y[he] = _e ? so(y[he]) : Hs(y[he]), E, Je, D, Z, oe, pe, _e);
+                            w(null, y[he] = _e ? cloneIfMounted(y[he]) : normalizeVNode(y[he]), E, Je, D, Z, oe, pe, _e);
                             he++;
                             ;
                         }
@@ -2915,7 +2915,7 @@ var main = fR((i5e, Rk) => {
                     } else {
                         const De = he, Je = he, pt = new Map();
                         for (he = Je; he <= Re; he++) {
-                            const xe = y[he] = _e ? so(y[he]) : Hs(y[he]);
+                            const xe = y[he] = _e ? cloneIfMounted(y[he]) : normalizeVNode(y[he]);
                             xe.key != null && pt.set(xe.key, he);
                         }
                         let U, $ = 0;
@@ -2936,7 +2936,7 @@ var main = fR((i5e, Rk) => {
                                 Fe = pt.get(xe.key);
                             } else {
                                 for (U = Je; U <= Re; U++) {
-                                    if (ve[U - Je] === 0 && sa(xe, y[U])) {
+                                    if (ve[U - Je] === 0 && isSameVNodeType(xe, y[U])) {
                                         Fe = U;
                                         break;
                                     }
@@ -2971,7 +2971,7 @@ var main = fR((i5e, Rk) => {
                     oe.move(A, y, E, k);
                     return;
                 }
-                if (oe === St) {
+                if (oe === Fragment) {
                     r(Z, y, E);
                     for (let ae = 0; ae < _e.length; ae++) {
                         Ie(_e[ae], y, E, C);
@@ -3031,7 +3031,7 @@ var main = fR((i5e, Rk) => {
                         return;
                     }
                     De && Xo(A, null, y, 'beforeUnmount');
-                    re & 64 ? A.type.remove(A, y, E, D, k, C) : he && (Z !== St || ae > 0 && ae & 64) ? Xe(he, y, E, false, true) : (Z === St && ae & 384 || !D && re & 16) && Xe(_e, y, E);
+                    re & 64 ? A.type.remove(A, y, E, D, k, C) : he && (Z !== Fragment || ae > 0 && ae & 64) ? Xe(he, y, E, false, true) : (Z === Fragment && ae & 384 || !D && re & 16) && Xe(_e, y, E);
                     C && Ot(A);
                     ;
                 }
@@ -3047,7 +3047,7 @@ var main = fR((i5e, Rk) => {
                     anchor: C,
                     transition: D
                 } = A;
-                if (y === St) {
+                if (y === Fragment) {
                     $t(E, C);
                     return;
                 }
@@ -3136,7 +3136,7 @@ var main = fR((i5e, Rk) => {
             for (let i = 0; i < r.length; i++) {
                 const a = r[i];
                 let c = s[i];
-                c.shapeFlag & 1 && !c.dynamicChildren && ((c.patchFlag <= 0 || c.patchFlag === 32) && (c = s[i] = so(s[i]), c.el = a.el), n || X5(a, c));
+                c.shapeFlag & 1 && !c.dynamicChildren && ((c.patchFlag <= 0 || c.patchFlag === 32) && (c = s[i] = cloneIfMounted(s[i]), c.el = a.el), n || X5(a, c));
                 c.type === Yl && (c.el = a.el);
                 ;
             }
@@ -3173,36 +3173,36 @@ var main = fR((i5e, Rk) => {
         }
         return n;
     }
-    const eD = t => t.__isTeleport, St = Symbol.for('v-fgt'), Yl = Symbol.for('v-txt'), ns = Symbol.for('v-cmt'), Wf = Symbol.for('v-stc'), zu = [];
-    let Es = null;
-    function K(t = false) {
-        zu.push(Es = t ? null : []);
+    const eD = t => t.__isTeleport, Fragment = Symbol.for('v-fgt'), Yl = Symbol.for('v-txt'), Comment = Symbol.for('v-cmt'), Wf = Symbol.for('v-stc'), blockStack = [];
+    let currentBlock = null;
+    function openBlock(disableTracking = false) {
+        blockStack.push(currentBlock = disableTracking ? null : []);
     }
-    function tD() {
-        zu.pop();
-        Es = zu[zu.length - 1] || null;
+    function closeBlock() {
+        blockStack.pop();
+        currentBlock = blockStack[blockStack.length - 1] || null;
         ;
     }
-    let dl = 1;
-    function aT(t) {
-        dl += t;
+    let isBlockTreeEnabled = 1;
+    function setBlockTracking(value) {
+        isBlockTreeEnabled += value;
     }
-    function Q5(t) {
-        return t.dynamicChildren = dl > 0 ? Es || pc : null, tD(), dl > 0 && Es && Es.push(t), t;
+    function setupBlock(vnode) {
+        return vnode.dynamicChildren = isBlockTreeEnabled > 0 ? currentBlock || pc : null, closeBlock(), isBlockTreeEnabled > 0 && currentBlock && currentBlock.push(vnode), vnode;
     }
-    function X(t, e, n, r, s, i) {
-        return Q5(createBaseVNode(t, e, n, r, s, i, true));
+    function createElementBlock(type, props, children, patchFlag, dynamicProps, shapeFlag) {
+        return setupBlock(createBaseVNode(type, props, children, patchFlag, dynamicProps, shapeFlag, true));
     }
-    function Lt(t, e, n, r, s) {
-        return Q5(Qe(t, e, n, r, s, true));
+    function createBlock(type, props, children, patchFlag, dynamicProps) {
+        return setupBlock(createVNode(type, props, children, patchFlag, dynamicProps, true));
     }
-    function ad(t) {
-        return t ? t.__v_isVNode === true : false;
+    function isVNode(value) {
+        return value ? value.__v_isVNode === true : false;
     }
-    function sa(t, e) {
-        return t.type === e.type && t.key === e.key;
+    function isSameVNodeType(n1, n2) {
+        return n1.type === n2.type && n1.key === n2.key;
     }
-    const J5 = ({key: t}) => t ?? null, Hf = ({
+    const normalizeKey = ({key: t}) => t ?? null, normalizeRef = ({
             ref: t,
             ref_key: e,
             ref_for: n
@@ -3212,15 +3212,15 @@ var main = fR((i5e, Rk) => {
             k: e,
             f: !!n
         } : t : null);
-    function createBaseVNode(type, props = null, children = null, patchFlag = 0, dynamicProps = null, shapeFlag = type === St ? 0 : 1, isBlockNode = false, needFullChildrenNormalization = false) {
+    function createBaseVNode(type, props = null, children = null, patchFlag = 0, dynamicProps = null, shapeFlag = type === Fragment ? 0 : 1, isBlockNode = false, needFullChildrenNormalization = false) {
         const vnode = {
             __v_isVNode: true,
             __v_skip: true,
             type: type,
             props: props,
-            key: props && J5(props),
-            ref: props && Hf(props),
-            scopeId: Dp,
+            key: props && normalizeKey(props),
+            ref: props && normalizeRef(props),
+            scopeId: currentScopeId,
             slotScopeIds: null,
             children: children,
             component: null,
@@ -3241,13 +3241,13 @@ var main = fR((i5e, Rk) => {
             appContext: null,
             ctx: currentRenderingInstance
         };
-        return needFullChildrenNormalization ? (normalizeChildren(vnode, children), shapeFlag & 128 && type.normalize(vnode)) : children && (vnode.shapeFlag |= isString(children) ? 8 : 16), dl > 0 && !isBlockNode && Es && (vnode.patchFlag > 0 || shapeFlag & 6) && vnode.patchFlag !== 32 && Es.push(vnode), vnode;
+        return needFullChildrenNormalization ? (normalizeChildren(vnode, children), shapeFlag & 128 && type.normalize(vnode)) : children && (vnode.shapeFlag |= isString(children) ? 8 : 16), isBlockTreeEnabled > 0 && !isBlockNode && currentBlock && (vnode.patchFlag > 0 || shapeFlag & 6) && vnode.patchFlag !== 32 && currentBlock.push(vnode), vnode;
     }
-    const Qe = nD;
+    const createVNode = nD;
     function nD(t, e = null, n = null, r = 0, s = null, i = false) {
-        if ((!t || t === NULL_DYNAMIC_COMPONENT) && (t = ns), ad(t)) {
+        if ((!t || t === NULL_DYNAMIC_COMPONENT) && (t = Comment), isVNode(t)) {
             const c = Eo(t, e, true);
-            return n && normalizeChildren(c, n), dl > 0 && !i && Es && (c.shapeFlag & 6 ? Es[Es.indexOf(t)] = c : Es.push(c)), c.patchFlag |= -2, c;
+            return n && normalizeChildren(c, n), isBlockTreeEnabled > 0 && !i && currentBlock && (c.shapeFlag & 6 ? currentBlock[currentBlock.indexOf(t)] = c : currentBlock.push(c)), c.patchFlag |= -2, c;
         }
         if (fD(t) && (t = t.__vccOpts), e) {
             e = rD(e);
@@ -3277,11 +3277,11 @@ var main = fR((i5e, Rk) => {
             __v_skip: true,
             type: t.type,
             props: c,
-            key: c && J5(c),
-            ref: e && e.ref ? n && s ? isArray(s) ? s.concat(Hf(e)) : [
+            key: c && normalizeKey(c),
+            ref: e && e.ref ? n && s ? isArray(s) ? s.concat(normalizeRef(e)) : [
                 s,
-                Hf(e)
-            ] : Hf(e) : s,
+                normalizeRef(e)
+            ] : normalizeRef(e) : s,
             scopeId: t.scopeId,
             slotScopeIds: t.slotScopeIds,
             children: a,
@@ -3289,7 +3289,7 @@ var main = fR((i5e, Rk) => {
             targetAnchor: t.targetAnchor,
             staticCount: t.staticCount,
             shapeFlag: t.shapeFlag,
-            patchFlag: e && t.type !== St ? i === -1 ? 16 : i | 16 : i,
+            patchFlag: e && t.type !== Fragment ? i === -1 ? 16 : i | 16 : i,
             dynamicProps: t.dynamicProps,
             dynamicChildren: t.dynamicChildren,
             appContext: t.appContext,
@@ -3305,21 +3305,21 @@ var main = fR((i5e, Rk) => {
             ce: t.ce
         };
     }
-    function dr(t = ' ', e = 0) {
-        return Qe(Yl, null, t, e);
+    function createTextVNode(text = ' ', flag = 0) {
+        return createVNode(Yl, null, text, flag);
     }
-    function e4(t, e) {
-        const n = Qe(Wf, null, t);
-        return n.staticCount = e, n;
+    function createStaticVNode(content, numberOfNodes) {
+        const n = createVNode(Wf, null, content);
+        return n.staticCount = numberOfNodes, n;
     }
-    function qe(t = '', e = false) {
-        return e ? (K(), Lt(ns, null, t)) : Qe(ns, null, t);
+    function createCommentVNode(text = '', asBlock = false) {
+        return asBlock ? (openBlock(), createBlock(Comment, null, text)) : createVNode(Comment, null, text);
     }
-    function Hs(t) {
-        return t == null || typeof t == 'boolean' ? Qe(ns) : isArray(t) ? Qe(St, null, t.slice()) : typeof t == 'object' ? so(t) : Qe(Yl, null, String(t));
+    function normalizeVNode(child) {
+        return child == null || typeof child == 'boolean' ? createVNode(Comment) : isArray(child) ? createVNode(Fragment, null, child.slice()) : typeof child == 'object' ? cloneIfMounted(child) : createVNode(Yl, null, String(child));
     }
-    function so(t) {
-        return t.el === null && t.patchFlag !== -1 || t.memo ? t : Eo(t);
+    function cloneIfMounted(child) {
+        return child.el === null && child.patchFlag !== -1 || child.memo ? child : Eo(child);
     }
     function normalizeChildren(t, e) {
         let n = 0;
@@ -3344,7 +3344,7 @@ var main = fR((i5e, Rk) => {
                     isFunction(e) ? (e = {
                         default: e,
                         _ctx: currentRenderingInstance
-                    }, n = 32) : (e = String(e), r & 64 ? (n = 16, e = [dr(e)]) : n = 8);
+                    }, n = 32) : (e = String(e), r & 64 ? (n = 16, e = [createTextVNode(e)]) : n = 8);
                 }
             }
         }
@@ -3598,7 +3598,7 @@ var main = fR((i5e, Rk) => {
     const Lr = (t, e) => cM(t, e, ml);
     function Yy(t, e, n) {
         const r = arguments.length;
-        return r === 2 ? isObject(e) && !isArray(e) ? ad(e) ? Qe(t, null, [e]) : Qe(t, e) : Qe(t, null, e) : (r > 3 ? n = Array.prototype.slice.call(arguments, 2) : r === 3 && ad(n) && (n = [n]), Qe(t, e, n));
+        return r === 2 ? isObject(e) && !isArray(e) ? isVNode(e) ? createVNode(t, null, [e]) : createVNode(t, e) : createVNode(t, null, e) : (r > 3 ? n = Array.prototype.slice.call(arguments, 2) : r === 3 && isVNode(n) && (n = [n]), createVNode(t, e, n));
     }
     const dD = Symbol.for('v-scx'), pD = () => mo(dD), ia = typeof document < 'u' ? document : null, hT = ia && ia.createElement('template'), _D = {
             insert: (t, e, n) => {
@@ -4145,12 +4145,12 @@ var main = fR((i5e, Rk) => {
         const n = e ? '_trueValue' : '_falseValue';
         return n in t ? t[n] : e;
     }
-    const BD = [
+    const systemModifiers = [
             'ctrl',
             'shift',
             'alt',
             'meta'
-        ], qD = {
+        ], modifierGuards = {
             stop: t => t.stopPropagation(),
             prevent: t => t.preventDefault(),
             self: t => t.target !== t.currentTarget,
@@ -4161,22 +4161,22 @@ var main = fR((i5e, Rk) => {
             left: t => 'button' in t && t.button !== 0,
             middle: t => 'button' in t && t.button !== 1,
             right: t => 'button' in t && t.button !== 2,
-            exact: (t, e) => BD.some(n => t[`${ n }Key`] && !e.includes(n))
-        }, xi = (t, e) => (n, ...r) => {
-            for (let s = 0; s < e.length; s++) {
-                const i = qD[e[s]];
-                if (i && i(n, e)) {
+            exact: (t, e) => systemModifiers.some(n => t[`${ n }Key`] && !e.includes(n))
+        }, withModifiers = (fn, modifiers) => (event, ...args) => {
+            for (let s = 0; s < modifiers.length; s++) {
+                const i = modifierGuards[modifiers[s]];
+                if (i && i(event, modifiers)) {
                     return;
                 }
             }
-            return t(n, ...r);
-        }, Ky = (t, e) => n => {
-            if (!('key' in n)) {
+            return fn(event, ...args);
+        }, withKeys = (fn, modifiers) => event => {
+            if (!('key' in event)) {
                 return;
             }
-            const r = ka(n.key);
-            if (e.some(s => s === r || VD[s] === r)) {
-                return t(n);
+            const r = ka(event.key);
+            if (modifiers.some(s => s === r || VD[s] === r)) {
+                return fn(event);
             }
         }, jD = extend({ patchProp: ND }, _D);
     let OT;
@@ -4186,7 +4186,7 @@ var main = fR((i5e, Rk) => {
     const WD = (...t) => {
         const e = GD().createApp(...t), {mount: n} = e;
         return e.mount = r => {
-            const s = HD(r);
+            const s = normalizeContainer(r);
             if (!s) {
                 return;
             }
@@ -4198,13 +4198,13 @@ var main = fR((i5e, Rk) => {
             return s instanceof Element && (s.removeAttribute('v-cloak'), s.setAttribute('data-v-app', '')), a;
         }, e;
     };
-    function HD(t) {
-        return isString(t) ? document.querySelector(t) : t;
+    function normalizeContainer(container) {
+        return isString(container) ? document.querySelector(container) : container;
     }
     const createComponent = (t, e) => {
-        const n = t.__vccOpts || t;
-        for (const [r, s] of e);
-        return n;
+      const n = t.__vccOpts || t;
+      for (const [r, s] of e) n[r] = s;
+      return n
     };
     var ln = typeof globalThis < 'u' ? globalThis : typeof window < 'u' ? window : typeof global < 'u' ? global : typeof self < 'u' ? self : {};
     function eu(t) {
@@ -20028,7 +20028,7 @@ function print() { __p += __j.call(arguments, '') }
                     (t = this.replayer) == null || t.disconnect();
                 }
             }
-        }), Ui = t => (Di('data-v-220ec4c0'), t = t(), $i(), t), Aee = Ui(() => createBaseVNode('p', null, 'MARKERS', -1)), Cee = ['onClick'], Iee = Ui(() => createBaseVNode('br', null, null, -1)), kee = Ui(() => createBaseVNode('p', { class: 'title blurred' }, 'DEBUG', -1)), Pee = Ui(() => createBaseVNode('svg', { viewBox: '0 0 20 10' }, [createBaseVNode('polygon', { points: '0,10 10,0 20,10' })], -1)), Ree = Ui(() => createBaseVNode('div', { class: 'visually-hidden' }, 'Open debug menu', -1)), Mee = [
+        }), Ui = t => (pushScopeId('data-v-220ec4c0'), t = t(), popScopeId(), t), Aee = Ui(() => createBaseVNode('p', null, 'MARKERS', -1)), Cee = ['onClick'], Iee = Ui(() => createBaseVNode('br', null, null, -1)), kee = Ui(() => createBaseVNode('p', { class: 'title blurred' }, 'DEBUG', -1)), Pee = Ui(() => createBaseVNode('svg', { viewBox: '0 0 20 10' }, [createBaseVNode('polygon', { points: '0,10 10,0 20,10' })], -1)), Ree = Ui(() => createBaseVNode('div', { class: 'visually-hidden' }, 'Open debug menu', -1)), Mee = [
             Pee,
             Ree
         ], Dee = Ui(() => createBaseVNode('svg', { viewBox: '0 0 60 50' }, [
@@ -20051,14 +20051,14 @@ function print() { __p += __j.call(arguments, '') }
             Uee
         ];
     function qee(t, e, n, r, s, i) {
-        return t.replayer ? (K(), X('div', wee, [
-            t.showPowerNav ? (K(), X('div', Oee, [
+        return t.replayer ? (openBlock(), createElementBlock('div', wee, [
+            t.showPowerNav ? (openBlock(), createElementBlock('div', Oee, [
                 createBaseVNode('button', {
                     class: 'close',
                     onClick: e[0] || (e[0] = (...a) => t.onClosePowerNavClick && t.onClosePowerNavClick(...a))
                 }, 'X'),
                 Aee,
-                createBaseVNode('ul', null, [(K(true), X(St, null, Dn(t.replayer.markerMap, (a, c) => (K(), X('li', {
+                createBaseVNode('ul', null, [(openBlock(true), createElementBlock(Fragment, null, renderList(t.replayer.markerMap, (a, c) => (openBlock(), createElementBlock('li', {
                         key: c,
                         class: rt({ active: c === t.replayer.currentMarkerItemIndex }),
                         onClick: l => t.onMarkerClick(c)
@@ -20067,18 +20067,18 @@ function print() { __p += __j.call(arguments, '') }
                     class: 'option',
                     onClick: e[1] || (e[1] = (...a) => t.onKillClick && t.onKillClick(...a))
                 }, [
-                    dr('KILL'),
+                    createTextVNode('KILL'),
                     Iee,
-                    dr('ROOM')
+                    createTextVNode('ROOM')
                 ]),
                 createBaseVNode('button', {
                     class: 'option',
                     onClick: e[2] || (e[2] = (...a) => t.onDisconnectClick && t.onDisconnectClick(...a))
                 }, 'DISCONNECT')
-            ])) : qe('', true),
+            ])) : createCommentVNode('', true),
             kee,
-            t.replayer.markerMap.length ? (K(), X('p', xee, Dt(t.replayer.currentMarkerItemIndex) + ' : ' + Dt(t.replayer.currentMarkerItem[1].marker) + ' (' + Dt(t.replayer.currentEntityItemIndex) + ') ', 1)) : (K(), X('p', Nee, 'Item #' + Dt(t.replayer.currentEntityItemIndex), 1)),
-            t.showPowerNav ? qe('', true) : (K(), X('button', {
+            t.replayer.markerMap.length ? (openBlock(), createElementBlock('p', xee, Dt(t.replayer.currentMarkerItemIndex) + ' : ' + Dt(t.replayer.currentMarkerItem[1].marker) + ' (' + Dt(t.replayer.currentEntityItemIndex) + ') ', 1)) : (openBlock(), createElementBlock('p', Nee, 'Item #' + Dt(t.replayer.currentEntityItemIndex), 1)),
+            t.showPowerNav ? createCommentVNode('', true) : (openBlock(), createElementBlock('button', {
                 key: 3,
                 class: 'open-power-nav',
                 onClick: e[3] || (e[3] = (...a) => t.onOpenPowerNavClick && t.onOpenPowerNavClick(...a))
@@ -20091,7 +20091,7 @@ function print() { __p += __j.call(arguments, '') }
                 class: 'direction next',
                 onClick: e[5] || (e[5] = (...a) => t.onNextClick && t.onNextClick(...a))
             }, Bee)
-        ], 512)) : qe('', true);
+        ], 512)) : createCommentVNode('', true);
     }
     const Vee = createComponent(See, [
         [
@@ -20357,13 +20357,13 @@ function print() { __p += __j.call(arguments, '') }
                     }), this.$emit('resolve')));
                 }
             }
-        }), us = t => (Di('data-v-2c53389f'), t = t(), $i(), t), wse = us(() => createBaseVNode('img', {
+        }), us = t => (pushScopeId('data-v-2c53389f'), t = t(), popScopeId(), t), wse = us(() => createBaseVNode('img', {
             src: 'https://bundles.jackbox.tv/main/pp10-nopus-opus/assets/ad9172fc.png',
             alt: 'Leave Feedback'
         }, null, -1)), Ose = us(() => createBaseVNode('span', null, [
-            dr('LEAVE'),
+            createTextVNode('LEAVE'),
             createBaseVNode('br'),
-            dr('FEEDBACK')
+            createTextVNode('FEEDBACK')
         ], -1)), Ase = [
             wse,
             Ose
@@ -20371,9 +20371,9 @@ function print() { __p += __j.call(arguments, '') }
             src: 'https://bundles.jackbox.tv/main/pp10-nopus-opus/assets/dc131b16.png',
             alt: 'Send Debug'
         }, null, -1)), Ise = us(() => createBaseVNode('span', null, [
-            dr('SEND A'),
+            createTextVNode('SEND A'),
             createBaseVNode('br'),
-            dr('DEBUG')
+            createTextVNode('DEBUG')
         ], -1)), kse = [
             Cse,
             Ise
@@ -20396,13 +20396,13 @@ function print() { __p += __j.call(arguments, '') }
             alt: 'Debug'
         }, null, -1)), Wse = us(() => createBaseVNode('h3', { class: 'text' }, 'What is Happening?', -1));
     function Yse(t, e, n, r, s, i) {
-        return K(), X('div', Tse, [t.screen === 'options' ? (K(), X('div', Sse, [
+        return openBlock(), createElementBlock('div', Tse, [t.screen === 'options' ? (openBlock(), createElementBlock('div', Sse, [
                 createBaseVNode('button', {
                     class: 'feedback-button',
                     onClick: e[0] || (e[0] = (...a) => t.onFeedbackClick && t.onFeedbackClick(...a))
                 }, Ase),
                 createBaseVNode('button', { onClick: e[1] || (e[1] = (...a) => t.onDebugClick && t.onDebugClick(...a)) }, kse)
-            ])) : t.screen === 'feedback' ? (K(), X('div', Nse, [
+            ])) : t.screen === 'feedback' ? (openBlock(), createElementBlock('div', Nse, [
                 xse,
                 Pse,
                 createBaseVNode('div', {
@@ -20428,7 +20428,7 @@ function print() { __p += __j.call(arguments, '') }
                     ])
                 ], 2),
                 createBaseVNode('div', qse, [
-                    t.content ? (K(), X('div', Vse, [
+                    t.content ? (openBlock(), createElementBlock('div', Vse, [
                         withDirectives(createBaseVNode('input', {
                             'onUpdate:modelValue': e[5] || (e[5] = a => t.isContent = a),
                             type: 'checkbox'
@@ -20437,10 +20437,10 @@ function print() { __p += __j.call(arguments, '') }
                                 t.isContent
                             ]]),
                         createBaseVNode('span', null, [
-                            dr('Feedback is about: '),
+                            createTextVNode('Feedback is about: '),
                             createBaseVNode('em', null, Dt(t.content), 1)
                         ])
-                    ])) : qe('', true),
+                    ])) : createCommentVNode('', true),
                     withDirectives(createBaseVNode('textarea', {
                         'onUpdate:modelValue': e[6] || (e[6] = a => t.message = a),
                         rows: '3',
@@ -20450,9 +20450,9 @@ function print() { __p += __j.call(arguments, '') }
                             ST,
                             t.message
                         ]]),
-                    createBaseVNode('button', { onClick: e[7] || (e[7] = xi((...a) => t.onSubmitClick && t.onSubmitClick(...a), ['prevent'])) }, Dt(t.$t('ACTION.SUBMIT')), 1)
+                    createBaseVNode('button', { onClick: e[7] || (e[7] = withModifiers((...a) => t.onSubmitClick && t.onSubmitClick(...a), ['prevent'])) }, Dt(t.$t('ACTION.SUBMIT')), 1)
                 ])
-            ])) : t.screen === 'debug' ? (K(), X('div', jse, [
+            ])) : t.screen === 'debug' ? (openBlock(), createElementBlock('div', jse, [
                 Gse,
                 Wse,
                 createBaseVNode('div', Hse, [
@@ -20465,9 +20465,9 @@ function print() { __p += __j.call(arguments, '') }
                             ST,
                             t.message
                         ]]),
-                    createBaseVNode('button', { onClick: e[9] || (e[9] = xi((...a) => t.onSubmitClick && t.onSubmitClick(...a), ['prevent'])) }, Dt(t.$t('ACTION.OK')), 1)
+                    createBaseVNode('button', { onClick: e[9] || (e[9] = withModifiers((...a) => t.onSubmitClick && t.onSubmitClick(...a), ['prevent'])) }, Dt(t.$t('ACTION.OK')), 1)
                 ])
-            ])) : qe('', true)]);
+            ])) : createCommentVNode('', true)]);
     }
     const Kse = createComponent(yse, [
             [
@@ -20486,7 +20486,7 @@ function print() { __p += __j.call(arguments, '') }
             }
         });
     function Zse(t, e, n, r, s, i) {
-        return K(), X('div', {
+        return openBlock(), createElementBlock('div', {
             class: 'feedback-button',
             onClick: e[0] || (e[0] = (...a) => t.onFeedbackClick && t.onFeedbackClick(...a))
         }, 'SEND FEEDBACK');
@@ -23655,7 +23655,7 @@ ${ e }`;
                     lce({ id: ((e = (t = this.fatalError) == null ? void 0 : t.event) == null ? void 0 : e.event_id) ?? 'Unknown' });
                 }
             }
-        }), ah = t => (Di('data-v-a7272d53'), t = t(), $i(), t), pce = ah(() => createBaseVNode('a', {
+        }), ah = t => (pushScopeId('data-v-a7272d53'), t = t(), popScopeId(), t), pce = ah(() => createBaseVNode('a', {
             class: 'logo',
             href: '/',
             'aria-label': 'Jackbox Games Logo'
@@ -23667,7 +23667,7 @@ ${ e }`;
             createBaseVNode('li', null, 'If that doesn\'t work, let us know.')
         ], -1)), vce = ah(() => createBaseVNode('hr', null, null, -1));
     function Ece(t, e, n, r, s, i) {
-        return K(), X('div', fce, [createBaseVNode('div', dce, [
+        return openBlock(), createElementBlock('div', fce, [createBaseVNode('div', dce, [
                 pce,
                 createBaseVNode('div', mce, [
                     gce,
@@ -23807,22 +23807,22 @@ ${ e }`;
         };
     function fue(t, e, n, r, s, i) {
         const a = resolveDirective('bb');
-        return K(), X('div', {
+        return openBlock(), createElementBlock('div', {
             class: rt([
                 'error-model',
                 t.classes
             ])
         }, [
-            t.image === 'tear' ? (K(), X('img', oue)) : t.image === 'moon' ? (K(), X('img', aue)) : (K(), X('img', cue)),
+            t.image === 'tear' ? (openBlock(), createElementBlock('img', oue)) : t.image === 'moon' ? (openBlock(), createElementBlock('img', aue)) : (openBlock(), createElementBlock('img', cue)),
             withDirectives(createBaseVNode('h3', uue, null, 512), [[
                     a,
                     t.text
                 ]]),
-            t.subtext ? withDirectives((K(), X('h3', lue, null, 512)), [[
+            t.subtext ? withDirectives((openBlock(), createElementBlock('h3', lue, null, 512)), [[
                     a,
                     t.subtext
-                ]]) : qe('', true),
-            createBaseVNode('div', hue, [withDirectives(createBaseVNode('button', { onClick: e[0] || (e[0] = xi(c => t.$emit('resolve'), ['prevent'])) }, null, 512), [[
+                ]]) : createCommentVNode('', true),
+            createBaseVNode('div', hue, [withDirectives(createBaseVNode('button', { onClick: e[0] || (e[0] = withModifiers(c => t.$emit('resolve'), ['prevent'])) }, null, 512), [[
                         a,
                         t.dismissText
                     ]])])
@@ -23854,7 +23854,7 @@ ${ e }`;
         }), yue = ['onClick'];
     function vue(t, e, n, r, s, i) {
         const a = resolveDirective('bb');
-        return K(), X('div', {
+        return openBlock(), createElementBlock('div', {
             class: rt([
                 'options-modal',
                 t.classes
@@ -23864,14 +23864,14 @@ ${ e }`;
                     a,
                     t.text
                 ]]),
-            t.subtext ? withDirectives((K(), X('h3', gue, null, 512)), [[
+            t.subtext ? withDirectives((openBlock(), createElementBlock('h3', gue, null, 512)), [[
                     a,
                     t.subtext
-                ]]) : qe('', true),
-            createBaseVNode('div', _ue, [(K(true), X(St, null, Dn(t.options, (c, l) => withDirectives((K(), X('button', {
+                ]]) : createCommentVNode('', true),
+            createBaseVNode('div', _ue, [(openBlock(true), createElementBlock(Fragment, null, renderList(t.options, (c, l) => withDirectives((openBlock(), createElementBlock('button', {
                     key: l,
                     class: rt(c.classes),
-                    onClick: xi(h => t.$emit('resolve', c.value), ['prevent'])
+                    onClick: withModifiers(h => t.$emit('resolve', c.value), ['prevent'])
                 }, null, 10, yue)), [[
                         a,
                         c.text
@@ -23918,19 +23918,19 @@ ${ e }`;
             }
         });
     function Tue(t, e, n, r, s, i) {
-        return K(), Lt(xs, { name: 'modal-transition' }, {
-            default: cs(() => [t.props ? (K(), X('div', {
+        return openBlock(), createBlock(xs, { name: 'modal-transition' }, {
+            default: withCtx(() => [t.props ? (openBlock(), createElementBlock('div', {
                     key: 0,
                     class: rt([
                         'modal',
                         t.classes
                     ]),
-                    onKeyup: e[0] || (e[0] = Ky((...a) => t.onBackgroundClick && t.onBackgroundClick(...a), ['esc'])),
-                    onClick: e[1] || (e[1] = xi((...a) => t.onBackgroundClick && t.onBackgroundClick(...a), ['self']))
-                }, [t.content ? (K(), Lt(resolveDynamicComponent(t.content), Up({
+                    onKeyup: e[0] || (e[0] = withKeys((...a) => t.onBackgroundClick && t.onBackgroundClick(...a), ['esc'])),
+                    onClick: e[1] || (e[1] = withModifiers((...a) => t.onBackgroundClick && t.onBackgroundClick(...a), ['self']))
+                }, [t.content ? (openBlock(), createBlock(resolveDynamicComponent(t.content), Up({
                         key: 0,
                         class: 'content'
-                    }, t.props, { onResolve: t.onResolve }), null, 16, ['onResolve'])) : qe('', true)], 34)) : qe('', true)]),
+                    }, t.props, { onResolve: t.onResolve }), null, 16, ['onResolve'])) : createCommentVNode('', true)], 34)) : createCommentVNode('', true)]),
             _: 1
         });
     }
@@ -24031,7 +24031,7 @@ ${ e }`;
             }
         });
     function Iue(t, e, n, r, s, i) {
-        return K(), X('div', Cue, [(K(true), X(St, null, Dn(t.lines, a => (K(), X('p', { key: a.id }, Dt(a.text), 1))), 128))]);
+        return openBlock(), createElementBlock('div', Cue, [(openBlock(true), createElementBlock(Fragment, null, renderList(t.lines, a => (openBlock(), createElementBlock('p', { key: a.id }, Dt(a.text), 1))), 128))]);
     }
     const kue = createComponent(Aue, [[
                 'render',
@@ -26413,7 +26413,7 @@ __p+='`), Z;
         }
     }
     function _3(t) {
-        return Qe(Yl, null, t, 0);
+        return createVNode(Yl, null, t, 0);
     }
     let y3 = 0;
     function v3(t) {
@@ -26965,7 +26965,7 @@ __p+='`), Z;
         }, {});
     }
     function VC(t) {
-        return St;
+        return Fragment;
     }
     const b3 = {
         name: 'i18n-t',
@@ -27661,8 +27661,8 @@ __p+='`), Z;
         }
     });
     function dhe(t, e, n, r, s, i) {
-        return K(), Lt(xs, { name: 'toast-transition' }, {
-            default: cs(() => [t.isVisible && t.options ? (K(), X('div', {
+        return openBlock(), createBlock(xs, { name: 'toast-transition' }, {
+            default: withCtx(() => [t.isVisible && t.options ? (openBlock(), createElementBlock('div', {
                     key: 0,
                     class: rt([
                         t.options.type,
@@ -27674,14 +27674,14 @@ __p+='`), Z;
                             alt: 'close',
                             src: 'https://bundles.jackbox.tv/main/pp10-nopus-opus/assets/c8afd972.svg',
                             onClick: e[0] || (e[0] = (...a) => t.hide && t.hide(...a)),
-                            onKeydown: e[1] || (e[1] = Ky((...a) => t.hide && t.hide(...a), ['esc']))
+                            onKeydown: e[1] || (e[1] = withKeys((...a) => t.hide && t.hide(...a), ['esc']))
                         }, null, 32),
                         createBaseVNode('p', che, Dt(t.options.text), 1),
                         createBaseVNode('p', uhe, Dt(t.options.subtext), 1),
-                        t.options.warning ? (K(), X('p', lhe, Dt(t.options.warning), 1)) : qe('', true),
-                        t.options.type === 'reconnecting' || t.options.type === 'paused' ? (K(), X('div', hhe)) : qe('', true),
-                        t.options.type === 'paused' ? (K(), X('div', fhe)) : qe('', true)
-                    ])], 2)) : qe('', true)]),
+                        t.options.warning ? (openBlock(), createElementBlock('p', lhe, Dt(t.options.warning), 1)) : createCommentVNode('', true),
+                        t.options.type === 'reconnecting' || t.options.type === 'paused' ? (openBlock(), createElementBlock('div', hhe)) : createCommentVNode('', true),
+                        t.options.type === 'paused' ? (openBlock(), createElementBlock('div', fhe)) : createCommentVNode('', true)
+                    ])], 2)) : createCommentVNode('', true)]),
             _: 1
         });
     }
@@ -27847,15 +27847,15 @@ __p+='`), Z;
         });
     function _he(t, e, n, r, s, i) {
         const a = resolveComponent('Fatal'), c = resolveComponent('TextDescriptions'), l = resolveComponent('Debug'), h = resolveComponent('Modal'), d = resolveComponent('Toast');
-        return t.shouldShowFatal ? (K(), Lt(a, { key: 0 })) : (K(), X(St, { key: 1 }, [
-            Qe(c),
-            (K(), Lt(resolveDynamicComponent(t.mainView), Up({
+        return t.shouldShowFatal ? (openBlock(), createBlock(a, { key: 0 })) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+            createVNode(c),
+            (openBlock(), createBlock(resolveDynamicComponent(t.mainView), Up({
                 id: 'game',
                 class: t.classes
             }, t.ecastValues), null, 16, ['class'])),
-            Qe(l),
-            Qe(h),
-            Qe(d)
+            createVNode(l),
+            createVNode(h),
+            createVNode(d)
         ], 64));
     }
     const A3 = createComponent(ghe, [[
@@ -28101,7 +28101,7 @@ __p+='`), Z;
                     required: true
                 }
             }
-        }), Et = t => (Di('data-v-762a6505'), t = t(), $i(), t), Ufe = Et(() => createBaseVNode('path', {
+        }), Et = t => (pushScopeId('data-v-762a6505'), t = t(), popScopeId(), t), Ufe = Et(() => createBaseVNode('path', {
             class: 'legs',
             d: 'm260.33,479.5c.14,9.96-15.51,9.97-15.36,0,0,0,0-69.65,0-69.65h15.36v69.65Zm45.85-69.65h-15.49v69.65c0,4.24,3.44,7.68,7.68,7.68s7.68-3.44,7.68-7.68l.13-69.65Z'
         }, null, -1)), Vfe = Et(() => createBaseVNode('path', {
@@ -28256,7 +28256,7 @@ __p+='`), Z;
             d: 'm437.81,295.45l.19-.19h.19c-1.11-1.38-107.2-1.04-91.76,3.36,24.28.89,66.94-1.43,89.17-1.34-.1-.42.77-.8,1.06-.96.32-.35.56-.69.96-.67.06-.13.13-.19.19-.19Z'
         }, null, -1));
     function Kde(t, e, n, r, s, i) {
-        return K(), X('svg', {
+        return openBlock(), createElementBlock('svg', {
             viewBox: '0 0 500 500',
             class: rt([
                 'avatar',
@@ -28265,7 +28265,7 @@ __p+='`), Z;
         }, [
             Ufe,
             createBaseVNode('g', Bfe, [
-                t.avatar === 0 ? (K(), X('g', qfe, Gfe)) : t.avatar === 1 ? (K(), X('g', Wfe, Kfe)) : t.avatar === 2 ? (K(), X('g', zfe, Jfe)) : t.avatar === 3 ? (K(), X('g', ede, rde)) : t.avatar === 4 ? (K(), X('g', sde, cde)) : t.avatar === 5 ? (K(), X('g', ude, fde)) : t.avatar === 6 ? (K(), X('g', dde, gde)) : t.avatar === 7 ? (K(), X('g', _de, bde)) : t.avatar === 8 ? (K(), X('g', Ede, Ode)) : t.avatar === 9 ? (K(), X('g', Ade, Nde)) : t.avatar === 10 ? (K(), X('g', xde, Dde)) : t.avatar === 11 ? (K(), X('g', $de, Bde)) : t.avatar === 99 ? (K(), X('g', qde, Gde)) : qe('', true),
+                t.avatar === 0 ? (openBlock(), createElementBlock('g', qfe, Gfe)) : t.avatar === 1 ? (openBlock(), createElementBlock('g', Wfe, Kfe)) : t.avatar === 2 ? (openBlock(), createElementBlock('g', zfe, Jfe)) : t.avatar === 3 ? (openBlock(), createElementBlock('g', ede, rde)) : t.avatar === 4 ? (openBlock(), createElementBlock('g', sde, cde)) : t.avatar === 5 ? (openBlock(), createElementBlock('g', ude, fde)) : t.avatar === 6 ? (openBlock(), createElementBlock('g', dde, gde)) : t.avatar === 7 ? (openBlock(), createElementBlock('g', _de, bde)) : t.avatar === 8 ? (openBlock(), createElementBlock('g', Ede, Ode)) : t.avatar === 9 ? (openBlock(), createElementBlock('g', Ade, Nde)) : t.avatar === 10 ? (openBlock(), createElementBlock('g', xde, Dde)) : t.avatar === 11 ? (openBlock(), createElementBlock('g', $de, Bde)) : t.avatar === 99 ? (openBlock(), createElementBlock('g', qde, Gde)) : createCommentVNode('', true),
                 Wde,
                 Hde,
                 Yde
@@ -28298,7 +28298,7 @@ __p+='`), Z;
                     this.$emit('didRequestClose');
                 }
             }
-        }), GC = t => (Di('data-v-626bed06'), t = t(), $i(), t), Qde = GC(() => createBaseVNode('svg', {
+        }), GC = t => (pushScopeId('data-v-626bed06'), t = t(), popScopeId(), t), Qde = GC(() => createBaseVNode('svg', {
             class: 'bg',
             viewBox: '0 0 400 50',
             preserveAspectRatio: 'none'
@@ -28327,22 +28327,22 @@ __p+='`), Z;
         ], -1));
     function rpe(t, e, n, r, s, i) {
         const a = resolveDirective('t');
-        return K(), X('div', {
+        return openBlock(), createElementBlock('div', {
             class: 'modal',
-            onClick: e[0] || (e[0] = xi((...c) => t.onCloseClick && t.onCloseClick(...c), ['self'])),
-            onKeyup: e[1] || (e[1] = Ky((...c) => t.onCloseClick && t.onCloseClick(...c), ['esc']))
+            onClick: e[0] || (e[0] = withModifiers((...c) => t.onCloseClick && t.onCloseClick(...c), ['self'])),
+            onKeyup: e[1] || (e[1] = withKeys((...c) => t.onCloseClick && t.onCloseClick(...c), ['esc']))
         }, [createBaseVNode('div', Zde, [
                 createBaseVNode('div', Xde, [
                     Qde,
-                    t.title ? (K(), X('h3', Jde, Dt(t.title), 1)) : qe('', true),
-                    t.titleKey ? withDirectives((K(), X('h3', epe, null, 512)), [[
+                    t.title ? (openBlock(), createElementBlock('h3', Jde, Dt(t.title), 1)) : createCommentVNode('', true),
+                    t.titleKey ? withDirectives((openBlock(), createElementBlock('h3', epe, null, 512)), [[
                             a,
                             t.titleKey
-                        ]]) : qe('', true)
+                        ]]) : createCommentVNode('', true)
                 ]),
                 createBaseVNode('div', tpe, [
                     npe,
-                    $M(t.$slots, 'default', {}, void 0, true)
+                    renderSlot(t.$slots, 'default', {}, void 0, true)
                 ])
             ])], 32);
     }
@@ -28403,15 +28403,15 @@ __p+='`), Z;
         }), ipe = ['onClick'];
     function ope(t, e, n, r, s, i) {
         const a = resolveComponent('AvatarSVG'), c = resolveComponent('BaseModal'), l = resolveDirective('t');
-        return K(), Lt(c, { 'title-key': 'MENU.CHOOSE_HOST' }, {
-            default: cs(() => [
-                (K(true), X(St, null, Dn(t.choices, (h, d) => (K(), X('button', {
+        return openBlock(), createBlock(c, { 'title-key': 'MENU.CHOOSE_HOST' }, {
+            default: withCtx(() => [
+                (openBlock(true), createElementBlock(Fragment, null, renderList(t.choices, (h, d) => (openBlock(), createElementBlock('button', {
                     key: d,
                     class: 'choice has-icon',
-                    onClick: xi(p => t.onChoiceClick(h.id), ['prevent'])
+                    onClick: withModifiers(p => t.onChoiceClick(h.id), ['prevent'])
                 }, [
-                    dr(Dt(h.label) + ' ', 1),
-                    Qe(a, {
+                    createTextVNode(Dt(h.label) + ' ', 1),
+                    createVNode(a, {
                         focusable: 'false',
                         avatar: h.avatar,
                         class: 'icon'
@@ -28479,28 +28479,28 @@ __p+='`), Z;
         ];
     function dpe(t, e, n, r, s, i) {
         const a = resolveComponent('AvatarSVG'), c = resolveDirective('t'), l = resolveDirective('bb');
-        return K(), X('div', cpe, [createBaseVNode('div', upe, [
-                t.info.isAudience ? withDirectives((K(), X('p', lpe, null, 512)), [[
+        return openBlock(), createElementBlock('div', cpe, [createBaseVNode('div', upe, [
+                t.info.isAudience ? withDirectives((openBlock(), createElementBlock('p', lpe, null, 512)), [[
                         c,
                         'AUDIENCE.NAME'
-                    ]]) : (K(), X('p', hpe, Dt(t.info.name), 1)),
+                    ]]) : (openBlock(), createElementBlock('p', hpe, Dt(t.info.name), 1)),
                 createBaseVNode('button', {
                     class: 'change-avatar',
                     'aria-label': t.$t('ARIA.CHANGE_AVATAR'),
                     disabled: !t.responseKey,
                     onClick: e[0] || (e[0] = (...h) => t.onAvatarClick && t.onAvatarClick(...h))
-                }, [Qe(a, {
+                }, [createVNode(a, {
                         focusable: 'false',
                         avatar: t.info.avatar
                     }, null, 8, ['avatar'])], 8, fpe),
-                t.isVip ? withDirectives((K(), X('button', {
+                t.isVip ? withDirectives((openBlock(), createElementBlock('button', {
                     key: 2,
                     class: 'change-host',
                     onClick: e[1] || (e[1] = (...h) => t.onChangeHostClick && t.onChangeHostClick(...h))
                 }, null, 512)), [[
                         l,
                         t.$t('MENU.CHANGE_HOST')
-                    ]]) : qe('', true)
+                    ]]) : createCommentVNode('', true)
             ])]);
     }
     const PlayerHeaderComponent = createComponent(ape, [
@@ -28580,22 +28580,22 @@ __p+='`), Z;
         }), Ope = ['src'], Ape = ['onClick'];
     function Cpe(t, e, n, r, s, i) {
         const a = resolveComponent('PlayerHeader'), c = resolveComponent('ChangeVIP'), l = resolveDirective('t');
-        return K(), X('div', mpe, [
+        return openBlock(), createElementBlock('div', mpe, [
             createBaseVNode('div', gpe, [
-                createBaseVNode('div', _pe, [t.info.isVip ? withDirectives((K(), X('h3', ype, null, 512)), [[
+                createBaseVNode('div', _pe, [t.info.isVip ? withDirectives((openBlock(), createElementBlock('h3', ype, null, 512)), [[
                             l,
                             'POST_GAME.PLAY_AGAIN'
-                        ]]) : qe('', true)]),
-                t.info.isVip ? (K(), X('div', vpe, [createBaseVNode('div', bpe, [withDirectives(createBaseVNode('button', { onClick: e[0] || (e[0] = h => t.onChoiceClick('back')) }, null, 512), [[
+                        ]]) : createCommentVNode('', true)]),
+                t.info.isVip ? (openBlock(), createElementBlock('div', vpe, [createBaseVNode('div', bpe, [withDirectives(createBaseVNode('button', { onClick: e[0] || (e[0] = h => t.onChoiceClick('back')) }, null, 512), [[
                                 l,
                                 'MENU.BACK_TO_MENU'
-                            ]])])])) : qe('', true),
+                            ]])])])) : createCommentVNode('', true),
                 createBaseVNode('div', Epe, [
                     withDirectives(createBaseVNode('h3', Tpe, null, 512), [[
                             l,
                             'CREDITS.SHARE'
                         ]]),
-                    (K(true), X(St, null, Dn(t.renders, (h, d) => (K(), X('div', {
+                    (openBlock(true), createElementBlock(Fragment, null, renderList(t.renders, (h, d) => (openBlock(), createElementBlock('div', {
                         key: d,
                         class: 'sharable'
                     }, [
@@ -28608,7 +28608,7 @@ __p+='`), Z;
                     ]))), 128))
                 ])
             ]),
-            Qe(a, {
+            createVNode(a, {
                 info: t.info,
                 'is-vip': t.info.isVip && !t.info.isSolo,
                 players: t.players,
@@ -28621,8 +28621,8 @@ __p+='`), Z;
                 'response-key',
                 'onDidRequestChangeVip'
             ]),
-            Qe(xs, { name: 'modal' }, {
-                default: cs(() => [t.showChangeVIP ? (K(), Lt(c, {
+            createVNode(xs, { name: 'modal' }, {
+                default: withCtx(() => [t.showChangeVIP ? (openBlock(), createBlock(c, {
                         key: 0,
                         info: t.info,
                         players: t.players,
@@ -28633,7 +28633,7 @@ __p+='`), Z;
                         'players',
                         'response-key',
                         'onDidRequestClose'
-                    ])) : qe('', true)]),
+                    ])) : createCommentVNode('', true)]),
                 _: 1
             })
         ]);
@@ -32223,13 +32223,13 @@ __p+='`), Z;
         }), F2e = ['disabled'];
     function q2e(t, e, n, r, s, i) {
         const a = resolveDirective('pointerbox'), c = resolveDirective('t');
-        return K(), X('div', {
+        return openBlock(), createElementBlock('div', {
             class: rt([
                 'tester',
                 { loading: t.isLoading }
             ])
         }, [
-            createBaseVNode('div', L2e, [withDirectives((K(), X('div', {
+            createBaseVNode('div', L2e, [withDirectives((openBlock(), createElementBlock('div', {
                     class: 'slider',
                     disabled: t.isLoading,
                     'onPointerbox:start': e[0] || (e[0] = (...l) => t.onPointerBoxStart && t.onPointerBoxStart(...l)),
@@ -32247,10 +32247,10 @@ __p+='`), Z;
                         void 0,
                         { restrict: true }
                     ]])]),
-            t.isLoading ? withDirectives((K(), X('p', U2e, null, 512)), [[
+            t.isLoading ? withDirectives((openBlock(), createElementBlock('p', U2e, null, 512)), [[
                     c,
                     'MENU.LOADING'
-                ]]) : withDirectives((K(), X('p', B2e, null, 512)), [[
+                ]]) : withDirectives((openBlock(), createElementBlock('p', B2e, null, 512)), [[
                     c,
                     'MENU.TEST_IT'
                 ]])
@@ -32642,7 +32642,7 @@ __p+='`), Z;
         ];
     function Z2e(t, e, n, r, s, i) {
         const a = resolveDirective('t');
-        return K(), X('div', {
+        return openBlock(), createElementBlock('div', {
             class: rt([
                 'tester',
                 {
@@ -32651,7 +32651,7 @@ __p+='`), Z;
                 }
             ])
         }, [
-            createBaseVNode('div', W2e, [(K(true), X(St, null, Dn(t.hitIndicators, (c, l) => (K(), X('div', {
+            createBaseVNode('div', W2e, [(openBlock(true), createElementBlock(Fragment, null, renderList(t.hitIndicators, (c, l) => (openBlock(), createElementBlock('div', {
                     key: l,
                     class: 'cell'
                 }, [createBaseVNode('button', {
@@ -32663,10 +32663,10 @@ __p+='`), Z;
                         onPointerleave: h => t.onPointerUp(h, l),
                         onPointerup: h => t.onPointerUp(h, l)
                     }, [createBaseVNode('span', Y2e, Dt(c.text), 1)], 42, H2e)]))), 128))]),
-            t.isLoading ? withDirectives((K(), X('p', K2e, null, 512)), [[
+            t.isLoading ? withDirectives((openBlock(), createElementBlock('p', K2e, null, 512)), [[
                     a,
                     'MENU.LOADING'
-                ]]) : withDirectives((K(), X('p', z2e, null, 512)), [[
+                ]]) : withDirectives((openBlock(), createElementBlock('p', z2e, null, 512)), [[
                     a,
                     'MENU.TEST_IT'
                 ]])
@@ -32694,10 +32694,10 @@ __p+='`), Z;
             }
         });
     function obe(t, e, n, r, s, i) {
-        return K(), X('svg', {
+        return openBlock(), createElementBlock('svg', {
             viewBox: '0 0 30 50',
             class: rt(t.classes)
-        }, [t.category === 'AuxPercussion' ? (K(), X('path', J2e)) : t.category === 'Bass' ? (K(), X('path', ebe)) : t.category === 'CounterMelody' ? (K(), X('path', tbe)) : t.category === 'Drums' ? (K(), X('path', nbe)) : t.category === 'Harmony' ? (K(), X('path', rbe)) : t.category === 'Melody' ? (K(), X('path', sbe)) : t.category === 'Signature' ? (K(), X('path', ibe)) : qe('', true)], 2);
+        }, [t.category === 'AuxPercussion' ? (openBlock(), createElementBlock('path', J2e)) : t.category === 'Bass' ? (openBlock(), createElementBlock('path', ebe)) : t.category === 'CounterMelody' ? (openBlock(), createElementBlock('path', tbe)) : t.category === 'Drums' ? (openBlock(), createElementBlock('path', nbe)) : t.category === 'Harmony' ? (openBlock(), createElementBlock('path', rbe)) : t.category === 'Melody' ? (openBlock(), createElementBlock('path', sbe)) : t.category === 'Signature' ? (openBlock(), createElementBlock('path', ibe)) : createCommentVNode('', true)], 2);
     }
     const CategorySVGComponent = createComponent(Q2e, [
             [
@@ -32710,7 +32710,7 @@ __p+='`), Z;
             ]
         ]), abe = {}, ube = createBaseVNode('path', { d: 'm50,0C22.39,0,0,22.39,0,50s22.39,50,50,50,50-22.39,50-50S77.61,0,50,0Zm17.31,72.45c-12.4,0-22.45-10.05-22.45-22.45-.4-16.04-23.92-16.03-24.32,0,0,6.72,5.44,12.16,12.16,12.16,3.13.17,6.82-1.94,9.58-3.07l4.12,9.43-4.72,2.06c-14.3,6.59-31.81-4.71-31.44-20.58.76-29.62,44.16-29.61,44.91,0,0,6.72,5.44,12.16,12.16,12.16,16.03-.4,16.04-23.92,0-24.32-3.44-.2-7.13,2.2-10.06,3.61l-4.64-9.19,4.59-2.32c14.32-7.64,32.98,3.68,32.56,20.06,0,12.4-10.05,22.45-22.45,22.45Z' }, null, -1), lbe = [ube];
     function hbe(t, e) {
-        return K(), X('svg', cbe, lbe);
+        return openBlock(), createElementBlock('svg', cbe, lbe);
     }
     const InfinitySVGComponent = createComponent(abe, [[
                 'render',
@@ -32736,13 +32736,13 @@ __p+='`), Z;
             }
         });
     function tEe(t, e, n, r, s, i) {
-        return K(), X('svg', {
+        return openBlock(), createElementBlock('svg', {
             viewBox: '0 0 180 180',
             class: rt([
                 'instrument',
                 `type-${ t.categoryClass }`
             ])
-        }, [t.icon === 'accordion' ? (K(), X('path', pbe)) : t.icon === 'banjo' ? (K(), X('path', mbe)) : t.icon === 'bell' ? (K(), X('path', gbe)) : t.icon === 'bongos' ? (K(), X('path', _be)) : t.icon === 'canon' ? (K(), X('path', ybe)) : t.icon === 'cap' ? (K(), X('path', vbe)) : t.icon === 'car' ? (K(), X('path', bbe)) : t.icon === 'castanets' ? (K(), X('path', Ebe)) : t.icon === 'cat' ? (K(), X('path', Tbe)) : t.icon === 'cello' ? (K(), X('path', Sbe)) : t.icon === 'chimes' ? (K(), X('path', wbe)) : t.icon === 'clock' ? (K(), X('path', Obe)) : t.icon === 'cup' ? (K(), X('path', Abe)) : t.icon === 'dog' ? (K(), X('path', Cbe)) : t.icon === 'drumKit' ? (K(), X('path', Ibe)) : t.icon === 'fish' ? (K(), X('path', kbe)) : t.icon === 'flute' ? (K(), X('path', Nbe)) : t.icon === 'frenchHorn' ? (K(), X('path', xbe)) : t.icon === 'gong' ? (K(), X('path', Pbe)) : t.icon === 'guitar' ? (K(), X('path', Rbe)) : t.icon === 'hands' ? (K(), X('path', Mbe)) : t.icon === 'kazoo' ? (K(), X('path', Dbe)) : t.icon === 'mouth' ? (K(), X('path', $be)) : t.icon === 'ocarina' ? (K(), X('path', Lbe)) : t.icon === 'piano' ? (K(), X('path', Fbe)) : t.icon === 'poop' ? (K(), X('path', Ube)) : t.icon === 'pots' ? (K(), X('path', Bbe)) : t.icon === 'sax' ? (K(), X('path', qbe)) : t.icon === 'shaker' ? (K(), X('path', Vbe)) : t.icon === 'snare' ? (K(), X('path', jbe)) : t.icon === 'sticks' ? (K(), X('path', Gbe)) : t.icon === 'synth' ? (K(), X('path', Wbe)) : t.icon === 'tallBongo' ? (K(), X('path', Hbe)) : t.icon === 'tamborine' ? (K(), X('path', Ybe)) : t.icon === 'trombone' ? (K(), X('path', Kbe)) : t.icon === 'trumpet' ? (K(), X('path', zbe)) : t.icon === 'tuba' ? (K(), X('path', Zbe)) : t.icon === 'vibraslap' ? (K(), X('path', Xbe)) : t.icon === 'whistle' ? (K(), X('path', Qbe)) : t.icon === 'woodblock' ? (K(), X('path', Jbe)) : t.icon === 'xylophone' ? (K(), X('path', eEe)) : qe('', true)], 2);
+        }, [t.icon === 'accordion' ? (openBlock(), createElementBlock('path', pbe)) : t.icon === 'banjo' ? (openBlock(), createElementBlock('path', mbe)) : t.icon === 'bell' ? (openBlock(), createElementBlock('path', gbe)) : t.icon === 'bongos' ? (openBlock(), createElementBlock('path', _be)) : t.icon === 'canon' ? (openBlock(), createElementBlock('path', ybe)) : t.icon === 'cap' ? (openBlock(), createElementBlock('path', vbe)) : t.icon === 'car' ? (openBlock(), createElementBlock('path', bbe)) : t.icon === 'castanets' ? (openBlock(), createElementBlock('path', Ebe)) : t.icon === 'cat' ? (openBlock(), createElementBlock('path', Tbe)) : t.icon === 'cello' ? (openBlock(), createElementBlock('path', Sbe)) : t.icon === 'chimes' ? (openBlock(), createElementBlock('path', wbe)) : t.icon === 'clock' ? (openBlock(), createElementBlock('path', Obe)) : t.icon === 'cup' ? (openBlock(), createElementBlock('path', Abe)) : t.icon === 'dog' ? (openBlock(), createElementBlock('path', Cbe)) : t.icon === 'drumKit' ? (openBlock(), createElementBlock('path', Ibe)) : t.icon === 'fish' ? (openBlock(), createElementBlock('path', kbe)) : t.icon === 'flute' ? (openBlock(), createElementBlock('path', Nbe)) : t.icon === 'frenchHorn' ? (openBlock(), createElementBlock('path', xbe)) : t.icon === 'gong' ? (openBlock(), createElementBlock('path', Pbe)) : t.icon === 'guitar' ? (openBlock(), createElementBlock('path', Rbe)) : t.icon === 'hands' ? (openBlock(), createElementBlock('path', Mbe)) : t.icon === 'kazoo' ? (openBlock(), createElementBlock('path', Dbe)) : t.icon === 'mouth' ? (openBlock(), createElementBlock('path', $be)) : t.icon === 'ocarina' ? (openBlock(), createElementBlock('path', Lbe)) : t.icon === 'piano' ? (openBlock(), createElementBlock('path', Fbe)) : t.icon === 'poop' ? (openBlock(), createElementBlock('path', Ube)) : t.icon === 'pots' ? (openBlock(), createElementBlock('path', Bbe)) : t.icon === 'sax' ? (openBlock(), createElementBlock('path', qbe)) : t.icon === 'shaker' ? (openBlock(), createElementBlock('path', Vbe)) : t.icon === 'snare' ? (openBlock(), createElementBlock('path', jbe)) : t.icon === 'sticks' ? (openBlock(), createElementBlock('path', Gbe)) : t.icon === 'synth' ? (openBlock(), createElementBlock('path', Wbe)) : t.icon === 'tallBongo' ? (openBlock(), createElementBlock('path', Hbe)) : t.icon === 'tamborine' ? (openBlock(), createElementBlock('path', Ybe)) : t.icon === 'trombone' ? (openBlock(), createElementBlock('path', Kbe)) : t.icon === 'trumpet' ? (openBlock(), createElementBlock('path', zbe)) : t.icon === 'tuba' ? (openBlock(), createElementBlock('path', Zbe)) : t.icon === 'vibraslap' ? (openBlock(), createElementBlock('path', Xbe)) : t.icon === 'whistle' ? (openBlock(), createElementBlock('path', Qbe)) : t.icon === 'woodblock' ? (openBlock(), createElementBlock('path', Jbe)) : t.icon === 'xylophone' ? (openBlock(), createElementBlock('path', eEe)) : createCommentVNode('', true)], 2);
     }
     const InstrumentSVGComponent = createComponent(dbe, [
             [
@@ -32767,15 +32767,15 @@ __p+='`), Z;
             }
         }), sEe = ['viewBox'];
     function dEe(t, e, n, r, s, i) {
-        return K(), X('svg', { viewBox: t.viewbox }, [
-            t.lanes ? (K(), X('rect', iEe)) : qe('', true),
-            t.lanes && t.lanes > 1 ? (K(), X('rect', oEe)) : qe('', true),
-            t.lanes && t.lanes > 2 ? (K(), X('rect', aEe)) : qe('', true),
-            t.lanes && t.lanes > 3 ? (K(), X('rect', cEe)) : qe('', true),
-            t.lanes && t.lanes > 4 ? (K(), X('rect', uEe)) : qe('', true),
-            t.lanes && t.lanes > 5 ? (K(), X('rect', lEe)) : qe('', true),
-            t.lanes ? qe('', true) : (K(), X('rect', hEe)),
-            t.lanes ? qe('', true) : (K(), X('circle', fEe))
+        return openBlock(), createElementBlock('svg', { viewBox: t.viewbox }, [
+            t.lanes ? (openBlock(), createElementBlock('rect', iEe)) : createCommentVNode('', true),
+            t.lanes && t.lanes > 1 ? (openBlock(), createElementBlock('rect', oEe)) : createCommentVNode('', true),
+            t.lanes && t.lanes > 2 ? (openBlock(), createElementBlock('rect', aEe)) : createCommentVNode('', true),
+            t.lanes && t.lanes > 3 ? (openBlock(), createElementBlock('rect', cEe)) : createCommentVNode('', true),
+            t.lanes && t.lanes > 4 ? (openBlock(), createElementBlock('rect', uEe)) : createCommentVNode('', true),
+            t.lanes && t.lanes > 5 ? (openBlock(), createElementBlock('rect', lEe)) : createCommentVNode('', true),
+            t.lanes ? createCommentVNode('', true) : (openBlock(), createElementBlock('rect', hEe)),
+            t.lanes ? createCommentVNode('', true) : (openBlock(), createElementBlock('circle', fEe))
         ], 8, sEe);
     }
     const LanesSVGComponent = createComponent(rEe, [
@@ -32789,7 +32789,7 @@ __p+='`), Z;
             ]
         ]), mEe = {}, _Ee = createBaseVNode('path', { d: 'm65,5.22v89.56c0,4.32-4.68,6.76-7.91,4.13L1.84,53.88c-2.45-2-2.45-5.76,0-7.76L57.09,1.09c3.23-2.63,7.91-.19,7.91,4.13Z' }, null, -1), yEe = [_Ee];
     function vEe(t, e) {
-        return K(), X('svg', gEe, yEe);
+        return openBlock(), createElementBlock('svg', gEe, yEe);
     }
     const LeftArrowSVGComponent = createComponent(mEe, [[
                 'render',
@@ -32944,29 +32944,29 @@ __p+='`), Z;
         }), AEe = ['aria-label'], kEe = ['onClick'];
     function jEe(t, e, n, r, s, i) {
         const a = resolveComponent('LeftArrowSVG'), c = resolveComponent('InstrumentSVG'), l = resolveComponent('InfinitySVG'), h = resolveComponent('AvatarSVG'), d = resolveComponent('CategorySVG'), p = resolveComponent('LanesSVG'), m = resolveComponent('ContinuousTester'), v = resolveComponent('DiscreteTester'), b = resolveComponent('PlayerHeader'), w = resolveComponent('ChangeVIP'), g = resolveDirective('t');
-        return K(), X('div', TEe, [
+        return openBlock(), createElementBlock('div', TEe, [
             createBaseVNode('div', SEe, [
                 createBaseVNode('div', wEe, [
                     withDirectives(createBaseVNode('h3', OEe, null, 512), [[
                             g,
                             'MENU.CHOOSE_INSTRUMENT'
                         ]]),
-                    t.info.isVip ? (K(), X('button', {
+                    t.info.isVip ? (openBlock(), createElementBlock('button', {
                         key: 0,
                         'aria-label': t.$t('ACTION.BACK'),
                         class: 'back',
                         onClick: e[0] || (e[0] = (...S) => t.onBackClick && t.onBackClick(...S))
-                    }, [Qe(a)], 8, AEe)) : qe('', true)
+                    }, [createVNode(a)], 8, AEe)) : createCommentVNode('', true)
                 ]),
-                createBaseVNode('div', CEe, [createBaseVNode('div', IEe, [(K(true), X(St, null, Dn(t.instrumentChoices, (S, P) => (K(), X('button', {
+                createBaseVNode('div', CEe, [createBaseVNode('div', IEe, [(openBlock(true), createElementBlock(Fragment, null, renderList(t.instrumentChoices, (S, P) => (openBlock(), createElementBlock('button', {
                             key: P,
                             class: rt([
                                 { selected: S.isSelected },
                                 'choice has-icon has-sub'
                             ]),
-                            onClick: xi(V => t.onInstrumentClick(P), ['prevent'])
+                            onClick: withModifiers(V => t.onInstrumentClick(P), ['prevent'])
                         }, [
-                            Qe(c, {
+                            createVNode(c, {
                                 category: S.category,
                                 slug: S.instrumentSlug,
                                 class: 'icon'
@@ -32974,17 +32974,17 @@ __p+='`), Z;
                                 'category',
                                 'slug'
                             ]),
-                            dr(' ' + Dt(S.label) + ' ', 1),
-                            S.type === 'Continuous' ? (K(), Lt(l, {
+                            createTextVNode(' ' + Dt(S.label) + ' ', 1),
+                            S.type === 'Continuous' ? (openBlock(), createBlock(l, {
                                 key: 0,
                                 class: 'infinity'
-                            })) : qe('', true),
+                            })) : createCommentVNode('', true),
                             createBaseVNode('span', NEe, Dt(S.difficultyName), 1),
-                            createBaseVNode('div', xEe, [(K(true), X(St, null, Dn(S.players, V => (K(), X('div', {
+                            createBaseVNode('div', xEe, [(openBlock(true), createElementBlock(Fragment, null, renderList(S.players, V => (openBlock(), createElementBlock('div', {
                                     key: V.name,
                                     focusable: 'false',
                                     class: 'avatar-wrapper'
-                                }, [Qe(h, { avatar: V.avatar }, null, 8, ['avatar'])]))), 128))])
+                                }, [createVNode(h, { avatar: V.avatar }, null, 8, ['avatar'])]))), 128))])
                         ], 10, kEe))), 128))])]),
                 createBaseVNode('div', PEe, [
                     createBaseVNode('div', REe, [
@@ -32995,7 +32995,7 @@ __p+='`), Z;
                                 t.categoryClass
                             ])
                         }, [
-                            Qe(d, {
+                            createVNode(d, {
                                 category: t.selectedBeatmap.config.category,
                                 class: 'icon'
                             }, null, 8, ['category']),
@@ -33018,22 +33018,22 @@ __p+='`), Z;
                                     'MENU.LANES'
                                 ]]),
                             createBaseVNode('p', VEe, [
-                                Qe(p, {
+                                createVNode(p, {
                                     lanes: t.selectedBeatmap.config.laneCount ?? null,
                                     class: 'icon'
                                 }, null, 8, ['lanes']),
-                                dr(' ' + Dt(t.selectedBeatmap.config.laneCount ?? '\u221E'), 1)
+                                createTextVNode(' ' + Dt(t.selectedBeatmap.config.laneCount ?? '\u221E'), 1)
                             ])
                         ])
                     ]),
-                    t.selectedBeatmap.config.type === 'Continuous' ? (K(), Lt(m, {
+                    t.selectedBeatmap.config.type === 'Continuous' ? (openBlock(), createBlock(m, {
                         key: 0,
                         beatmap: t.selectedBeatmap,
                         instrument: t.selectedInstrument
                     }, null, 8, [
                         'beatmap',
                         'instrument'
-                    ])) : (K(), Lt(v, {
+                    ])) : (openBlock(), createBlock(v, {
                         key: 1,
                         beatmap: t.selectedBeatmap,
                         instrument: t.selectedInstrument
@@ -33042,16 +33042,16 @@ __p+='`), Z;
                         'instrument'
                     ]))
                 ]),
-                t.info.isVip ? withDirectives((K(), X('button', {
+                t.info.isVip ? withDirectives((openBlock(), createElementBlock('button', {
                     key: 0,
                     class: 'commit',
                     onClick: e[1] || (e[1] = (...S) => t.onStartClick && t.onStartClick(...S))
                 }, null, 512)), [[
                         g,
                         'MENU.START_SONG'
-                    ]]) : qe('', true)
+                    ]]) : createCommentVNode('', true)
             ]),
-            Qe(b, {
+            createVNode(b, {
                 info: t.info,
                 players: t.players,
                 'is-vip': t.info.isVip && !t.info.isSolo,
@@ -33064,8 +33064,8 @@ __p+='`), Z;
                 'response-key',
                 'onDidRequestChangeVip'
             ]),
-            Qe(xs, { name: 'modal' }, {
-                default: cs(() => [t.showChangeVIP && t.player.responseKey ? (K(), Lt(w, {
+            createVNode(xs, { name: 'modal' }, {
+                default: withCtx(() => [t.showChangeVIP && t.player.responseKey ? (openBlock(), createBlock(w, {
                         key: 0,
                         info: t.info,
                         players: t.players,
@@ -33076,7 +33076,7 @@ __p+='`), Z;
                         'players',
                         'response-key',
                         'onDidRequestClose'
-                    ])) : qe('', true)]),
+                    ])) : createCommentVNode('', true)]),
                 _: 1
             })
         ]);
@@ -33110,21 +33110,21 @@ __p+='`), Z;
                     this.isOn = !this.isOn;
                 }
             }
-        }), YEe = e4('<circle class="glow glow-2" cx="100" cy="100" r="100" data-v-6bf0f020></circle><circle class="glow glow-1" cx="100" cy="100" r="50" data-v-6bf0f020></circle><circle class="glow glow-0" cx="100" cy="100" r="30" data-v-6bf0f020></circle><path class="body" d="m111.81,34.5c2.73-.71,4.59,3.41,6.88,1.97.59-.59.59-1.54,0-2.12-5.3-5.69-15.7-2.2-16.51,5.52-1.04-.1-2.12-.14-3.17-.09-.87-7.67-11.22-11.09-16.49-5.43-.59.59-.59,1.54,0,2.12.59.59,1.54.59,2.12,0,3.62-3.88,10.72-1.6,11.39,3.66-24.46,2.26-11.41,69.01,3.97,68.2,15.07.8,28.11-63.97,5.13-67.94.34-3.28,3.37-5.96,6.67-5.89Z" data-v-6bf0f020></path><path class="bottom-wing left" d="m98.71,50.9c8.7,7.81-21.59,50.03-31.91,39.49-8.7-7.81,21.59-50.03,31.91-39.49Z" data-v-6bf0f020></path><path class="bottom-wing right" d="m101.29,50.9c10.33-10.54,40.62,31.68,31.91,39.49-10.33,10.54-40.62-31.68-31.91-39.49Z" data-v-6bf0f020></path><path class="top-wing left" d="m98.58,48.04c9.59,9.1-26.11,44.79-35.2,35.2-9.59-9.1,26.11-44.79,35.2-35.2Z" data-v-6bf0f020></path><path class="top-wing right" d="m101.42,48.04c9.1-9.59,44.79,26.11,35.2,35.2-9.1,9.59-44.79-26.11-35.2-35.2Z" data-v-6bf0f020></path>', 8), KEe = [YEe];
+        }), YEe = createStaticVNode('<circle class="glow glow-2" cx="100" cy="100" r="100" data-v-6bf0f020></circle><circle class="glow glow-1" cx="100" cy="100" r="50" data-v-6bf0f020></circle><circle class="glow glow-0" cx="100" cy="100" r="30" data-v-6bf0f020></circle><path class="body" d="m111.81,34.5c2.73-.71,4.59,3.41,6.88,1.97.59-.59.59-1.54,0-2.12-5.3-5.69-15.7-2.2-16.51,5.52-1.04-.1-2.12-.14-3.17-.09-.87-7.67-11.22-11.09-16.49-5.43-.59.59-.59,1.54,0,2.12.59.59,1.54.59,2.12,0,3.62-3.88,10.72-1.6,11.39,3.66-24.46,2.26-11.41,69.01,3.97,68.2,15.07.8,28.11-63.97,5.13-67.94.34-3.28,3.37-5.96,6.67-5.89Z" data-v-6bf0f020></path><path class="bottom-wing left" d="m98.71,50.9c8.7,7.81-21.59,50.03-31.91,39.49-8.7-7.81,21.59-50.03,31.91-39.49Z" data-v-6bf0f020></path><path class="bottom-wing right" d="m101.29,50.9c10.33-10.54,40.62,31.68,31.91,39.49-10.33,10.54-40.62-31.68-31.91-39.49Z" data-v-6bf0f020></path><path class="top-wing left" d="m98.58,48.04c9.59,9.1-26.11,44.79-35.2,35.2-9.59-9.1,26.11-44.79,35.2-35.2Z" data-v-6bf0f020></path><path class="top-wing right" d="m101.42,48.04c9.1-9.59,44.79,26.11,35.2,35.2-9.1,9.59-44.79-26.11-35.2-35.2Z" data-v-6bf0f020></path>', 8), KEe = [YEe];
     function renderPlayback(state, e, n, r, s, i) {
         const a = resolveComponent('PlayerHeader');
-        return K(), X('div', {
+        return openBlock(), createElementBlock('div', {
             class: rt([
                 'playback',
                 { on: state.isOn }
             ])
         }, [
-            createBaseVNode('div', HEe, [(K(), X('svg', {
+            createBaseVNode('div', HEe, [(openBlock(), createElementBlock('svg', {
                     class: 'fly',
                     viewBox: '0 0 200 200',
                     onClick: e[0] || (e[0] = (...c) => state.onClick && state.onClick(...c))
                 }, KEe))]),
-            Qe(a, { info: state.info }, null, 8, ['info'])
+            createVNode(a, { info: state.info }, null, 8, ['info'])
         ], 2);
     }
     const PlaybackComponent = createComponent(WEe, [
@@ -33593,7 +33593,7 @@ __p+='`), Z;
     });
     function tTe(t, e, n, r, s, i) {
         const a = resolveDirective('pointerbox');
-        return K(), X(St, null, [
+        return openBlock(), createElementBlock(Fragment, null, [
             createBaseVNode('div', {
                 class: 'releaser',
                 onPointerup: e[0] || (e[0] = (...c) => t.onReleaserUp && t.onReleaserUp(...c))
@@ -33648,17 +33648,21 @@ __p+='`), Z;
                 }
             }
         });
-    function iTe(t, e, n, r, s, i) {
-        return K(), X('div', sTe, [(K(true), X(St, null, Dn(t.beatLines, (a, c) => (K(), X('div', {
-                key: c,
-                class: 'beat-line',
-                style: gn(a.styles)
-            }, null, 4))), 128))]);
+    function renderBeatlines(t, e, n, r, s, i) {
+        return openBlock(), createElementBlock('div', {class : 'beat-lines'}, [
+            (openBlock(true), createElementBlock(Fragment, null, renderList(t.beatLines, (value, index) => 
+                (openBlock(), createElementBlock('div', {
+                    key: index,
+                    class: 'beat-line',
+                    style: gn(value.styles)
+                }, null, PatchFlags.STYLE))
+            ), PatchFlags.KEYED_FRAGMENT))
+        ]);
     }
     const BeatlinesComponent = createComponent(rTe, [
             [
                 'render',
-                iTe
+                renderBeatlines
             ],
             [
                 '__scopeId',
@@ -33738,11 +33742,11 @@ __p+='`), Z;
                     }), t;
                 }
             }
-        }), aTe = t => (Di('data-v-e85bac1d'), t = t(), $i(), t), lTe = aTe(() => createBaseVNode('div', { class: 'touch-line' }, null, -1)), dTe = ['d'], pTe = ['d'];
-    function yTe(t, e, n, r, s, i) {
+        }), aTe = t => (pushScopeId('data-v-e85bac1d'), t = t(), popScopeId(), t), lTe = aTe(() => createBaseVNode('div', { class: 'touch-line' }, null, -1)), dTe = ['d'], pTe = ['d'];
+    function renderContinuousVisuals(t, e, n, r, s, i) {
         const a = resolveComponent('Beatlines'), c = resolveDirective('t');
-        return K(), X('div', cTe, [
-            createBaseVNode('div', uTe, [Qe(a, {
+        return openBlock(), createElementBlock('div', cTe, [
+            createBaseVNode('div', uTe, [createVNode(a, {
                     class: 'scroll-container',
                     guide: t.manager.guide,
                     duration: t.manager.duration,
@@ -33756,7 +33760,7 @@ __p+='`), Z;
             createBaseVNode('div', hTe, [createBaseVNode('div', {
                     class: 'inputs scroll-container',
                     style: gn(t.scrollStyles)
-                }, [createBaseVNode('div', fTe, [(K(true), X(St, null, Dn(t.inputs, l => (K(), X('div', {
+                }, [createBaseVNode('div', fTe, [(openBlock(true), createElementBlock(Fragment, null, renderList(t.inputs, l => (openBlock(), createElementBlock('div', {
                             key: l.key,
                             class: rt([
                                 'input',
@@ -33764,7 +33768,7 @@ __p+='`), Z;
                             ]),
                             style: gn(l.styles)
                         }, [
-                            (K(), X('svg', {
+                            (openBlock(), createElementBlock('svg', {
                                 viewBox: '0 0 1 1',
                                 preserveAspectRatio: 'none',
                                 class: rt(l.line.classes),
@@ -33793,7 +33797,7 @@ __p+='`), Z;
                         'hit-house',
                         { alert: t.showCta }
                     ])
-                }, [(K(true), X(St, null, Dn(t.feedbackItems, (l, h) => withDirectives((K(), X('span', {
+                }, [(openBlock(true), createElementBlock(Fragment, null, renderList(t.feedbackItems, (l, h) => withDirectives((openBlock(), createElementBlock('span', {
                         key: h,
                         class: rt([
                             'feedback-item',
@@ -33825,11 +33829,11 @@ __p+='`), Z;
                     ]),
                     style: gn(t.hitIndicator.styles)
                 }, null, 6),
-                Qe(xs, { name: 'cta' }, {
-                    default: cs(() => [t.showCta ? (K(), X('div', gTe, [withDirectives(createBaseVNode('p', _Te, null, 512), [[
+                createVNode(xs, { name: 'cta' }, {
+                    default: withCtx(() => [t.showCta ? (openBlock(), createElementBlock('div', gTe, [withDirectives(createBaseVNode('p', _Te, null, 512), [[
                                     c,
                                     'INFO.CONTINUOUS'
-                                ]])])) : qe('', true)]),
+                                ]])])) : createCommentVNode('', true)]),
                     _: 1
                 })
             ])
@@ -33838,7 +33842,7 @@ __p+='`), Z;
     const ContinuousVisualsComponent = createComponent(oTe, [
         [
             'render',
-            yTe
+            renderContinuousVisuals
         ],
         [
             '__scopeId',
@@ -34123,11 +34127,11 @@ __p+='`), Z;
                     }), t;
                 }
             }
-        }), TTe = t => (Di('data-v-1a291824'), t = t(), $i(), t), xTe = TTe(() => createBaseVNode('div', { class: 'tap-indicator' }, null, -1));
+        }), withScope1a291824 = t => (pushScopeId('data-v-1a291824'), t = t(), popScopeId(), t)
     function renderGameplay(t, e, n, r, s, i) {
         const a = resolveComponent('Beatlines'), c = resolveDirective('t');
-        return K(), X('div', STe, [
-            createBaseVNode('div', wTe, [Qe(a, {
+        return openBlock(), createElementBlock('div', {class : 'visuals'}, [
+            createBaseVNode('div', {class : 'scroll-wrapper'}, [createVNode(a, {
                     class: 'scroll-container',
                     guide: t.manager.guide,
                     duration: t.manager.duration,
@@ -34137,8 +34141,8 @@ __p+='`), Z;
                     'duration',
                     'style'
                 ])]),
-            createBaseVNode('div', OTe, [
-                createBaseVNode('div', ATe, [(K(true), X(St, null, Dn(t.laneLines, (l, h) => (K(), X('div', {
+            createBaseVNode('div', {class : 'constrainer'}, [
+                createBaseVNode('div', {class : 'lane-lines'}, [(openBlock(true), createElementBlock(Fragment, null, renderList(t.laneLines, (l, h) => (openBlock(), createElementBlock('div', {
                         key: h,
                         class: rt([
                             'lane-line',
@@ -34146,7 +34150,7 @@ __p+='`), Z;
                         ]),
                         style: gn(l.styles)
                     }, null, 6))), 128))]),
-                createBaseVNode('div', CTe, [(K(true), X(St, null, Dn(t.hitIndicators, (l, h) => (K(), X('div', {
+                createBaseVNode('div', {class : 'hit-indicators behind'}, [(openBlock(true), createElementBlock(Fragment, null, renderList(t.hitIndicators, (l, h) => (openBlock(), createElementBlock('div', {
                         key: h,
                         class: rt([
                             'hit-indicator',
@@ -34155,10 +34159,10 @@ __p+='`), Z;
                         style: gn(l.styles)
                     }, null, 6))), 128))])
             ]),
-            createBaseVNode('div', ITe, [createBaseVNode('div', {
+            createBaseVNode('div', {class : 'scroll-wrapper'}, [createBaseVNode('div', {
                     class: 'scroll-container',
                     style: gn(t.scrollStyles)
-                }, [createBaseVNode('div', kTe, [(K(true), X(St, null, Dn(t.inputs, l => (K(), X('div', {
+                }, [createBaseVNode('div', {class : 'constrainer'}, [(openBlock(true), createElementBlock(Fragment, null, renderList(t.inputs, l => (openBlock(), createElementBlock('div', {
                             key: l.key,
                             class: rt([
                                 'input',
@@ -34166,11 +34170,11 @@ __p+='`), Z;
                             ]),
                             style: gn(l.styles)
                         }, [
-                            l.isHold ? (K(), X('div', NTe)) : qe('', true),
-                            xTe
+                            l.isHold ? (openBlock(), createElementBlock('div', {key: 0, class : 'hold-indicator'})) : createCommentVNode('', true),
+                            withScope1a291824(() => createBaseVNode('div', { class: 'tap-indicator' }, null, -1))
                         ], 6))), 128))])], 4)]),
-            createBaseVNode('div', PTe, [
-                (K(true), X(St, null, Dn(t.hitIndicators, (l, h) => (K(), X('div', {
+            createBaseVNode('div', {class : 'constrainer foreground'}, [
+                (openBlock(true), createElementBlock(Fragment, null, renderList(t.hitIndicators, (l, h) => (openBlock(), createElementBlock('div', {
                     key: h,
                     class: rt([
                         'hit-indicator',
@@ -34178,7 +34182,7 @@ __p+='`), Z;
                     ]),
                     style: gn(l.styles)
                 }, [
-                    (K(true), X(St, null, Dn(l.items, (d, p) => withDirectives((K(), X('span', {
+                    (openBlock(true), createElementBlock(Fragment, null, renderList(l.items, (d, p) => withDirectives((openBlock(), createElementBlock('span', {
                         key: p,
                         class: rt([
                             'feedback-item',
@@ -34188,13 +34192,13 @@ __p+='`), Z;
                             c,
                             d.textKey
                         ]])), 128)),
-                    t.isDesktop ? (K(), X('span', RTe, Dt(l.text), 1)) : qe('', true)
+                    t.isDesktop ? (openBlock(), createElementBlock('span', {key: 0, class : 'hotkey'}, Dt(l.text), 1)) : createCommentVNode('', true)
                 ], 6))), 128)),
-                Qe(xs, { name: 'cta' }, {
-                    default: cs(() => [t.showCta ? (K(), X('div', MTe, [withDirectives(createBaseVNode('p', DTe, null, 512), [[
+                createVNode(xs, { name: 'cta' }, {
+                    default: withCtx(() => [t.showCta ? (openBlock(), createElementBlock('div', {key: 0, class : 'cta-container'}, [withDirectives(createBaseVNode('p', {class : 'cta'}, null, 512), [[
                                     c,
                                     'INFO.DISCRETE'
-                                ]])])) : qe('', true)]),
+                                ]])])) : createCommentVNode('', true)]),
                     _: 1
                 })
             ])
@@ -34266,7 +34270,7 @@ __p+='`), Z;
         });
     function UTe(t, e, n, r, s, i) {
         const a = resolveDirective('pointerbox');
-        return withDirectives((K(), X('div', {
+        return withDirectives((openBlock(), createElementBlock('div', {
             class: 'constrainer controls',
             'onPointerbox:start': e[0] || (e[0] = (...c) => t.onPointerBoxStart && t.onPointerBoxStart(...c)),
             'onPointerbox:end': e[1] || (e[1] = (...c) => t.onPointerBoxEnd && t.onPointerBoxEnd(...c))
@@ -34392,14 +34396,14 @@ __p+='`), Z;
         });
     function VTe(state, e, n, r, s, i) {
         const a = resolveComponent('ContinuousVisuals'), c = resolveComponent('ContinuousControls'), l = resolveComponent('DiscreteVisuals'), h = resolveComponent('DiscreteControls');
-        return state.manager ? (K(), X('div', {
+        return state.manager ? (openBlock(), createElementBlock('div', {
             key: 0,
             class: rt([
                 state.classes,
                 'beatmap'
             ])
-        }, [state.beatmap.config.type === 'Continuous' ? (K(), X(St, { key: 0 }, [
-                Qe(a, {
+        }, [state.beatmap.config.type === 'Continuous' ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+                createVNode(a, {
                     manager: state.manager,
                     'is-desktop': state.isDesktop || state.isDesktopLocal,
                     'show-cta': state.showCTA
@@ -34408,12 +34412,12 @@ __p+='`), Z;
                     'is-desktop',
                     'show-cta'
                 ]),
-                state.manager.isLoaded ? (K(), Lt(c, {
+                state.manager.isLoaded ? (openBlock(), createBlock(c, {
                     key: 0,
                     manager: state.manager
-                }, null, 8, ['manager'])) : qe('', true)
-            ], 64)) : (K(), X(St, { key: 1 }, [
-                Qe(l, {
+                }, null, 8, ['manager'])) : createCommentVNode('', true)
+            ], 64)) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+                createVNode(l, {
                     manager: state.manager,
                     'is-desktop': state.isDesktop || state.isDesktopLocal,
                     'show-cta': state.showCTA
@@ -34422,15 +34426,15 @@ __p+='`), Z;
                     'is-desktop',
                     'show-cta'
                 ]),
-                state.manager.isLoaded ? (K(), Lt(h, {
+                state.manager.isLoaded ? (openBlock(), createBlock(h, {
                     key: 0,
                     manager: state.manager,
                     onDidProveAsDesktop: state.onDesktopProof
                 }, null, 8, [
                     'manager',
                     'onDidProveAsDesktop'
-                ])) : qe('', true)
-            ], 64))], 2)) : qe('', true);
+                ])) : createCommentVNode('', true)
+            ], 64))], 2)) : createCommentVNode('', true);
     }
     const BeatmapComponent = createComponent(qTe, [[
                 'render',
@@ -34539,7 +34543,7 @@ __p+='`), Z;
         }), tSe = ['disabled'];
     function rSe(t, e, n, r, s, i) {
         const a = resolveDirective('t'), c = resolveDirective('bb');
-        return K(), X('div', {
+        return openBlock(), createElementBlock('div', {
             class: rt([
                 'count-in',
                 t.classes
@@ -34562,12 +34566,12 @@ __p+='`), Z;
                             a,
                             'COUNT_IN.TAP'
                         ]]),
-                    dr('\xA0\xB7\xA0 '),
+                    createTextVNode('\xA0\xB7\xA0 '),
                     withDirectives(createBaseVNode('span', null, null, 512), [[
                             a,
                             'COUNT_IN.TAP'
                         ]]),
-                    dr('\xA0\xB7\xA0 '),
+                    createTextVNode('\xA0\xB7\xA0 '),
                     withDirectives(createBaseVNode('span', null, null, 512), [[
                             a,
                             'COUNT_IN.TAP'
@@ -34587,7 +34591,7 @@ __p+='`), Z;
         ]), iSe = defineComponent({});
     function cSe(t, e, n, r, s, i) {
         const a = resolveDirective('t');
-        return K(), X('div', oSe, [createBaseVNode('div', aSe, [withDirectives(createBaseVNode('p', null, null, 512), [[
+        return openBlock(), createElementBlock('div', oSe, [createBaseVNode('div', aSe, [withDirectives(createBaseVNode('p', null, null, 512), [[
                         a,
                         'INFO.IN_PROGRESS'
                     ]])])]);
@@ -34604,7 +34608,7 @@ __p+='`), Z;
         ]), lSe = defineComponent({});
     function dSe(t, e, n, r, s, i) {
         const a = resolveDirective('t');
-        return K(), X('div', hSe, [createBaseVNode('div', fSe, [withDirectives(createBaseVNode('p', null, null, 512), [[
+        return openBlock(), createElementBlock('div', hSe, [createBaseVNode('div', fSe, [withDirectives(createBaseVNode('p', null, null, 512), [[
                         a,
                         'INFO.RESYNC'
                     ]])])]);
@@ -34688,14 +34692,14 @@ __p+='`), Z;
         });
     function _Se(t, e, n, r, s, i) {
         const a = resolveComponent('Beatmap'), c = resolveComponent('CountIn'), l = resolveComponent('Paused'), h = resolveComponent('InProgress');
-        return K(), X('div', {
+        return openBlock(), createElementBlock('div', {
             class: rt([
                 'recording',
                 t.classes
             ]),
             style: gn({ '--draw-distance': t.drawDistance })
         }, [
-            (K(), Lt(a, {
+            (openBlock(), createBlock(a, {
                 key: t.instrument.name,
                 beatmap: t.beatmap,
                 'count-in-offset': t.countInOffset,
@@ -34714,15 +34718,15 @@ __p+='`), Z;
                 'should-run'
             ])),
             createBaseVNode('p', gSe, Dt(t.instrument.name), 1),
-            t.showCountIn ? (K(), Lt(c, {
+            t.showCountIn ? (openBlock(), createBlock(c, {
                 key: 0,
                 state: t.player.recordingInfo.recordingState,
                 onDidCountIn: t.onDidCountIn
             }, null, 8, [
                 'state',
                 'onDidCountIn'
-            ])) : qe('', true),
-            t.hostIsPaused ? (K(), Lt(l, { key: 1 })) : t.wasJoinedInProgress ? (K(), Lt(h, { key: 2 })) : qe('', true)
+            ])) : createCommentVNode('', true),
+            t.hostIsPaused ? (openBlock(), createBlock(l, { key: 1 })) : t.wasJoinedInProgress ? (openBlock(), createBlock(h, { key: 2 })) : createCommentVNode('', true)
         ], 6);
     }
     const RecordingComponent = createComponent(mSe, [
@@ -34783,7 +34787,7 @@ __p+='`), Z;
                     }
                 }
             }
-        }), Pk = t => (Di('data-v-d11e6827'), t = t(), $i(), t), TSe = Pk(() => createBaseVNode('polygon', {
+        }), Pk = t => (pushScopeId('data-v-d11e6827'), t = t(), popScopeId(), t), TSe = Pk(() => createBaseVNode('polygon', {
             class: 'screen',
             points: '176.48 45.33 163.58 4.46 132.15 0 102.19 13.39 102.19 48.88 75.96 33.48 39.75 39.96 28.1 75.22 48.49 95.31 9.57 87.05 0 100 200 100 200 15.85 196.05 16.29 176.48 45.33'
         }, null, -1)), SSe = Pk(() => createBaseVNode('path', {
@@ -34796,21 +34800,21 @@ __p+='`), Z;
     function RSe(t, e, n, r, s, i) {
         var h;
         const a = resolveComponent('PlayerHeader'), c = resolveComponent('ChangeVIP'), l = resolveDirective('t');
-        return K(), X('div', bSe, [
-            t.render && !t.render.survived ? (K(), X('svg', ESe, wSe)) : qe('', true),
+        return openBlock(), createElementBlock('div', bSe, [
+            t.render && !t.render.survived ? (openBlock(), createElementBlock('svg', ESe, wSe)) : createCommentVNode('', true),
             createBaseVNode('div', OSe, [
-                (h = t.render) != null && h.survived ? withDirectives((K(), X('h1', ASe, null, 512)), [[
+                (h = t.render) != null && h.survived ? withDirectives((openBlock(), createElementBlock('h1', ASe, null, 512)), [[
                         l,
                         'RESULTS.SURVIVED'
-                    ]]) : t.render && !t.render.survived ? withDirectives((K(), X('h1', CSe, null, 512)), [[
+                    ]]) : t.render && !t.render.survived ? withDirectives((openBlock(), createElementBlock('h1', CSe, null, 512)), [[
                         l,
                         'RESULTS.EATEN'
-                    ]]) : qe('', true),
-                createBaseVNode('div', ISe, [t.info.isVip ? withDirectives((K(), X('h3', kSe, null, 512)), [[
+                    ]]) : createCommentVNode('', true),
+                createBaseVNode('div', ISe, [t.info.isVip ? withDirectives((openBlock(), createElementBlock('h3', kSe, null, 512)), [[
                             l,
                             'MENU.WHAT_NEXT'
-                        ]]) : t.vipName ? (K(), X('h3', NSe, Dt(t.$t('MENU.WAITING_FOR', { vipName: t.vipName })), 1)) : qe('', true)]),
-                t.info.isVip ? (K(), X('div', xSe, [createBaseVNode('div', PSe, [
+                        ]]) : t.vipName ? (openBlock(), createElementBlock('h3', NSe, Dt(t.$t('MENU.WAITING_FOR', { vipName: t.vipName })), 1)) : createCommentVNode('', true)]),
+                t.info.isVip ? (openBlock(), createElementBlock('div', xSe, [createBaseVNode('div', PSe, [
                         withDirectives(createBaseVNode('button', { onClick: e[0] || (e[0] = d => t.onChoiceClick('retry')) }, null, 512), [[
                                 l,
                                 'MENU.RETRY_SONG'
@@ -34823,9 +34827,9 @@ __p+='`), Z;
                                 l,
                                 'MENU.END_SESSION'
                             ]])
-                    ])])) : qe('', true)
+                    ])])) : createCommentVNode('', true)
             ]),
-            Qe(a, {
+            createVNode(a, {
                 info: t.info,
                 'is-vip': t.info.isVip && !t.info.isSolo,
                 players: t.players,
@@ -34838,8 +34842,8 @@ __p+='`), Z;
                 'response-key',
                 'onDidRequestChangeVip'
             ]),
-            Qe(xs, { name: 'modal' }, {
-                default: cs(() => [t.showChangeVIP ? (K(), Lt(c, {
+            createVNode(xs, { name: 'modal' }, {
+                default: withCtx(() => [t.showChangeVIP ? (openBlock(), createBlock(c, {
                         key: 0,
                         info: t.info,
                         players: t.players,
@@ -34850,7 +34854,7 @@ __p+='`), Z;
                         'players',
                         'response-key',
                         'onDidRequestClose'
-                    ])) : qe('', true)]),
+                    ])) : createCommentVNode('', true)]),
                 _: 1
             })
         ]);
@@ -34877,13 +34881,13 @@ __p+='`), Z;
                     return this.rating === 8 ? t.push('gold') : this.rating === 7 ? t.push('silver') : this.rating === 6 ? t.push('bronze') : this.rating === 5 && t.push('full'), this.rating === 0 ? t.push('rating-0') : this.rating === 1 ? t.push('rating-1') : this.rating === 2 ? t.push('rating-2') : this.rating === 3 ? t.push('rating-3') : this.rating === 4 ? t.push('rating-4') : t.push('rating-5'), t;
                 }
             }
-        }), LSe = e4('<polygon class="bg" points="64.76 11.33 49.22 0 35.24 12.09 31.16 28.2 13.35 26.73 0 38.26 5.39 56.27 19.81 64.16 13.23 80.33 18.75 96.75 27.77 99.87 41 95.61 49.34 86.31 60.59 96.27 73.35 100 81.19 96.31 86.58 79.82 79.87 64.16 93.73 55.82 100 37.81 84.95 26.16 67.65 27.94 64.76 11.33" data-v-bc6516f8></polygon><polygon class="petal p5" points="6.02 40.04 9.72 51.11 20.82 59.07 33.04 59.07 44.64 52.45 38.75 41.82 29.84 33.99 16.18 32.08 6.02 40.04" data-v-bc6516f8></polygon><polygon class="petal p4" points="33.35 61.62 23.51 69.7 19.37 80.97 23.7 92.74 27.65 93.7 37.81 89.69 44.26 82.75 47.77 72.44 46.02 59.96 33.35 61.62" data-v-bc6516f8></polygon><polygon class="petal p3" points="75.24 67.92 64.2 60.6 52.98 59.83 52.73 71.8 55.61 83.51 62.76 90.83 72.23 93.83 77.49 91.28 80.5 79.19 75.24 67.92" data-v-bc6516f8></polygon><polygon class="petal p2" points="69.59 33.99 60.69 42.27 55.42 52.9 64.33 57.48 76.24 59.2 89.09 51.75 93.04 39.72 82.95 32.59 69.59 33.99" data-v-bc6516f8></polygon><polygon class="petal p1" points="62.45 29.41 60 15.47 49.34 7.57 39.56 15.47 36.68 28.2 41 38.89 49.53 47.87 57.62 40.04 62.45 29.41" data-v-bc6516f8></polygon>', 6);
+        }), LSe = createStaticVNode('<polygon class="bg" points="64.76 11.33 49.22 0 35.24 12.09 31.16 28.2 13.35 26.73 0 38.26 5.39 56.27 19.81 64.16 13.23 80.33 18.75 96.75 27.77 99.87 41 95.61 49.34 86.31 60.59 96.27 73.35 100 81.19 96.31 86.58 79.82 79.87 64.16 93.73 55.82 100 37.81 84.95 26.16 67.65 27.94 64.76 11.33" data-v-bc6516f8></polygon><polygon class="petal p5" points="6.02 40.04 9.72 51.11 20.82 59.07 33.04 59.07 44.64 52.45 38.75 41.82 29.84 33.99 16.18 32.08 6.02 40.04" data-v-bc6516f8></polygon><polygon class="petal p4" points="33.35 61.62 23.51 69.7 19.37 80.97 23.7 92.74 27.65 93.7 37.81 89.69 44.26 82.75 47.77 72.44 46.02 59.96 33.35 61.62" data-v-bc6516f8></polygon><polygon class="petal p3" points="75.24 67.92 64.2 60.6 52.98 59.83 52.73 71.8 55.61 83.51 62.76 90.83 72.23 93.83 77.49 91.28 80.5 79.19 75.24 67.92" data-v-bc6516f8></polygon><polygon class="petal p2" points="69.59 33.99 60.69 42.27 55.42 52.9 64.33 57.48 76.24 59.2 89.09 51.75 93.04 39.72 82.95 32.59 69.59 33.99" data-v-bc6516f8></polygon><polygon class="petal p1" points="62.45 29.41 60 15.47 49.34 7.57 39.56 15.47 36.68 28.2 41 38.89 49.53 47.87 57.62 40.04 62.45 29.41" data-v-bc6516f8></polygon>', 6);
     function FSe(t, e, n, r, s, i) {
-        return K(), X('svg', {
+        return openBlock(), createElementBlock('svg', {
             viewBox: '0 0 100 100',
             class: rt(t.classes)
         }, [
-            t.rating > 5 ? (K(), X('polygon', $Se)) : qe('', true),
+            t.rating > 5 ? (openBlock(), createElementBlock('polygon', $Se)) : createCommentVNode('', true),
             LSe
         ], 2);
     }
@@ -34898,21 +34902,21 @@ __p+='`), Z;
             ]
         ]), BSe = {}, VSe = createBaseVNode('path', { d: 'm22,21l13-10,20,11v19l17,1-2-26L31,0,11,15,3,40h18l1-19Zm51,24L1,47l-1,46,40,7,35-5-2-50Zm-31,36h-9l-1-17,6-4,5,6-1,15Z' }, null, -1), jSe = [VSe];
     function GSe(t, e) {
-        return K(), X('svg', qSe, jSe);
+        return openBlock(), createElementBlock('svg', qSe, jSe);
     }
     const LockSVGComponent = createComponent(BSe, [[
                 'render',
                 GSe
             ]]), HSe = {}, KSe = createBaseVNode('path', { d: 'm9.69,100c-22.03-2.79-1.78-29.92,14.06-21.33V13.83L79.68,0c-1.07,7.9,2.83,79.11-2.84,84.29-3.99,7.74-16.19,13.35-23.78,7.78-9.11-11.56,9.48-25.36,21.08-19.16V11.05l-44.86,11.98v56.07c.3,10.79-8.3,20.84-19.59,20.89Z' }, null, -1), zSe = [KSe];
     function ZSe(t, e) {
-        return K(), X('svg', YSe, zSe);
+        return openBlock(), createElementBlock('svg', YSe, zSe);
     }
     const NoteSVGComponent = createComponent(HSe, [[
                 'render',
                 ZSe
             ]]), QSe = {}, ewe = createBaseVNode('path', { d: 'm94.78,65H5.22c-4.32,0-6.76-4.68-4.13-7.91L46.12,1.84c2-2.45,5.76-2.45,7.76,0l45.03,55.25c2.63,3.23.19,7.91-4.13,7.91Z' }, null, -1), twe = [ewe];
     function nwe(t, e) {
-        return K(), X('svg', JSe, twe);
+        return openBlock(), createElementBlock('svg', JSe, twe);
     }
     const UpArrowSVG = createComponent(QSe, [[
                 'render',
@@ -35038,12 +35042,12 @@ __p+='`), Z;
     function Swe(t, e, n, r, s, i) {
         var b, w, g, S;
         const a = resolveComponent('UpArrowSVG'), c = resolveComponent('NoteSVG'), l = resolveComponent('LockSVG'), h = resolveComponent('FlowerSVG'), d = resolveComponent('CategorySVG'), p = resolveComponent('PlayerHeader'), m = resolveComponent('ChangeVIP'), v = resolveDirective('t');
-        return K(), X('div', iwe, [
+        return openBlock(), createElementBlock('div', iwe, [
             createBaseVNode('div', owe, [
-                createBaseVNode('div', awe, [t.info.isVip ? withDirectives((K(), X('h3', cwe, null, 512)), [[
+                createBaseVNode('div', awe, [t.info.isVip ? withDirectives((openBlock(), createElementBlock('h3', cwe, null, 512)), [[
                             v,
                             'MENU.CHOOSE_SONG'
-                        ]]) : withDirectives((K(), X('h3', uwe, null, 512)), [[
+                        ]]) : withDirectives((openBlock(), createElementBlock('h3', uwe, null, 512)), [[
                             v,
                             'MENU.VOTE_SONG'
                         ]])]),
@@ -35052,43 +35056,43 @@ __p+='`), Z;
                         'choices-wrapper',
                         { 'is-choosing': t.info.isVip }
                     ])
-                }, [t.info.isVip ? (K(), X('div', lwe, [
+                }, [t.info.isVip ? (openBlock(), createElementBlock('div', lwe, [
                         createBaseVNode('button', {
                             class: 'direction',
                             'aria-label': t.$t('ARIA.SONG_UP', { songName: ((b = t.upChoice) == null ? void 0 : b.name) ?? '' }),
                             onClick: e[0] || (e[0] = P => t.onDirectionClick('up'))
-                        }, [Qe(a)], 8, hwe),
+                        }, [createVNode(a)], 8, hwe),
                         createBaseVNode('button', {
                             class: 'direction',
                             'aria-label': t.$t('ARIA.SONG_DOWN', { songName: ((w = t.downChoice) == null ? void 0 : w.name) ?? '' }),
                             onClick: e[1] || (e[1] = P => t.onDirectionClick('down'))
-                        }, [Qe(a)], 8, fwe)
-                    ])) : (K(), X('div', dwe, [(K(true), X(St, null, Dn(t.choices, (P, V) => (K(), X('button', {
+                        }, [createVNode(a)], 8, fwe)
+                    ])) : (openBlock(), createElementBlock('div', dwe, [(openBlock(true), createElementBlock(Fragment, null, renderList(t.choices, (P, V) => (openBlock(), createElementBlock('button', {
                             key: V,
                             class: rt([
                                 P.classes,
                                 'choice has-icon'
                             ]),
-                            onClick: xi(M => t.onVoteClick(V), ['prevent'])
+                            onClick: withModifiers(M => t.onVoteClick(V), ['prevent'])
                         }, [
-                            P === t.selectedChoice ? (K(), Lt(c, {
+                            P === t.selectedChoice ? (openBlock(), createBlock(c, {
                                 key: 0,
                                 class: 'icon note'
-                            })) : qe('', true),
-                            dr(' ' + Dt(P.name), 1)
+                            })) : createCommentVNode('', true),
+                            createTextVNode(' ' + Dt(P.name), 1)
                         ], 10, pwe))), 128))]))], 2),
-                t.info.isVip && t.selectedChoice ? (K(), X('div', mwe, [createBaseVNode('div', gwe, [
+                t.info.isVip && t.selectedChoice ? (openBlock(), createElementBlock('div', mwe, [createBaseVNode('div', gwe, [
                         createBaseVNode('p', _we, [
-                            t.selectedChoice.isLocked ? (K(), Lt(l, {
+                            t.selectedChoice.isLocked ? (openBlock(), createBlock(l, {
                                 key: 0,
                                 class: 'icon'
-                            })) : (K(), Lt(c, {
+                            })) : (openBlock(), createBlock(c, {
                                 key: 1,
                                 class: 'icon'
                             })),
-                            dr(' ' + Dt(t.selectedChoice.name), 1)
+                            createTextVNode(' ' + Dt(t.selectedChoice.name), 1)
                         ]),
-                        createBaseVNode('div', ywe, [Qe(h, {
+                        createBaseVNode('div', ywe, [createVNode(h, {
                                 class: 'flower',
                                 rating: t.selectedChoice.highestRating
                             }, null, 8, ['rating'])]),
@@ -35097,7 +35101,7 @@ __p+='`), Z;
                                     v,
                                     'MENU.COMPLETED_PARTS'
                                 ]]),
-                            createBaseVNode('div', Ewe, [(K(true), X(St, null, Dn(t.selectedChoice.categories, (P, V) => (K(), Lt(d, {
+                            createBaseVNode('div', Ewe, [(openBlock(true), createElementBlock(Fragment, null, renderList(t.selectedChoice.categories, (P, V) => (openBlock(), createBlock(d, {
                                     key: V,
                                     category: P.category,
                                     class: rt([
@@ -35112,8 +35116,8 @@ __p+='`), Z;
                                     'class'
                                 ]))), 128))])
                         ])
-                    ])])) : qe('', true),
-                t.info.isVip ? withDirectives((K(), X('button', {
+                    ])])) : createCommentVNode('', true),
+                t.info.isVip ? withDirectives((openBlock(), createElementBlock('button', {
                     key: 1,
                     'aria-label': t.$t('ARIA.SELECT_SONG', { songName: ((g = t.selectedChoice) == null ? void 0 : g.name) ?? '' }),
                     class: 'commit',
@@ -35122,9 +35126,9 @@ __p+='`), Z;
                 }, null, 8, Twe)), [[
                         v,
                         'MENU.SELECT_SONG'
-                    ]]) : qe('', true)
+                    ]]) : createCommentVNode('', true)
             ]),
-            Qe(p, {
+            createVNode(p, {
                 info: t.info,
                 players: t.players,
                 'is-vip': t.info.isVip && !t.info.isSolo,
@@ -35137,8 +35141,8 @@ __p+='`), Z;
                 'response-key',
                 'onDidRequestChangeVip'
             ]),
-            Qe(xs, { name: 'modal' }, {
-                default: cs(() => [t.showChangeVIP ? (K(), Lt(m, {
+            createVNode(xs, { name: 'modal' }, {
+                default: withCtx(() => [t.showChangeVIP ? (openBlock(), createBlock(m, {
                         key: 0,
                         info: t.info,
                         players: t.players,
@@ -35149,7 +35153,7 @@ __p+='`), Z;
                         'players',
                         'response-key',
                         'onDidRequestClose'
-                    ])) : qe('', true)]),
+                    ])) : createCommentVNode('', true)]),
                 _: 1
             })
         ]);
@@ -35175,12 +35179,12 @@ __p+='`), Z;
                     required: false
                 }
             }
-        }), Awe = t => (Di('data-v-33c50df1'), t = t(), $i(), t), Iwe = Awe(() => createBaseVNode('div', { class: 'constrain menu has-header' }, [createBaseVNode('div', { class: 'bg' })], -1));
+        }), Awe = t => (pushScopeId('data-v-33c50df1'), t = t(), popScopeId(), t), Iwe = Awe(() => createBaseVNode('div', { class: 'constrain menu has-header' }, [createBaseVNode('div', { class: 'bg' })], -1));
     function kwe(t, e, n, r, s, i) {
         const a = resolveComponent('PlayerHeader');
-        return K(), X('div', Cwe, [
+        return openBlock(), createElementBlock('div', Cwe, [
             Iwe,
-            Qe(a, { info: t.info }, null, 8, ['info'])
+            createVNode(a, { info: t.info }, null, 8, ['info'])
         ]);
     }
     const WaitingComponent = createComponent(Owe, [
@@ -35657,8 +35661,8 @@ __p+='`), Z;
     });
     function Uwe(t, e, n, r, s, i) {
         const a = resolveComponent('BaseModal'), c = resolveDirective('t');
-        return K(), Lt(a, { 'title-key': 'WELCOME.WELCOME' }, {
-            default: cs(() => [
+        return openBlock(), createBlock(a, { 'title-key': 'WELCOME.WELCOME' }, {
+            default: withCtx(() => [
                 createBaseVNode('ul', null, [
                     withDirectives(createBaseVNode('li', null, null, 512), [[
                             c,
@@ -35906,25 +35910,25 @@ __p+='`), Z;
         });
     function Vwe(t, e, n, r, s, i) {
         const a = resolveComponent('Welcome');
-        return t.isReady ? (K(), X('div', {
+        return t.isReady ? (openBlock(), createElementBlock('div', {
             key: 0,
             class: rt([
                 'nopus',
                 t.themeClass
             ])
         }, [
-            t.screen ? (K(), Lt(resolveDynamicComponent(t.screen[0]), Up({
+            t.screen ? (openBlock(), createBlock(resolveDynamicComponent(t.screen[0]), Up({
                 key: 0,
                 role: 'main'
-            }, t.screen[1]), null, 16)) : qe('', true),
-            Qe(xs, { name: 'modal' }, {
-                default: cs(() => [t.showWelcome ? (K(), Lt(a, {
+            }, t.screen[1]), null, 16)) : createCommentVNode('', true),
+            createVNode(xs, { name: 'modal' }, {
+                default: withCtx(() => [t.showWelcome ? (openBlock(), createBlock(a, {
                         key: 0,
                         onDidRequestClose: t.onDidRequestModalClose
-                    }, null, 8, ['onDidRequestClose'])) : qe('', true)]),
+                    }, null, 8, ['onDidRequestClose'])) : createCommentVNode('', true)]),
                 _: 1
             })
-        ], 2)) : qe('', true);
+        ], 2)) : createCommentVNode('', true);
     }
     const jwe = createComponent(qwe, [[
             'render',
