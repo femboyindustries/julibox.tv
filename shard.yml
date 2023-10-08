@@ -1,20 +1,11 @@
 name: julibox-tv
 version: 0.1.0
 
-# authors:
-#   - name <email@example.com>
+authors:
+  - Jill "oatmealine" Monoids <me@oat.zone>
 
-# description: |
-#   Short description of julibox-tv
-
-# dependencies:
-#   pg:
-#     github: will/crystal-pg
-#     version: "~> 0.5"
-
-# development_dependencies:
-#   webmock:
-#     github: manastech/webmock.cr
+description: |
+  Attempt to get Jackbox client modification to be easy and accessible, aswell as individual game tools and mods
 
 # license: MIT
 
