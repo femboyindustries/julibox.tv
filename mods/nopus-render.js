@@ -1,4 +1,6 @@
 (t, e, n, r, s, i) => {
+  $$update(t);
+
   const a = ot('Beatlines'),
     c = hn('t');
   return (
@@ -80,19 +82,21 @@
                 null,
                 Dn(
                   t.inputs,
-                  (l) => (
-                    K(),
-                    X(
-                      'div',
-                      {
-                        key: l.key,
-                        class: rt(['input', l.classes]),
-                        style: gn(l.styles),
-                      },
-                      [l.isHold ? (K(), X('div', NTe)) : qe('', !0), xTe],
-                      6
-                    )
-                  )
+                  (l) => {
+                    const quant = $$quantize($$getMeasure(t.manager, l.start));
+
+                    return K(),
+                      X(
+                        'div',
+                        {
+                          key: l.key,
+                          class: rt(['input', `quant-${quant}`, l.classes]),
+                          style: gn(l.styles),
+                        },
+                        [l.isHold ? (K(), X('div', NTe)) : qe('', !0), xTe],
+                        6
+                      )
+                  }
                 ),
                 128
               )),

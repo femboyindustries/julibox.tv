@@ -9,7 +9,7 @@ module JuliboxTV
     end
   
     def should_intercept_body?(request : HTTP::Request)
-      request.path.ends_with?(".js") || request.path.starts_with?("/api/")
+      request.path.ends_with?(".js") || request.path.starts_with?("/api/") || request.path.ends_with?(".html") || request.path == "/"
     end
   
     def rewrite_body(request : HTTP::Request, body : String) : String
@@ -20,8 +20,14 @@ module JuliboxTV
           body = body.sub("scheme:\"https\"", "scheme:\"http\"")
           body = body.sub("e.scheme:this.scheme=\"wss\"", "e.scheme:this.scheme=\"ws\"")
         end
-        body = body.sub("const LTe=ct(ETe", ";const $$penis=#{File.read("mods/nopus-component.js")};const LTe=ct($$penis")
+        body = body.sub("class bTe extends Nk", "#{File.read("mods/nopus-common.js")};class bTe extends Nk")
+        body = body.sub("const LTe=ct(ETe", ";const $$customComponent=#{File.read("mods/nopus-component.js")};const LTe=ct($$customComponent")
         body = body.sub("\"render\",$Te", "\"render\",#{File.read("mods/nopus-render.js")}")
+      end
+
+      if request.path.ends_with?(".html") || request.path == "/"
+        body = body.sub("<title>Jackbox.TV</title>", "<title>julibox.tv</title>")
+        body = body.sub("</head>", "<style>#{File.read("mods/nopus-styles.css")}</style></head>")
       end
   
       if request.path.starts_with?("/api/")

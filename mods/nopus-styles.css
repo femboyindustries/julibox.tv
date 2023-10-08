@@ -1,0 +1,46 @@
+
+.aux-percussion {
+  --category-color-light: #ffa567;
+  --category-color: #ff7a17
+}
+.bass {
+  --category-color-light: #9165ef;
+  --category-color: #6b3cdb
+}
+.counter-melody {
+  --category-color-light: #ff60da;
+  --category-color: #ef1ab4
+}
+.drums {
+  --category-color-light: #ff4f60;
+  --category-color: #fd0018
+}
+.harmony {
+  --category-color-light: #20efc4;
+  --category-color: #00cd8d
+}
+.melody {
+  --category-color-light: #24aeff;
+  --category-color: #0082ea
+}
+.signature {
+  --category-color-light: #ffe59a;
+  --category-color: #ffcc2e
+}
+
+.quant-4 .tap-indicator[data-v-1a291824], .quant-4 .hold-indicator[data-v-1a291824] {
+  background-color: #ff4f60;
+  border-color: #fd0018;
+}
+.quant-8 .tap-indicator[data-v-1a291824], .quant-8 .hold-indicator[data-v-1a291824] {
+  background-color: #24aeff !important;
+  border-color: #0082ea !important;
+}
+.quant-12 .tap-indicator[data-v-1a291824], .quant-12 .hold-indicator[data-v-1a291824] {
+  background-color: #9165ef !important;
+  border-color: #6b3cdb !important;
+}
+.quant-16 .tap-indicator[data-v-1a291824], .quant-16 .hold-indicator[data-v-1a291824] {
+  background-color: #ffe59a !important;
+  border-color: #ffcc2e !important;
+}

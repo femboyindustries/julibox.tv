@@ -21,6 +21,7 @@ _t({
     hitIndicators() {
       return this.manager.lanes.map((t, e) => {
         const n = [];
+        const time = this.manager.progress * this.manager.duration / 1000;
         return (
           this.manager.lanes[e].isActive && n.push("active"),
           this.manager.lanes[e].isFlubbing && n.push("flubbing"),
@@ -30,7 +31,8 @@ _t({
             text: this.layout.hotKeys[e],
             styles: {
               width: `${this.layout.hit * 100}%`,
-              left: `${this.layout.lanes[e].center * 100}%`,
+              left: `calc(${this.layout.lanes[e].center * 100}% + ${$$getNoteX(0, time, e)}px)`,
+              bottom: `calc(20% - ${$$getNoteY(0, time, e)}px)`
             },
             items: t.feedback.map((r) =>
               r === 0
@@ -56,14 +58,18 @@ _t({
                   return;
                 }
 
+                const y = (n.y - this.manager.progress) * this.manager.duration / 1000;
+                const time = this.manager.progress * this.manager.duration / 1000;
+
                 const i = {
                   classes: [],
                   isHold: n.isHold,
                   key: r.key,
+                  start: n.start,
                   styles: {
-                    left: `calc(${s.center * 100}% + ${Math.sin(((n.y + this.manager.progress) * this.manager.duration / 1000) * Math.PI + r.lane * 0.2) * this.layout.hit / 2 * 100}%)`,
+                    left: `calc(${s.center * 100}% + ${$$getNoteX(y, time, r.lane)}px)`,
                     width: `${this.layout.hit * 100}%`,
-                    bottom: `calc(${n.y * 100}% + ${Math.cos(((n.y + this.manager.progress) * this.manager.duration / 1000) * Math.PI + r.lane * 0.2) * 30}px)`,
+                    bottom: `calc(${n.y * 100}% - ${$$getNoteY(y, time, r.lane)}px)`,
                   },
                 };
                 n.isHolding && i.classes.push("holding"),

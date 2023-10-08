@@ -112,7 +112,6 @@ module JuliboxTV
         HTTP::LogHandler.new,
         ws_handler.handler,
         HTTP::CompressHandler.new,
-        IndexHandler.new,
         file_handler,
         asset_proxy_handler
       ]
