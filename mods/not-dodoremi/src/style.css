@@ -28,19 +28,35 @@
   --category-color: #ffcc2e
 }
 
-.quant-4 .tap-indicator[data-v-1a291824], .quant-4 .hold-indicator[data-v-1a291824] {
+.quant-4.head circle[data-v-546beebe] {
+  fill: #ff4f60;
+  stroke: #fd0018;
+}
+.quant-4.hold[data-v-546beebe] {
   background-color: #ff4f60;
   border-color: #fd0018;
 }
-.quant-8 .tap-indicator[data-v-1a291824], .quant-8 .hold-indicator[data-v-1a291824] {
+.quant-8.head circle[data-v-546beebe] {
+  fill: #24aeff !important;
+  stroke: #0082ea !important;
+}
+.quant-8.hold[data-v-546beebe] {
   background-color: #24aeff !important;
   border-color: #0082ea !important;
 }
-.quant-12 .tap-indicator[data-v-1a291824], .quant-12 .hold-indicator[data-v-1a291824] {
+.quant-12.head circle[data-v-546beebe] {
+  fill: #9165ef !important;
+  stroke: #6b3cdb !important;
+}
+.quant-12.hold[data-v-546beebe] {
   background-color: #9165ef !important;
   border-color: #6b3cdb !important;
 }
-.quant-16 .tap-indicator[data-v-1a291824], .quant-16 .hold-indicator[data-v-1a291824] {
+.quant-16.head circle[data-v-546beebe] { 
+  fill: #ffe59a !important;
+  stroke: #ffcc2e !important;
+}
+.quant-16.hold[data-v-546beebe] {
   background-color: #ffe59a !important;
   border-color: #ffcc2e !important;
 }

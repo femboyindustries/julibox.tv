@@ -1,4 +1,6 @@
 (t, e, n, r, s, i) => {
+  $$update(t);
+
   const o = We('Beatlines'), a = We('LaneLine'), l = We('LaneRing'), u = We('LaneText'), f = fn('t');
   return G(), K('div', W7e, [
     V('div', H7e, [Ye(o, {
