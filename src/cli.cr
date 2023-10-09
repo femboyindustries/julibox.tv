@@ -18,7 +18,7 @@ module JuliboxTV
       when .info?
         Colorize.with.cyan
       when .notice?
-        Colorize.with.cyan
+        Colorize.with.light_green
       when .warn?
         Colorize.with.yellow
       when .error?

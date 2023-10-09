@@ -40,31 +40,31 @@
 	"rules": [
 		{
 			"slug": "inject-common-js",
-			"filename": "*.js",
+			"filename": "d1dc09a6.js",
 			"required": true,
 			"action": {
 				"type": "find-replace",
-				"find": "class bTe extends Nk",
-				"replace": "${COMMON_JS}${MODFILE_JS};class bTe extends Nk"
+				"find": "class Ewe extends XI",
+				"replace": "${COMMON_JS}${MODFILE_JS};class Ewe extends XI"
 			}
 		},
 		{
 			"slug": "inject-component-js",
-			"filename": "*.js",
+			"filename": "d1dc09a6.js",
 			"required": true,
 			"action": {
 				"type": "find-replace",
-				"find": "const LTe=ct(ETe",
-				"replace": ";const $$customComponent=${COMPONENT_JS};const LTe=ct($$customComponent"
+				"find": "const a9e=Je(j7e",
+				"replace": ";const $$customComponent=${COMPONENT_JS};const a9e=Je($$customComponent"
 			}
 		},
 		{
 			"slug": "inject-render-js",
-			"filename": "*.js",
+			"filename": "d1dc09a6.js",
 			"required": true,
 			"action": {
 				"type": "find-replace",
-				"find": "\"render\",$Te",
+				"find": "\"render\",o9e",
 				"replace": "\"render\",${RENDER_JS}"
 			}
 		},

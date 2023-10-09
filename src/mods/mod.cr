@@ -135,7 +135,9 @@ module JuliboxTV
       def initialize(@find : String, @replace : String)
       end
       def transform(a : String, ctx : Variables) : String
-        a.sub(@find, Mod.substitute_variables(@replace, ctx))
+        b = a.sub(@find, Mod.substitute_variables(@replace, ctx))
+        raise "No pattern found in source string" if a == b
+        b
       end
     end
 
@@ -154,7 +156,11 @@ module JuliboxTV
 
       def matches_filepath(path : String) : Bool
         # todo: this sucks
-        Regex.new(Regex.escape(@filename).gsub(/(?<!\\)\\\*/, ".+")).matches?(path)
+        Regex.new(Regex.escape(@filename).gsub(/(?<!\\)\\\*/, ".+") + "$").matches?(path)
+      end
+
+      def transform(a : String, ctx : Variables) : String
+        action.transform(a, ctx)
       end
     end
 
@@ -205,7 +211,18 @@ module JuliboxTV
     def process(filepath : String, body : String)
       rules.each do |rule|
         if rule.matches_filepath(filepath)
-          body = rule.action.transform(body, variables)
+          begin
+            body = rule.transform(body, variables)
+          rescue ex
+            if rule.required
+              @log.error { "Failed to apply rule #{rule.slug}: #{ex.message}" }
+              return body
+            else
+              @log.warn { "Failed to apply rule #{rule.slug}: #{ex.message}" }
+            end
+          else
+            @log.debug { "Applied rule #{rule.slug}" }
+          end
         end
       end
       body
