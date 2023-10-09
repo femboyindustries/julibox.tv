@@ -1,6 +1,8 @@
 require "option_parser"
 require "colorize"
 require "log"
+require "./config"
+require "./mods/mod.cr"
 require "./handlers/*"
 require "./mock/*"
 
@@ -86,6 +88,22 @@ module JuliboxTV
     parser.parse
     
     if mock || proxy
+      # TODO
+      mod_paths = [Path["mods/not-dodoremi/mod.julibox.json"]]
+
+      mods = mod_paths.map do |path|
+        json = JSON.parse(File.read(path))
+        mod = Mod.new(path.parent, json)
+        mod
+      end
+
+      Config.init(Hash.zip(mods.map &.slug, mods.map &.config))
+
+      mods.each do |mod|
+        mod.evaluate_config!(Config.get_config(mod.slug).transform_values &.[0])
+        mod.evaluate_variables!
+      end
+
       if mock
         # todo: keep a record of lobbies somehow?
         lobby = LobbyInfo.new "AAAA"
@@ -105,7 +123,7 @@ module JuliboxTV
 
       file_handler = HTTP::StaticFileHandler.new("src/assets/", directory_listing: false)
     
-      asset_proxy_handler = ProxyHandler.new("jackbox.tv", "http://127.0.0.1:8080", "127.0.0.1:8080")
+      asset_proxy_handler = ProxyHandler.new("jackbox.tv", "http://127.0.0.1:8080", "127.0.0.1:8080", mods)
 
       server = HTTP::Server.new [
         HTTP::ErrorHandler.new(verbose: true),

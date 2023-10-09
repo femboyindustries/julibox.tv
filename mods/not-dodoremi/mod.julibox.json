@@ -1,0 +1,81 @@
+{
+	"metadata": {
+		"slug": "not-dodoremi",
+		"version": "0.1.0",
+		"displayName": "NotDodoReMi",
+		"description": "Extensive arrow effects mod toolkit for Dodo Re Mi",
+		"author": "oatmealine",
+		"license": "LGPL-3.0",
+		"dependencies": {
+			"some-mod": "*"
+		}
+	},
+	"config": [
+		{
+			"name": "modfile",
+			"type": "filepath",
+			"description": "Which JS file to load for modchart code",
+			"variable": "MODFILE_JS",
+			"required": true
+		}
+	],
+	"variables": {
+		"COMMON_JS": {
+			"type": "file",
+			"file": "./src/common.js"
+		},
+		"COMPONENT_JS": {
+			"type": "file",
+			"file": "./src/component.js"
+		},
+		"RENDER_JS": {
+			"type": "file",
+			"file": "./src/render.js"
+		},
+		"STYLE_CSS": {
+			"type": "file",
+			"file": "./src/style.css"
+		}
+	},
+	"rules": [
+		{
+			"slug": "inject-common-js",
+			"filename": "*.js",
+			"required": true,
+			"action": {
+				"type": "find-replace",
+				"find": "class bTe extends Nk",
+				"replace": "${COMMON_JS}${MODFILE_JS};class bTe extends Nk"
+			}
+		},
+		{
+			"slug": "inject-component-js",
+			"filename": "*.js",
+			"required": true,
+			"action": {
+				"type": "find-replace",
+				"find": "const LTe=ct(ETe",
+				"replace": ";const $$customComponent=${COMPONENT_JS};const LTe=ct($$customComponent"
+			}
+		},
+		{
+			"slug": "inject-render-js",
+			"filename": "*.js",
+			"required": true,
+			"action": {
+				"type": "find-replace",
+				"find": "\"render\",$Te",
+				"replace": "\"render\",${RENDER_JS}"
+			}
+		},
+		{
+			"slug": "inject-style-css",
+			"filename": "/",
+			"action": {
+				"type": "find-replace",
+				"find": "</head>",
+				"replace": "<style>${STYLE_CSS}</style></head>"
+			}
+		}
+	]
+}
