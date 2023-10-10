@@ -31,6 +31,7 @@ function $$update(component) {
   const beat = $$getBeat(manager, manager.now);
 
   $$mbuffer['drunk'] = Math.abs(Math.sin(beat * Math.PI)) * 100;
+  $$mbuffer['tipsy'] = Math.abs(Math.sin(beat * Math.PI)) * 100;
 }
 
 // biblically accurate

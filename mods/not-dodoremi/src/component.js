@@ -33,7 +33,7 @@ at({
           styles: {
             width: `${this.layout.hit}%`,
             left: `calc(${this.layout.lanes[e].center}% + ${$$getNoteX(0, time, e)}px)`,
-            //bottom: `calc(20% - ${$$getNoteY(0, time, e)}px)`
+            bottom: `calc(var(--judgement-position) - ${$$getNoteY(0, time, e)}px)`
           }
         }
       });
