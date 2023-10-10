@@ -10,3 +10,8 @@ node_modules/
 
 # runtime
 /cache
+
+# smToDodo
+misc/scripts/smToDodo.spec
+misc/scripts/build/*
+misc/scripts/dist/*
