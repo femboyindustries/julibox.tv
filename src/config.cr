@@ -18,11 +18,22 @@ module JuliboxTV::Config
   end
 
   @@app_configs = [
-    Mod::ConfigOption.new("mods", Mod::ConfigOption::ConfigType::String, "A comma-seperated list of mods to apply")
+    Mod::ConfigOption.new("mods", Mod::ConfigOption::ConfigType::String, "A comma-seperated list of mods to apply"),
+    Mod::ConfigOption.new("paranoid_load", Mod::ConfigOption::ConfigType::Boolean, "Whether to keep reloading mods' variables _constantly_ on each request.\nNot recommended for anywhere except development", default: "false")
   ]
+  @@app_config = {} of String => Mod::Variable
 
   @@config = {} of String => CommentedINI::Value
   @@mod_configs = {} of String => Hash(String, CommentedINI::Value)
+
+  def evaluate_config!
+    @@config.each do |key, config|
+      cfg = @@app_configs.find { |c| c.name == key }
+      if cfg
+        @@app_config[key] = cfg.parse_value(config[0])
+      end
+    end
+  end
 
   def init(mod_configs : Hash(String, Array(Mod::ConfigOption)))
     config_path = get_config_path
@@ -34,6 +45,7 @@ module JuliboxTV::Config
     if File.exists?(config_file)
       config = CommentedINI.parse(File.read(config_file))
     else
+      LOG.info { "Config not found, will create" }
       write_file = true
       config = Hash(String, Hash(String, CommentedINI::Value)).new
       config[""] = {} of String => CommentedINI::Value
@@ -46,9 +58,12 @@ module JuliboxTV::Config
       write_file ||= should_rewrite
     end
 
-    if should_rewrite
+    if write_file
+      LOG.info { "Writing config updated with new options to #{config_file}" }
       File.write(config_file, CommentedINI.build(@@mod_configs.merge({"" => @@config}), space: true))
     end
+
+    evaluate_config!
   end
 
   def get_config(key : String)
@@ -57,6 +72,10 @@ module JuliboxTV::Config
     else
       @@mod_configs[key]
     end
+  end
+
+  def app_config(key : String) : Mod::Variable
+    @@app_config[key]
   end
 
   def format_comment(option : Mod::ConfigOption)

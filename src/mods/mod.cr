@@ -182,9 +182,9 @@ module JuliboxTV
       @log.info { "Loaded #{display_name} #{version} w/ #{rules.size} rules" }
     end
 
-    def evaluate_config!(user_config : Hash(String, String))
+    def evaluate_config!(@user_config : Hash(String, String))
       @config.each do |option|
-        str = user_config[option.name]?
+        str = @user_config.not_nil![option.name]?
         if option.required && (str == nil || str.not_nil!.strip == "")
           raise "Option #{option.name} is required, but no value was given"
         end
@@ -209,6 +209,12 @@ module JuliboxTV
     end
 
     def process(filepath : String, body : String)
+      if Config.app_config("paranoid_load")
+        @log.debug { "Paranoidly reloading mod" }
+        evaluate_config!(@user_config.not_nil!)
+        evaluate_variables!
+      end
+
       rules.each do |rule|
         if rule.matches_filepath(filepath)
           begin
