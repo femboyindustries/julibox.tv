@@ -25,6 +25,9 @@ config = configparser.ConfigParser()
 config.read(args.config)
 songs_path = Path(config["DEFAULT"]["SongsPath"])
 
+if config["DEFAULT"]["FfmpegPath"]:
+        AudioSegment.converter = Path(config["DEFAULT"]["FfmpegPath"])
+
 try:
     stepfile = simfile.open(args.chart_path)
 except FileNotFoundError:
@@ -122,6 +125,9 @@ for i in count(start = -4, step = 4):
 slugs = []
 duplicates = 0
 for slot, chart in enumerate(stepfile.charts):
+
+    ### Slot and duplicate managment ###
+
     slot = slot - duplicates
     if slot > 6:
         print("WARNING: Your file has more than 7 charts! Dodo Re Mi only supports 7 charts per song. A folder will still be generated, but some of the charts might be missing.")
@@ -137,6 +143,9 @@ for slot, chart in enumerate(stepfile.charts):
 
     slugs.append(slug)
 
+
+    ### General settings ###
+
     beatmap = mapTemplate()
     beatmap["slug"] = slug
     beatmap["category"] = categories[slot] 
@@ -144,6 +153,9 @@ for slot, chart in enumerate(stepfile.charts):
 
     instrument = config["Instruments"]["InstEdit"] if chart.difficulty == "Edit" else config["Instruments"]["InstNormal"]
     beatmap["instruments"].append(instrument)
+
+
+    ### Notedata processing ###
 
     maxColumn = 0
     notedata = group_notes(NoteData(chart), join_heads_to_tails=True)
@@ -163,6 +175,9 @@ for slot, chart in enumerate(stepfile.charts):
         beatmap["inputs"].append(input)
 
         maxColumn = max(maxColumn, n.column)
+
+
+    ### Adding to output ###
 
     if maxColumn > 5:
         print("WARNING: Your file has a chart that has more than 6 columns! Dodo Re Mi only supports 6 lanes per chart. The chart will still be added, but notes in lanes above the sixth have been discarded.")
