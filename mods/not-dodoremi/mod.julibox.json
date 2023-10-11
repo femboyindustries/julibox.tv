@@ -5,10 +5,7 @@
 		"displayName": "NotDodoReMi",
 		"description": "Extensive arrow effects mod toolkit for Dodo Re Mi",
 		"author": "oatmealine",
-		"license": "LGPL-3.0",
-		"dependencies": {
-			"some-mod": "*"
-		}
+		"license": "LGPL-3.0"
 	},
 	"config": [
 		{

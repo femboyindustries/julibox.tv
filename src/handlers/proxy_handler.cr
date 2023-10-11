@@ -16,14 +16,6 @@ module JuliboxTV
       if request.path.ends_with?(".js")
         body = body.sub("https://bundles.jackbox.tv/", @source_url + "/bundles/")
         body = body.sub("ecast.jackboxgames.com", @source_origin)
-        if @source_url.starts_with?("http://")
-          body = body.sub("scheme:\"https\"", "scheme:\"http\"")
-          body = body.sub("e.scheme:this.scheme=\"wss\"", "e.scheme:this.scheme=\"ws\"")
-        end
-      end
-
-      if request.path.ends_with?(".html") || request.path == "/"
-        body = body.sub("<title>Jackbox.TV</title>", "<title>julibox.tv</title>")
       end
 
       @mods.each do |mod|

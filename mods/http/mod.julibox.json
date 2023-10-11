@@ -1,0 +1,30 @@
+{
+	"metadata": {
+		"slug": "http",
+		"version": "1.0.0",
+		"displayName": "HTTP",
+		"description": "Modifies scripts to allow hosting over unsecured HTTP",
+		"author": "oatmealine",
+		"license": "LGPL-3.0"
+	},
+	"rules": [
+		{
+			"slug": "replace-https-http",
+			"filename": "*.js",
+			"action": {
+				"type": "find-replace",
+				"find": "scheme:\"https\"",
+				"replace": "scheme:\"http\""
+			}
+		},
+		{
+			"slug": "replace-wss-ws",
+			"filename": "*.js",
+			"action": {
+				"type": "find-replace",
+				"find": "this.scheme=\"wss\"",
+				"replace": "this.scheme=\"ws\""
+			}
+		}
+	]
+}

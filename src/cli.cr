@@ -85,7 +85,7 @@ module JuliboxTV
     
     if mock || proxy
       # TODO
-      mod_paths = [Path["mods/not-dodoremi/mod.julibox.json"]]
+      mod_paths = [Path["mods/branding/mod.julibox.json"], Path["mods/http/mod.julibox.json"], Path["mods/not-dodoremi/mod.julibox.json"]]
 
       mods = mod_paths.map do |path|
         json = JSON.parse(File.read(path))

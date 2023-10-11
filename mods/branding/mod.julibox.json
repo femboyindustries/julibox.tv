@@ -1,0 +1,31 @@
+{
+	"metadata": {
+		"slug": "branding",
+		"version": "1.0.0",
+		"displayName": "Branding",
+		"description": "Changes Jackbox.TV branding to julibox.tv, to avoid confusion/misleading",
+		"author": "oatmealine",
+		"license": "LGPL-3.0"
+	},
+	"config": [
+		{
+			"name": "name",
+			"type": "string",
+			"description": "What name to use",
+			"default": "julibox.tv",
+			"variable": "APPLICATION_NAME",
+			"required": true
+		}
+	],
+	"rules": [
+		{
+			"slug": "replace-title",
+			"filename": "/",
+			"action": {
+				"type": "find-replace",
+				"find": "<title>Jackbox.TV</title>",
+				"replace": "<title>${APPLICATION_NAME}</title>"
+			}
+		}
+	]
+}

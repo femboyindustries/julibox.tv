@@ -10,7 +10,7 @@ module JuliboxTV
     getter description : String?
     getter author : String?
     getter license : String?
-    getter dependencies : Hash(String, String)
+    getter dependencies : Hash(String, String)?
 
     def parse_metadata(m : Hash(String, JSON::Any))
       return m["slug"].as_s,
@@ -19,10 +19,10 @@ module JuliboxTV
         m["description"]?.try &.as_s?,
         m["author"]?.try &.as_s?,
         m["license"]?.try &.as_s?,
-        m["dependencies"].as_h.transform_values &.as_s
+        m["dependencies"]?.try &.as_h?.try &.transform_values &.as_s
     end
 
-    getter config : Array(Config::ConfigOption)
+    getter config : Array(Config::ConfigOption) = [] of Config::ConfigOption
 
     def parse_config(configs : Array(JSON::Any))
       configs.map { |c| Config::ConfigOption.new c.as_h }
@@ -54,7 +54,7 @@ module JuliboxTV
     end
 
     # Load-time definitions
-    getter variable_definitions : Hash(String, VariableDefintion)
+    getter variable_definitions : Hash(String, VariableDefintion) = {} of String => VariableDefintion
     # Runtime values
     @variables = {} of String => Variable
     @variables_evaluated = false
@@ -123,7 +123,7 @@ module JuliboxTV
       end
     end
 
-    getter rules : Array(Rule)
+    getter rules : Array(Rule) = [] of Rule
 
     def parse_rules(rules : Array(JSON::Any))
       rules.map { |r| Rule.new r.as_h }
@@ -139,9 +139,9 @@ module JuliboxTV
     end
     def initialize(json : JSON::Any, @filepath : Path, quiet : Bool = false)
       @slug, @version, @display_name, @description, @author, @license, @dependencies = parse_metadata(json["metadata"].as_h)
-      @config = parse_config(json["config"].as_a)
-      @variable_definitions = parse_variables(json["variables"].as_h)
-      @rules = parse_rules(json["rules"].as_a)
+      @config = parse_config(json["config"].as_a) if json["config"]?
+      @variable_definitions = parse_variables(json["variables"].as_h) if json["variables"]?
+      @rules = parse_rules(json["rules"].as_a) if json["rules"]?
 
       @log = LOG.for(slug)
       @log.info { "Loaded #{display_name.colorize(:cyan)} #{version} w/ #{rules.size} rules" } if !quiet
@@ -154,6 +154,7 @@ module JuliboxTV
     end
 
     def evaluate_variables!
+
       variable_definitions.each do |name, var|
         val = var.evaluate @variables
         @variables[name] = val
@@ -161,7 +162,7 @@ module JuliboxTV
       end
       @variables_evaluated = true
 
-      @log.info { "Evaluated #{variables.size} variables" }
+      @log.info { "Evaluated #{variables.size} variables" } if variables.size > 0
     end
 
     def should_process(filepath : String)
