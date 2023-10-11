@@ -31,10 +31,6 @@ module JuliboxTV
     end
 
     def run
-      Colorize.with.light_gray.dim.surround(@io) do
-        timestamp
-      end
-      string "  "
       severity_color(@entry.severity).surround(@io) do
         @entry.severity.label.rjust(@io, 6)
       end
@@ -94,13 +90,14 @@ module JuliboxTV
       mods = mod_paths.map do |path|
         json = JSON.parse(File.read(path))
         mod = Mod.new(path)
+        CONFIG.init_mod(mod.slug, mod.config)
         mod
       end
 
-      Config.init(Hash.zip(mods.map &.slug, mods.map &.config))
+      CONFIG.evaluate!
 
       mods.each do |mod|
-        mod.evaluate_config!(Config.get_config(mod.slug).transform_values &.[0])
+        mod.set_config!(CONFIG.get_config(mod.slug))
         mod.evaluate_variables!
       end
 

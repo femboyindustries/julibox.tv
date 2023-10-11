@@ -1,5 +1,6 @@
 require "json"
 require "semantic_version"
+require "../config.cr"
 
 module JuliboxTV
   class Mod
@@ -21,52 +22,10 @@ module JuliboxTV
         m["dependencies"].as_h.transform_values &.as_s
     end
 
-    struct ConfigOption
-      enum ConfigType
-        Boolean
-        String
-        Number
-        Filepath
-      end
-
-      getter name : String
-      getter type : ConfigType
-      getter description : String?
-      getter variable : String?
-      getter default : String? # not yet parsed, so it's a string
-      getter required : Bool
-
-      def initialize(option : Hash(String, JSON::Any))
-        @name = option["name"].as_s
-        @type = ConfigType.parse option["type"].as_s
-        @description = option["description"]?.try &.as_s?
-        @variable = option["variable"]?.try &.as_s?
-        @default = option["default"]?.try &.as_s?
-        @required = option["required"]?.try &.as_bool? || false
-      end
-      def initialize(@name : String, @type : ConfigType, @description : String? = nil, @default : String? = nil, @required : Bool = false)
-      end
-
-      def parse_value(value : String) : Variable
-        case @type
-        when ConfigType::Boolean
-          value.downcase == "true"
-        when ConfigType::String
-          value
-        when ConfigType::Number
-          value.to_f64
-        when ConfigType::Filepath
-          File.read(Path[value].normalize)
-        else
-          raise NotImplementedError.new "Parser for #{@type} not yet implemented"
-        end
-      end
-    end
-
-    getter config : Array(ConfigOption)
+    getter config : Array(Config::ConfigOption)
 
     def parse_config(configs : Array(JSON::Any))
-      configs.map { |c| ConfigOption.new c.as_h }
+      configs.map { |c| Config::ConfigOption.new c.as_h }
     end
 
     alias Variable = String | Float64 | Bool | Nil
@@ -188,17 +147,9 @@ module JuliboxTV
       @log.info { "Loaded #{display_name.colorize(:cyan)} #{version} w/ #{rules.size} rules" } if !quiet
     end
 
-    def evaluate_config!(@user_config : Hash(String, String))
-      @config.each do |option|
-        str = @user_config.not_nil![option.name]?
-        if option.required && (str == nil || str.not_nil!.strip == "")
-          raise "Option #{option.name} is required, but no value was given"
-        end
-
-        name = option.variable.not_nil!("Option #{option.name} does not specify variable name")
-        val = option.parse_value(str.not_nil!)
+    def set_config!(@user_config : Config::Configurator)
+      @user_config.not_nil!.values.each do |name, val|
         @variables[name] = val
-        @log.debug { "cfg.#{name.colorize(:cyan)} = #{JuliboxTV.trunc val.to_s}" }
       end
     end
 
@@ -218,11 +169,13 @@ module JuliboxTV
     end
 
     def process(filepath : String, body : String)
-      if Config.app_config("paranoid_load")
+      if CONFIG.get_config.get("paranoid_load")
         @log.debug { "Paranoidly reloading mod" }
-        #evaluate_config!(@user_config.not_nil!)
-        #evaluate_variables!
         initialize(@filepath, quiet: true)
+        @variables = {} of String => Variable
+        @user_config.not_nil!.evaluate!
+        set_config!(@user_config.not_nil!)
+        evaluate_variables!
       end
 
       rules.each do |rule|
