@@ -60,3 +60,13 @@
   background-color: #ffe59a !important;
   border-color: #ffcc2e !important;
 }
+
+.home {
+  display: none;
+}
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+.head, .hold {
+  transform-style: preserve-3d;
+}

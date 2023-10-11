@@ -320,7 +320,7 @@ class $$Modfile {
       } else {
         this.#easesActive.splice(i, 1);
         for (let mod in e.mods) {
-          modOffsets[mod] = 0
+          modOffsets[mod] = (modOffsets[mod] || 0);
         }
       }
     }
@@ -343,23 +343,84 @@ class $$Modfile {
   }
 }
 
-function $$getArrowSize() {
-  return 91;
-}
+// in pixels
+let $$laneWidth = 150;
+// in pixels
+let $$noteSize = 87;
 
 let $$m = new $$Modfile();
 
 // outputs pixels
 function $$getNoteX(y, time, lane) {
   return (
-    $$m.get('drunk') / 100 * Math.cos((time + y * 2 + lane * 0.2)) * $$getArrowSize() * 0.5
+    $$m.get('drunk') / 100 * Math.cos(time + y * 2 + lane * 0.2 + $$m.get('drunkoffset') / 100 * Math.PI) * $$noteSize * 0.5 +
+    $$m.get('movex') / 100 * $$laneWidth + 
+    $$m.get(`movex${lane}`) / 100 * $$laneWidth +
+    $$m.get('flip') / 100 * $$laneWidth * (3 - lane * 2) +
+    $$m.get('invert') / 100 * (((lane + 1) % 2) * 2 - 1) * $$laneWidth
   );
 }
 // outputs pixels
 function $$getNoteY(y, time, lane) {
   return (
-    $$m.get('tipsy') / 100 * Math.cos((time * 1.2 + lane * 1.8)) * $$getArrowSize() * 0.4
+    $$m.get('tipsy') / 100 * Math.cos(time * 1.2 + lane * 1.8 + $$m.get('tipsyoffset') / 100 * Math.PI) * $$noteSize * 0.4 +
+    $$m.get('movey') / 100 * $$laneWidth + 
+    $$m.get(`movey${lane}`) / 100 * $$laneWidth +
+    $$m.get('wave') / 100 * Math.sin(y * 6) * $$noteSize * 0.7
   );
+}
+// outputs pixels
+function $$getNoteZ(y, time, lane) {
+  return (
+    $$m.get('bumpy') / 100 * Math.sin(y * 6 + $$m.get('bumpyoffset') / 100 * Math.PI) * 40 +
+    $$m.get('movez') / 100 * $$laneWidth +
+    $$m.get(`movez${lane}`) / 100 * $$laneWidth
+  );
+}
+function $$getNoteScaleX(y, time, lane) {
+  return (
+    1
+    - $$m.get('tiny') / 200
+    - $$m.get(`tiny${lane}`) / 200
+    - $$m.get('tinyx') / 200
+    - $$m.get(`tinyx${lane}`) / 200
+  );
+}
+function $$getNoteScaleY(y, time, lane) {
+  return (
+    1
+    - $$m.get('tiny') / 200
+    - $$m.get(`tiny${lane}`) / 200
+    - $$m.get('tinyy') / 200
+    - $$m.get(`tinyy${lane}`) / 200
+  );
+}
+function $$getNoteScaleZ(y, time, lane) {
+  return (
+    1
+    - $$m.get('tinyz') / 200
+    - $$m.get(`tinyz${lane}`) / 200
+  );
+}
+function $$getNoteRotationX(y, time, lane) {
+  return (
+    $$m.get('confusionoffsetx') +
+    $$m.get(`confusionoffsetx${lane}`)
+  )
+}
+function $$getNoteRotationY(y, time, lane) {
+  return (
+    $$m.get('confusionoffsety') +
+    $$m.get(`confusionoffsety${lane}`)
+  )
+}
+function $$getNoteRotationZ(y, time, lane) {
+  return (
+    $$m.get('confusionoffset') +
+    $$m.get(`confusionoffset${lane}`) +
+    $$m.get('confusionoffsetz') +
+    $$m.get(`confusionoffsetz${lane}`)
+  )
 }
 
 let $$debug;
@@ -380,6 +441,15 @@ function $$update(component) {
     $$debug = node;
   }
 
+  const constraner = document.querySelector('.constrainer');
+  if (constraner) {
+    $$laneWidth = constraner.clientWidth / component.layout.lanes.length;
+  }
+  const lane = document.querySelector('.lane');
+  if (lane) {
+    $$noteSize = lane.clientWidth;
+  }
+
   const manager = component.manager;
   const beat = $$getBeat(manager, manager.now);
 
@@ -387,7 +457,7 @@ function $$update(component) {
 
   if ($$debug) {
     $$debug.innerText = `B${Math.floor(beat * 100) / 100} T${Math.floor((manager.now / 1000) * 100) / 100}` + '\n' +
-      Object.entries($$m.modBuffer).map(([k, v]) => `${v}% ${k}`);
+      Object.entries($$m.modBuffer).map(([k, v]) => `${v}% ${k}`).join('\n');
   }
 }
 
@@ -431,4 +501,8 @@ function $$quantize(m) {
     }
   }
   return minq;
+}
+
+function $$transforms(t) {
+  return Object.entries(t).map(([k, v]) => `${k}(${v})`).join(' ');
 }
