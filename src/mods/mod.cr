@@ -80,7 +80,7 @@ module JuliboxTV
 
       getter type : VariableType
 
-      def initialize(@dir : Path, @raw : Hash(String, JSON::Any))
+      def initialize(@raw : Hash(String, JSON::Any), @dir : Path)
         @type = VariableType.parse @raw["type"].as_s
       end
 
@@ -105,7 +105,7 @@ module JuliboxTV
     end
 
     def parse_variables(map : Hash(String, JSON::Any))
-      map.transform_values { |v| VariableDefintion.new(@dir, v.as_h) }
+      map.transform_values { |v| VariableDefintion.new(v.as_h, @filepath.parent) }
     end
 
     def self.substitute_variables(str : String, vars : Variables)
@@ -172,14 +172,20 @@ module JuliboxTV
 
     getter log : Log
 
-    def initialize(@dir : Path, json : JSON::Any)
+    def initialize(@filepath : Path, quiet : Bool = false)
+      json = File.open(@filepath) do |file|
+        JSON.parse(file)
+      end
+      initialize(json, @filepath, quiet)
+    end
+    def initialize(json : JSON::Any, @filepath : Path, quiet : Bool = false)
       @slug, @version, @display_name, @description, @author, @license, @dependencies = parse_metadata(json["metadata"].as_h)
       @config = parse_config(json["config"].as_a)
       @variable_definitions = parse_variables(json["variables"].as_h)
       @rules = parse_rules(json["rules"].as_a)
 
       @log = LOG.for(slug)
-      @log.info { "Loaded #{display_name} #{version} w/ #{rules.size} rules" }
+      @log.info { "Loaded #{display_name.colorize(:cyan)} #{version} w/ #{rules.size} rules" } if !quiet
     end
 
     def evaluate_config!(@user_config : Hash(String, String))
@@ -189,7 +195,10 @@ module JuliboxTV
           raise "Option #{option.name} is required, but no value was given"
         end
 
-        @variables[option.variable.not_nil!("Option #{option.name} does not specify variable name")] = option.parse_value(str.not_nil!)
+        name = option.variable.not_nil!("Option #{option.name} does not specify variable name")
+        val = option.parse_value(str.not_nil!)
+        @variables[name] = val
+        @log.debug { "cfg.#{name.colorize(:cyan)} = #{JuliboxTV.trunc val.to_s}" }
       end
     end
 
@@ -197,7 +206,7 @@ module JuliboxTV
       variable_definitions.each do |name, var|
         val = var.evaluate @variables
         @variables[name] = val
-        @log.debug { "#{name} = #{JuliboxTV.trunc val.to_s}" }
+        @log.debug { "var.#{name.colorize(:cyan)} = #{JuliboxTV.trunc val.to_s}" }
       end
       @variables_evaluated = true
 
@@ -211,8 +220,9 @@ module JuliboxTV
     def process(filepath : String, body : String)
       if Config.app_config("paranoid_load")
         @log.debug { "Paranoidly reloading mod" }
-        evaluate_config!(@user_config.not_nil!)
-        evaluate_variables!
+        #evaluate_config!(@user_config.not_nil!)
+        #evaluate_variables!
+        initialize(@filepath, quiet: true)
       end
 
       rules.each do |rule|

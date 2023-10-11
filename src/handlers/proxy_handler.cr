@@ -27,7 +27,7 @@ module JuliboxTV
       end
 
       @mods.each do |mod|
-        body = mod.process(request.path, body)
+        body = mod.process(request.path, body) if mod.should_process(request.path)
       end
   
       if request.path.starts_with?("/api/")

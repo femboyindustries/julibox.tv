@@ -93,7 +93,7 @@ module JuliboxTV
 
       mods = mod_paths.map do |path|
         json = JSON.parse(File.read(path))
-        mod = Mod.new(path.parent, json)
+        mod = Mod.new(path)
         mod
       end
 
