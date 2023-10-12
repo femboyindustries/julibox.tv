@@ -170,7 +170,7 @@ module JuliboxTV
     end
 
     def process(filepath : String, body : String)
-      if CONFIG.get_config.get("paranoid_load")
+      if JuliboxTV.paranoid_reload
         @log.debug { "Paranoidly reloading mod" }
         initialize(@filepath, quiet: true)
         @variables = {} of String => Variable

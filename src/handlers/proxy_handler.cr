@@ -5,7 +5,7 @@ module JuliboxTV
   class ProxyHandler
     include HTTP::Handler
   
-    def initialize(@target : String, @source_url : String, @source_origin : String, @mods : Array(Mod))
+    def initialize(@target : String, @source_url : String, @source_origin : String, @mods : Array(Mod), @disable_cache : Bool = false)
     end
   
     def should_intercept_body?(request : HTTP::Request)
@@ -52,6 +52,26 @@ module JuliboxTV
       end
       "https://#{@target}#{path}"
     end
+
+    def fix_response_headers(headers : HTTP::Headers, is_intercepted : Bool = false)
+      # fuck cors
+      headers["Access-Control-Allow-Origin"] = "*"
+      # don't pretend to send chunked data
+      headers.delete("Transfer-Encoding")
+
+      if is_intercepted
+        # don't pretend to send gzipped data
+        headers.delete("Content-Encoding")
+
+        if @disable_cache
+          headers["Age"] = "0"
+          headers.delete("ETag")
+          headers.delete("Date")
+          headers.delete("Last-Modified")
+          headers["Cache-Control"] = "no-cache, must-revalidate, max-age=0"
+        end
+      end
+    end
   
     def call(context)
       req = context.request.dup
@@ -62,6 +82,10 @@ module JuliboxTV
       uri = URI.parse(orig_url)
       req.headers["Host"] = uri.host.not_nil!
       req.headers["Origin"] = "https://#{@target}"
+
+      if @disable_cache
+        req.headers["Cache-Control"] = "no-cache"
+      end
   
       # should we intercept the body?
       if should_intercept_body?(req)
@@ -72,12 +96,8 @@ module JuliboxTV
         # proxy everything but the body
         context.response.status = response.status
         context.response.headers.merge!(response.headers)
-        # fuck cors
-        context.response.headers["Access-Control-Allow-Origin"] = "*"
-        # don't pretend to send gzipped data
-        context.response.headers.delete("Content-Encoding")
-        # don't pretend to send chunked data
-        context.response.headers.delete("Transfer-Encoding")
+
+        fix_response_headers(context.response.headers, true)
   
         # intercept the body
         new_body = rewrite_body(req, response.body)
@@ -91,10 +111,8 @@ module JuliboxTV
           # proxy everything
           context.response.status = response.status
           context.response.headers.merge!(response.headers)
-          # fuck cors
-          context.response.headers["Access-Control-Allow-Origin"] = "*"
-          # don't pretend to send chunked data
-          context.response.headers.delete("Transfer-Encoding")
+
+          fix_response_headers(context.response.headers)
   
           IO.copy(response.body_io, context.response) if response.body_io
   

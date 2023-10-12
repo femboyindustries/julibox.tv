@@ -44,6 +44,12 @@ module JuliboxTV
     end
   end
 
+  @@paranoid_reload = false
+
+  def paranoid_reload
+    @@paranoid_reload
+  end
+
   def run()
     Log.setup_from_env(backend: Log::IOBackend.new(formatter: LogFormat), default_level: :debug)
   
@@ -54,6 +60,7 @@ module JuliboxTV
     cli_mods = [] of String
     cli_mod_paths = [] of String
     force_rewrite = false
+    disable_cache = false
 
     parser = OptionParser.new do |parser|
       parser.banner = "Usage: julibox [subcommand] [arguments]"
@@ -86,6 +93,12 @@ module JuliboxTV
       end
       parser.on("--force-config-rewrite", "Force a config rewrite to fix formatting and comments") do
         force_rewrite = true
+      end
+      parser.on("--no-cache", "Disable caching headers for development ease") do
+        disable_cache = true
+      end
+      parser.on("--paranoid-reload", "Keep reloading mods' variables _constantly_ on each request. Not recommended for anywhere except development") do
+        @@paranoid_reload = true
       end
     end
     
@@ -144,7 +157,7 @@ module JuliboxTV
 
       file_handler = HTTP::StaticFileHandler.new("src/assets/", directory_listing: false)
     
-      asset_proxy_handler = ProxyHandler.new("jackbox.tv", "http://127.0.0.1:8080", "127.0.0.1:8080", mods)
+      asset_proxy_handler = ProxyHandler.new("jackbox.tv", "http://127.0.0.1:8080", "127.0.0.1:8080", mods, disable_cache: disable_cache)
 
       server = HTTP::Server.new [
         HTTP::ErrorHandler.new(verbose: true),

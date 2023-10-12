@@ -29,12 +29,6 @@ module JuliboxTV
       Config::ConfigOption::ConfigType::String,
       "A comma-seperated list of paths to search for mods through\nSupports relative paths from the working directory",
       default: "./mods,#{Config.get_config_path(APPLICATION_NAME) / "mods"}"
-    ),
-    Config::ConfigOption.new(
-      "paranoid_load",
-      Config::ConfigOption::ConfigType::Boolean,
-      "Whether to keep reloading mods' variables _constantly_ on each request.\nNot recommended for anywhere except development",
-      default: "false"
     )
   ])
   CONFIG.evaluate_app!
