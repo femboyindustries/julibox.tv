@@ -138,12 +138,12 @@ module JuliboxTV::Config
         LOG.info { "Writing config updated with new options to #{config_file}" }
         File.write(config_file, CommentedINI.build(@mods_data.merge({"" => @app_data}), space: true))
       end
-  
-      evaluate!
     end
 
-    def evaluate!
+    def evaluate_app!
       get_config.evaluate!
+    end
+    def evaluate_mods!
       @mod_configs.each_value &.evaluate!
     end
 

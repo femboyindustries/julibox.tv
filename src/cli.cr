@@ -84,22 +84,37 @@ module JuliboxTV
     parser.parse
     
     if mock || proxy
-      # TODO
-      mod_paths = [Path["mods/branding/mod.julibox.json"], Path["mods/http/mod.julibox.json"], Path["mods/not-dodoremi/mod.julibox.json"]]
+      mod_paths = CONFIG.get_config.get("mod_paths").as(String).split(",", remove_empty: true).map { |m| Path[m].normalize }
+      mod_names = CONFIG.get_config.get("mods").as(String).split(",", remove_empty: true)
 
-      mods = mod_paths.map do |path|
-        json = JSON.parse(File.read(path))
-        mod = Mod.new(path)
+      mods = mod_names.map do |name|
+        search_paths = mod_paths.map { |path| path / name / "mod.julibox.json" }
+        mod_filepath = search_paths.find { |path| File.exists?(path) }
+
+        if mod_filepath == nil
+          LOG.error { "Mod '#{name}' not found!" }
+          LOG.error { "Searched paths: #{search_paths}" }
+          exit 1
+        end
+
+        LOG.debug { "Found mod '#{name}' in #{mod_filepath}" }
+
+        json = JSON.parse(File.read(mod_filepath.not_nil!))
+        mod = Mod.new(mod_filepath.not_nil!)
         CONFIG.init_mod(mod.slug, mod.config)
         mod
       end
 
-      CONFIG.evaluate!
+      CONFIG.evaluate_mods!
 
       mods.each do |mod|
         mod.set_config!(CONFIG.get_config(mod.slug))
         mod.evaluate_variables!
       end
+
+      CONFIG.finalize
+
+      LOG.info { "Loaded #{mods.size} mods successfully!" }
 
       if mock
         # todo: keep a record of lobbies somehow?

@@ -21,7 +21,8 @@ module JuliboxTV
     Config::ConfigOption.new(
       "mods",
       Config::ConfigOption::ConfigType::String,
-      "A comma-seperated list of mod names to apply\njulibox will search through every path in mod_paths for these mods"
+      "A comma-seperated list of mod names to apply\njulibox will search through every path in mod_paths for these mods",
+      default: "branding,http"
     ),
     Config::ConfigOption.new(
       "mod_paths",
@@ -36,6 +37,7 @@ module JuliboxTV
       default: "false"
     )
   ])
+  CONFIG.evaluate_app!
 end
 
 JuliboxTV.run
