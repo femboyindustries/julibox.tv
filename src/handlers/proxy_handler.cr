@@ -114,7 +114,7 @@ module JuliboxTV
 
           fix_response_headers(context.response.headers)
   
-          IO.copy(response.body_io, context.response) if response.body_io
+          IO.copy(response.body_io, context.response) if response.body_io?
   
           context.response.close
         end
