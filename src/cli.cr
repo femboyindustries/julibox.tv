@@ -53,6 +53,7 @@ module JuliboxTV
     proxy = false
     cli_mods = [] of String
     cli_mod_paths = [] of String
+    force_rewrite = false
 
     parser = OptionParser.new do |parser|
       parser.banner = "Usage: julibox [subcommand] [arguments]"
@@ -82,6 +83,9 @@ module JuliboxTV
       end
       parser.on("--mod-paths MOD_PATHS", "Include mod paths into the search list for mods") do |mods_str|
         cli_mod_paths = mods_str.split(",", remove_empty: true)
+      end
+      parser.on("--force-config-rewrite", "Force a config rewrite to fix formatting and comments") do
+        force_rewrite = true
       end
     end
     
@@ -116,6 +120,7 @@ module JuliboxTV
         mod.evaluate_variables!
       end
 
+      CONFIG.mark_dirty! if force_rewrite
       CONFIG.finalize
 
       LOG.info { "Loaded #{mods.size} mods successfully!" }

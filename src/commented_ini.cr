@@ -83,15 +83,20 @@ module JuliboxTV::CommentedINI
         io << (space ? "# " : "#") << comment << '\n'
       end
       io << key << (space ? " = " : '=') << value[0] << '\n'
+      io << '\n'
     end
     ini.each do |section, contents|
       next if section.to_s.empty?
-      io << '[' << section << "]\n"
+      io << "[" << section << "]\n\n"
       contents.each do |key, value|
         value[1].try &.each_line do |comment|
           io << (space ? "# " : "#") << comment << '\n'
         end
         io << key << (space ? " = " : '=') << value[0] << '\n'
+        io << '\n'
+      end
+      if contents.size == 0
+        io << "# No configuration options\n"
       end
       io.puts
     end
