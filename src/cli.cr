@@ -51,7 +51,8 @@ module JuliboxTV
     mock_game = nil : String?
     mock_args = [] of String
     proxy = false
-    #mods = [] of ???
+    cli_mods = [] of String
+    cli_mod_paths = [] of String
 
     parser = OptionParser.new do |parser|
       parser.banner = "Usage: julibox [subcommand] [arguments]"
@@ -59,10 +60,10 @@ module JuliboxTV
         mock = true
         parser.banner = "Usage: julibox mock [game] [arguments]"
         parser.unknown_args do |args|
-          #if args.size == 0
-          #  puts parser
-          #  exit(1)
-          #end
+          if args.size == 0
+            puts parser
+            exit(1)
+          end
 
           mock_game = args[0]
           mock_args = args[1..]
@@ -76,16 +77,19 @@ module JuliboxTV
         puts parser
         exit
       end
-      #parser.on("-m MODS", "--mods MODS", "Include mods (see mods/ for valid options)") do |mods|
-      #
-      #end
+      parser.on("-m MODS", "--mods MODS", "Include mods, searched for through mod_paths") do |mods_str|
+        cli_mods = mods_str.split(",", remove_empty: true)
+      end
+      parser.on("--mod-paths MOD_PATHS", "Include mod paths into the search list for mods") do |mods_str|
+        cli_mod_paths = mods_str.split(",", remove_empty: true)
+      end
     end
     
     parser.parse
     
     if mock || proxy
-      mod_paths = CONFIG.get_config.get("mod_paths").as(String).split(",", remove_empty: true).map { |m| Path[m].normalize }
-      mod_names = CONFIG.get_config.get("mods").as(String).split(",", remove_empty: true)
+      mod_paths = (CONFIG.get_config.get("mod_paths").as(String).split(",", remove_empty: true) | cli_mod_paths).map { |m| Path[m].normalize }
+      mod_names = CONFIG.get_config.get("mods").as(String).split(",", remove_empty: true) | cli_mods
 
       mods = mod_names.map do |name|
         search_paths = mod_paths.map { |path| path / name / "mod.julibox.json" }
@@ -93,7 +97,7 @@ module JuliboxTV
 
         if mod_filepath == nil
           LOG.error { "Mod '#{name}' not found!" }
-          LOG.error { "Searched paths: #{search_paths}" }
+          LOG.error { "Searched paths: #{(search_paths.map &.to_s).join(", ")}" }
           exit 1
         end
 
