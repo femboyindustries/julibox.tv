@@ -118,7 +118,7 @@ module JuliboxTV::Config
     end
   
     def init_app(app_definitions : Array(ConfigOption))
-      @app_data, should_rewrite = Config.merge_options(@ini[""], app_definitions)
+      @app_data, should_rewrite = Config.merge_options(@ini[""]? || {} of String => CommentedINI::Value, app_definitions)
       mark_dirty! if should_rewrite
       @app_config = Configurator.new(@app_data.transform_values &.[0], app_definitions)
     end

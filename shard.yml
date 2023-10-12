@@ -10,5 +10,5 @@ description: |
 # license: MIT
 
 targets:
-  julibox-tv:
+  julibox:
     main: src/julibox.cr

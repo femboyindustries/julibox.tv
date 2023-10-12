@@ -11,6 +11,7 @@
 		{
 			"name": "modfile",
 			"type": "filepath",
+			"default": "misc/modfiles/test.js",
 			"description": "Which JS file to load for modchart code",
 			"variable": "MODFILE_JS",
 			"required": true

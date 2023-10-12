@@ -29,14 +29,20 @@ Proxying simply applies the existing mods onto the clients of everyone who uses 
 julibox proxy
 ```
 
+### Config
+
+Your config is located in:
+
+| | |
+| - | - |
+| Windows | `%AppData%/julibox/`                     |
+| OSX     | `~/Library/Application Support/julibox/` |
+| Linux   | `~/.config/julibox/`                     |
+
+Upon starting the tool, it will write a sample config with comments describing every config value. You'll want to look through those for things like enabling mods, configuring them, etc.
+
 ### Mods
 
-_TODO; for now every mod available is enabled by default._
+Mods take on a simple JSON format, which you can look at a sample of [here](mods/not-dodoremi/mod.julibox.json) - you can define configuration values, variables which can read from files, and then be able to use those in rules which actually modify files served by the proxy. Documentation is yet to be properly written.
 
-When using the tool, you are able to pass in a comma-seperated list of mods:
-
-```sh
-julibox proxy --mods 'proxy,branding,http,nopus-opus-modfile'
-```
-
-These read from folders in `mods/`. The format is yet to be documented.
+There are a few mods currently in `mods/` - if you wish to create your own, you are free to add them to the repository aswell.
