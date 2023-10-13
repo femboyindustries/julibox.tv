@@ -246,7 +246,7 @@ class $$Modfile {
     for (let i = this.#perframesActive.length - 1; i >= 0; i--) {
       let f = this.#perframesActive[i];
       if (beat < (f.b + f.len)) {
-        f.func(f.b);
+        f.func(beat);
       } else {
         this.#perframesActive.splice(i, 1);
       }
