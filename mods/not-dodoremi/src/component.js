@@ -1,9 +1,9 @@
 at({
   components: {
     Beatlines: QI,
-    LaneLine: w7e,
-    LaneRing: F7e,
-    LaneText: G7e
+    LaneLine: T7e,
+    LaneRing: $7e,
+    LaneText: q7e
   },
   props: {
     manager: {
@@ -20,7 +20,7 @@ at({
       return this.$hotkeyManager.mappings.get(this.manager.lanes.length);
     },
     layout() {
-      return x5(this.manager.lanes.length);
+      return Pb(this.manager.lanes.length);
     },
     lanes() {
       return this.manager.lanes.map((t, e) => {

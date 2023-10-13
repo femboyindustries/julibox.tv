@@ -26,7 +26,7 @@
       'duration',
       'style'
     ])]),
-    t.showCombo ? (G(), K('div', z7e)) : De('', true),
+    t.showCombo ? (G(), K('div', W7e)) : De('', true),
     V('div', {
       class: nt([
         'constrainer',
@@ -89,7 +89,7 @@
       ]),
       viewBox: '0 0 110 110',
       style: an(d.headStyles)
-    }, t9e, 6))), 128))])], 4)]),
+    }, J7e, 6))), 128))])], 4)]),
     V('div', {class : 'constrainer transforms preserve-3d'}, [(G(true), K(gt, null, wn(t.lanes, (d, p) => (G(), wt(u, {
       key: p,
       style: an(d.styles),
@@ -98,8 +98,8 @@
       'style',
       'feedback'
     ]))), 128))]),
-    Ye(Ta, { name: 'cta' }, {
-      default: go(() => [t.showCta ? (G(), K('div', r9e, [V('div', s9e, [qe(V('p', i9e, null, 512), [[
+    Ye(Ea, { name: 'cta' }, {
+      default: go(() => [t.showCta ? (G(), K('div', t9e, [V('div', n9e, [qe(V('p', r9e, null, 512), [[
         f,
         'INFO.DISCRETE'
       ]])])])) : De('', true)]),
