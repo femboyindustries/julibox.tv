@@ -181,8 +181,8 @@ class $$Modfile {
   eases = [];
   #easesActive = [];
   #easesInactive = [];
-  
-  ease(beat, len, ease, ...modsArray) {
+
+  #ease(add, beat, len, ease, ...modsArray) {
     let mods = {};
     let modBuffer = null;
     
@@ -204,9 +204,18 @@ class $$Modfile {
       len: len,
       ease: ease,
       mods: mods,
-      transient: ease(1) < 0.5
+      transient: ease(1) < 0.5,
+      add: add
     });
   }
+  
+  ease(beat, len, ease, ...modsArray) {
+    this.#ease(false, beat, len, ease, ...modsArray);
+  }
+  add(beat, len, ease, ...modsArray) {
+    this.#ease(true, beat, len, ease, ...modsArray);
+  }
+
   set(beat, ...mods) {
     this.ease(beat, 0, $$eases.instant, ...mods)
   }
@@ -293,9 +302,14 @@ class $$Modfile {
         if (!e.transient) {
           for (let [mod, value] of Object.entries(e.mods)) {
             let old = this.#modValues[mod] || 0;
-            this.#modValues[mod] = value;
             modOffsets[mod] = 0;
-            e.mods[mod] = value - old;
+            if (e.add) {
+              this.#modValues[mod] = old + value;
+              e.mods[mod] = value;
+            } else {
+              this.#modValues[mod] = value;
+              e.mods[mod] = value - old;
+            }
           }
         }
       } else {

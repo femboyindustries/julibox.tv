@@ -43,7 +43,7 @@
 			"action": {
 				"type": "find-replace",
 				"find": "class vwe extends XI",
-				"replace": "${COMMON_JS}${MODFILE_JS};class vwe extends XI"
+				"replace": "${COMMON_JS};if(true){${MODFILE_JS};\n$$m.finalize()};class vwe extends XI"
 			}
 		},
 		{
