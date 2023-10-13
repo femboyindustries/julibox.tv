@@ -329,12 +329,16 @@ class $$Modfile {
       this.modBuffer[mod] = (this.#modValues[mod] || 0) + offset;
     }
   }
+
+  static sort(arr) {
+    return arr.map((s, i) => [s, i]).sort((a, b) => (b[0].b - a[0].b) || (b[1] - a[1])).map(([s, i]) => s);
+  }
   
   finalize() {
-    this.funcs.sort((a, b) => b.b - a.b);
-    this.funcEases.sort((a, b) => b.b - a.b);
-    this.perframes.sort((a, b) => b.b - a.b);
-    this.eases.sort((a, b) => b.b - a.b);
+    this.funcs = $$Modfile.sort(this.funcs);
+    this.funcEases = $$Modfile.sort(this.funcEases);
+    this.perframes = $$Modfile.sort(this.perframes);
+    this.eases = $$Modfile.sort(this.eases);
     
     this.#funcsQueue = [...this.funcs];
     this.#funcEasesInactive = [...this.funcEases];
