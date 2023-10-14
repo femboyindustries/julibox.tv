@@ -82,6 +82,12 @@ function $$getNoteRotationZ(y, time, lane) {
 
 let $$debug;
 
+let $$audio;
+let $$audioStarted = false;
+if ($$songPath !== "null") {
+  $$audio = new Audio($$songPath);
+}
+
 function $$update(component) {
   const visualsLayer = document.querySelector('.visuals');
   if (!visualsLayer) return; // hasn't loaded yet!
@@ -115,6 +121,11 @@ function $$update(component) {
   if ($$debug) {
     $$debug.innerText = `B${Math.floor(beat * 100) / 100} T${Math.floor((manager.now / 1000) * 100) / 100}` + '\n' +
       Object.entries($$m.modBuffer).map(([k, v]) => `${v}% ${k}`).join('\n');
+  }
+
+  if ($$audio && manager.hasStarted && !$$audioStarted) {
+    $$audioStarted = true;
+    $$audio.play();
   }
 }
 
@@ -162,9 +173,4 @@ function $$quantize(m) {
 
 function $$transforms(t) {
   return Object.entries(t).map(([k, v]) => `${k}(${v})`).join(' ');
-}
-
-if ($$songPath !== "null") {
-  let audio = new Audio($$songPath);
-  $$m.func(Number.MIN_VALUE, () => {audio.play()});
 }
