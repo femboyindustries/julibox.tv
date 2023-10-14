@@ -5,6 +5,7 @@
     ['rotateX', Math.floor($$m.get('rotationx') * 1000) / 1000 + 'deg'],
     ['rotateY', Math.floor($$m.get('rotationy') * 1000) / 1000 + 'deg'],
     ['rotateZ', Math.floor($$m.get('rotationz') * 1000) / 1000 + 'deg'],
+    ['scale', Math.floor(((1 - $$m.get('mini') / 200) * 1000)) / 1000],
   ];
 
   const transforms = $$transforms(transformObj);
