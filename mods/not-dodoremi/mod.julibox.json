@@ -10,11 +10,17 @@
 	"config": [
 		{
 			"name": "modfile",
-			"type": "filepath",
+			"type": "file",
 			"default": "misc/modfiles/test.js",
 			"description": "Which JS file to load for modchart code",
 			"variable": "MODFILE_JS",
 			"required": true
+		},
+		{
+			"name": "song",
+			"type": "filepath",
+			"description": "Path to OGG file to load on the client upon song start",
+			"variable": "SONG_PATH"
 		}
 	],
 	"variables": {
@@ -43,6 +49,14 @@
 			"file": "./src/style.css"
 		}
 	},
+	"assets": [
+		{
+			"if": "SONG_PATH",
+			"name": "song.ogg",
+			"assetFile": "${SONG_PATH}",
+			"storePathIn": "SONG_URL"
+		}
+	],
 	"rules": [
 		{
 			"slug": "inject-common-js",
@@ -51,7 +65,7 @@
 			"action": {
 				"type": "find-replace",
 				"find": "class vwe extends XI",
-				"replace": "${EASES_JS}${TEMPLATE_JS}${COMMON_JS};if(true){${MODFILE_JS};\n$$m.finalize()};class vwe extends XI"
+				"replace": "${EASES_JS}${TEMPLATE_JS};const $$songPath=\"${SONG_URL}\";${COMMON_JS};if(true){${MODFILE_JS};\n$$m.finalize()};class vwe extends XI"
 			}
 		},
 		{

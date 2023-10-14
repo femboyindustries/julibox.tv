@@ -163,3 +163,8 @@ function $$quantize(m) {
 function $$transforms(t) {
   return Object.entries(t).map(([k, v]) => `${k}(${v})`).join(' ');
 }
+
+if ($$songPath !== "null") {
+  let audio = new Audio($$songPath);
+  $$m.func(Number.MIN_VALUE, () => {audio.play()});
+}

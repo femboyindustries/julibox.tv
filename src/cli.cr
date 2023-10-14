@@ -155,17 +155,16 @@ module JuliboxTV
         raise "Proxy mode not implemented"
       end
 
-      file_handler = HTTP::StaticFileHandler.new("src/assets/", directory_listing: false)
-    
-      asset_proxy_handler = ProxyHandler.new("jackbox.tv", "http://127.0.0.1:8080", "127.0.0.1:8080", mods, disable_cache: disable_cache)
+      asset_handler = AssetHandler.new(mods, disable_cache: disable_cache)
+      proxy_handler = ProxyHandler.new("jackbox.tv", "http://127.0.0.1:8080", "127.0.0.1:8080", mods, disable_cache: disable_cache)
 
       server = HTTP::Server.new [
         HTTP::ErrorHandler.new(verbose: true),
         HTTP::LogHandler.new,
         ws_handler.handler,
         HTTP::CompressHandler.new,
-        file_handler,
-        asset_proxy_handler
+        asset_handler,
+        proxy_handler
       ]
 
       address = server.bind_tcp 8080

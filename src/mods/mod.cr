@@ -1,5 +1,6 @@
 require "json"
 require "semantic_version"
+require "random"
 require "../config.cr"
 
 module JuliboxTV
@@ -70,11 +71,11 @@ module JuliboxTV
     def self.substitute_variables(str : String, vars : Variables)
       str.gsub(/\${([a-zA-Z_-][a-zA-Z0-9_-]*)}/) do |_, regex|
         key = regex[1]
-        var = vars[key]?
         if !vars.has_key?(key)
           LOG.warn { "Mod uses undefined variable #{key}" }
+          return "null"
         end
-        var.to_s || "null"
+        vars[key].to_s
       end
     end
 
@@ -129,6 +130,61 @@ module JuliboxTV
       rules.map { |r| Rule.new r.as_h }
     end
 
+    class Asset
+      getter name : String
+
+      @cond_if : String?
+      @asset_file_str : String
+      getter asset_file : String = ""
+      getter path : String
+      @store_path_in : String?
+
+      getter enabled : Bool
+
+      def initialize(json : Hash(String, JSON::Any), mod_name : String)
+        @name = (json["name"]?.try &.as_s?) || Random::Secure.hex(8)
+        @cond_if = json["if"]?.try &.as_s?
+        @asset_file_str = json["assetFile"].as_s
+        @store_path_in = json["storePathIn"]?.try &.as_s?
+        @path = (json["path"]?.try &.as_s?) || "/#{mod_name}/#{@name}"
+
+        @enabled = false
+      end
+
+      def evaluate!(variables : Variables)
+        @enabled = true
+        if @cond_if
+          var = variables[@cond_if]?
+          @enabled = (var != nil && var != "" && var != false)
+        end
+
+        return if !@enabled
+
+        @asset_file = Mod.substitute_variables(@asset_file_str, variables)
+        if @store_path_in
+          return {@store_path_in.not_nil!, @path}
+        end
+      end
+
+      def asset_io(&: IO ->)
+        raise "Not enabled" if !enabled
+        File.open(@asset_file) do |io|
+          yield io
+        end
+      end
+
+      def asset_str
+        raise "Not enabled" if !enabled
+        File.read(@asset_file)
+      end
+    end
+
+    getter assets : Array(Asset) = [] of Asset
+
+    def parse_assets(assets : Array(JSON::Any))
+      assets.map { |r| Asset.new(r.as_h, slug) }
+    end
+
     getter log : Log
 
     def initialize(@filepath : Path, quiet : Bool = false)
@@ -142,6 +198,7 @@ module JuliboxTV
       @config = parse_config(json["config"].as_a) if json["config"]?
       @variable_definitions = parse_variables(json["variables"].as_h) if json["variables"]?
       @rules = parse_rules(json["rules"].as_a) if json["rules"]?
+      @assets = parse_assets(json["assets"].as_a) if json["assets"]?
 
       @log = LOG.for(slug)
       @log.info { "Loaded #{display_name.colorize(:cyan)} #{version} w/ #{rules.size} rules" } if !quiet
@@ -154,11 +211,18 @@ module JuliboxTV
     end
 
     def evaluate_variables!
-
       variable_definitions.each do |name, var|
         val = var.evaluate @variables
         @variables[name] = val
         @log.debug { "var.#{name.colorize(:cyan)} = #{JuliboxTV.trunc val.to_s}" }
+      end
+      assets.each do |asset|
+        res = asset.evaluate!(@variables)
+        if res
+          name, val = res.not_nil!
+          @variables[name] = val
+          @log.debug { "var.#{name.colorize(:cyan)} = #{JuliboxTV.trunc val.to_s}" }
+        end
       end
       @variables_evaluated = true
 

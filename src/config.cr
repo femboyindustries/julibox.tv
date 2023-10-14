@@ -47,7 +47,8 @@ module JuliboxTV::Config
       Boolean
       String
       Number
-      Filepath
+      Filepath # path to a file, stored as a Path
+      File     # path to a file, stored as a String of the contents
     end
 
     getter name : String
@@ -77,6 +78,8 @@ module JuliboxTV::Config
       when ConfigType::Number
         value.to_f64
       when ConfigType::Filepath
+        Path[value].normalize.to_s
+      when ConfigType::File
         File.read(Path[value].normalize)
       else
         raise NotImplementedError.new "Parser for #{@type} not yet implemented"
