@@ -144,7 +144,7 @@ module JuliboxTV
 
         case mock_game
         when "nopus-opus"
-          mocker = NopusOpusMocker.new lobby
+          mocker = NopusOpusMocker.new(lobby, mock_args)
         else
           raise "No mocker found for #{mock_game}"
         end

@@ -2,8 +2,9 @@ require "./mocker.cr"
 
 module JuliboxTV
   class NopusOpusMocker < Mocker
-    def initialize(@lobby : LobbyInfo)
-      initialize(@lobby, File.read("src/assets/chart.json"))
+    def initialize(@lobby : LobbyInfo, args : Array(String))
+      chart = args[0]?.not_nil!("Chart path not provided!")
+      initialize(@lobby, File.read(chart))
     end
     def initialize(@lobby : LobbyInfo, chart_json : String)
       @chart = JSON.parse(chart_json)
