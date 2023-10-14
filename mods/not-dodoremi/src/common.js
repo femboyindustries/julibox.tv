@@ -172,5 +172,5 @@ function $$quantize(m) {
 }
 
 function $$transforms(t) {
-  return Object.entries(t).map(([k, v]) => `${k}(${v})`).join(' ');
+  return t.map(([k, v]) => `${k}(${v})`).join(' ');
 }

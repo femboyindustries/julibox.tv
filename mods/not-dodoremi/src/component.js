@@ -25,11 +25,11 @@ at({
     lanes() {
       return this.manager.lanes.map((t, e) => {
         const time = this.manager.progress * this.manager.duration / 1000;
-        const transforms = {
-          translateZ: `${$$getNoteZ(0, time, e)}px`,
-          rotateY: `${$$getNoteRotationY(0, time, e)}deg`
-        }
-        const laneTransforms = $$transforms({translate: '-50%', ...transforms});
+        const transforms = [
+          ['translateZ', `${$$getNoteZ(0, time, e)}px`],
+          ['rotateY', `${$$getNoteRotationY(0, time, e)}deg`]
+        ]
+        const laneTransforms = $$transforms([['translate', '-50%'], ...transforms]);
         return {
           isActive: t.isActive,
           isHolding: t.activeInput !== void 0,
@@ -67,20 +67,20 @@ at({
             const y = (n.y - this.manager.progress) * this.manager.duration / 1000;
             const time = this.manager.progress * this.manager.duration / 1000;
             const quant = $$quantize($$getMeasure(this.manager, n.start));
-            const transforms = {
-              scaleX: `${$$getNoteScaleX(y, time, r.lane)}`,
-              scaleZ: `${$$getNoteScaleZ(y, time, r.lane)}`,
-              rotateX: `${$$getNoteRotationX(y, time, r.lane)}deg`,
-              rotateY: `${$$getNoteRotationY(y, time, r.lane)}deg`,
-              translateZ: `${$$getNoteZ(y, time, r.lane)}px`
-            }
-            const noteTransforms = $$transforms({
-              translate: '-50%,50%',
-              scaleY: `${$$getNoteScaleY(y, time, r.lane)}`,
-              rotateZ: `${$$getNoteRotationZ(y, time, r.lane)}deg`,
-              ...transforms
-            });
-            const holdTransforms = $$transforms({translate: '-50%', ...transforms});
+            const transforms = [
+              ['rotateX', `${$$getNoteRotationX(y, time, r.lane)}deg`],
+              ['rotateY', `${$$getNoteRotationY(y, time, r.lane)}deg`],
+              ['scaleX', `${$$getNoteScaleX(y, time, r.lane)}`],
+              ['scaleZ', `${$$getNoteScaleZ(y, time, r.lane)}`],
+              ['translateZ', `${$$getNoteZ(y, time, r.lane)}px`]
+            ];
+            const noteTransforms = $$transforms([
+              ['translate', '-50%,50%'],
+              ['rotateZ', `${$$getNoteRotationZ(y, time, r.lane)}deg`],
+              ...transforms,
+              ['scaleY', `${$$getNoteScaleY(y, time, r.lane)}`],
+            ]);
+            const holdTransforms = $$transforms([['translate', '-50%'], ...transforms]);
             const i = {
               classes: [`quant-${quant}`, 'preserve-3d'],
               key: r.key,

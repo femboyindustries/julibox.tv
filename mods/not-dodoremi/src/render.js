@@ -1,14 +1,14 @@
 (t, e, n, r, s, i) => {
   $$update(t);
 
-  const transformObj = {
-    rotateX: Math.floor($$m.get('rotationx') * 1000) / 1000 + 'deg',
-    rotateY: Math.floor($$m.get('rotationy') * 1000) / 1000 + 'deg',
-    rotateZ: Math.floor($$m.get('rotationz') * 1000) / 1000 + 'deg',
-  }
+  const transformObj = [
+    ['rotateX', Math.floor($$m.get('rotationx') * 1000) / 1000 + 'deg'],
+    ['rotateY', Math.floor($$m.get('rotationy') * 1000) / 1000 + 'deg'],
+    ['rotateZ', Math.floor($$m.get('rotationz') * 1000) / 1000 + 'deg'],
+  ];
 
   const transforms = $$transforms(transformObj);
-  const transformsConstrainer = $$transforms({translate: '-50%', ...transformObj});
+  const transformsConstrainer = $$transforms([['translate', '-50%'], ...transformObj]);
 
   document.querySelectorAll('.beatmap .visuals').forEach(elem => elem.style.perspective = `${$$m.get('fov')}px`);
   document.querySelectorAll('.transforms.constrainer').forEach(elem => elem.style.transform = transformsConstrainer);
