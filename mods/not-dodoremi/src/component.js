@@ -39,7 +39,7 @@ at({
             width: `${this.layout.hit}%`,
             left: `calc(${this.layout.lanes[e].center}% + ${$$getNoteX(0, time, e)}px)`,
             bottom: `calc(var(--judgement-position) - ${$$getNoteY(0, time, e)}px)`,
-            transform: laneTransforms,
+            //transform: laneTransforms,
             ['transform-style']: 'preserve-3d'
           }
         }
@@ -76,6 +76,8 @@ at({
             ];
             const noteTransforms = $$transforms([
               ['translate', '-50%,50%'],
+              ['skewX', `${$$getNoteSkewX(y, time, r.lane)}deg`],
+              ['skewY', `${$$getNoteSkewY(y, time, r.lane)}deg`],
               ['rotateZ', `${$$getNoteRotationZ(y, time, r.lane)}deg`],
               ...transforms,
               ['scaleY', `${$$getNoteScaleY(y, time, r.lane)}`],

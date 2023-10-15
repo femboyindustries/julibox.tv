@@ -40,6 +40,8 @@
   const rings = document.querySelectorAll('svg.ring');
   rings.forEach((ring, i) => {
     const transforms = [
+      ['skewX', `${$$getNoteSkewX(0, time, i)}deg`],
+      ['skewY', `${$$getNoteSkewY(0, time, i)}deg`],
       ['rotateX', `${$$getNoteRotationX(0, time, i)}deg`],
       ['rotateY', `${$$getNoteRotationY(0, time, i)}deg`],
       ['rotateZ', `${$$getNoteRotationZ(0, time, i)}deg`],

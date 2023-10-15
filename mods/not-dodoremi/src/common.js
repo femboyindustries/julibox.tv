@@ -79,6 +79,20 @@ function $$getNoteRotationZ(y, time, lane) {
     $$m.get(`confusionoffsetz${lane}`)
   )
 }
+function $$getNoteSkewX(y, time, lane) {
+  return (
+    $$m.get('noteskew') +
+    $$m.get(`noteskew${lane}`) +
+    $$m.get('noteskewx') +
+    $$m.get(`noteskewx${lane}`)
+  )
+}
+function $$getNoteSkewY(y, time, lane) {
+  return (
+    $$m.get('noteskewy') +
+    $$m.get(`noteskewy${lane}`)
+  )
+}
 
 let $$debug;
 
