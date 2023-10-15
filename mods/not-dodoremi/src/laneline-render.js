@@ -1,5 +1,5 @@
 (t, e, n, r, s, i) => {
-  if (!$$manager) return;
+  if (!$$manager) return E7e(t, e, n, r, s, i);
 
   const screenHeight = document.querySelector('.recording').clientHeight;
 
@@ -35,6 +35,24 @@
   const svgs = document.querySelectorAll('svg.line');
   svgs.forEach(svg => {
     svg.setAttribute('viewBox', viewBox);
+  });
+
+  const rings = document.querySelectorAll('svg.ring');
+  rings.forEach((ring, i) => {
+    const transforms = [
+      ['rotateX', `${$$getNoteRotationX(0, time, i)}deg`],
+      ['rotateY', `${$$getNoteRotationY(0, time, i)}deg`],
+      ['rotateZ', `${$$getNoteRotationZ(0, time, i)}deg`],
+      ['scaleX', `${$$getNoteScaleX(0, time, i)}`],
+      ['scaleY', `${$$getNoteScaleY(0, time, i)}`],
+      ['scaleZ', `${$$getNoteScaleZ(0, time, i)}`],
+      ['translateZ', `${$$getNoteZ(0, time, i)}px`]
+    ];
+    const ringTransforms = $$transforms([
+      ['translateY', '50%'],
+      ...transforms,
+    ]);
+    ring.style.transform = ringTransforms;
   });
 
   return G(),
