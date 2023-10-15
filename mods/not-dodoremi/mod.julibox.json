@@ -36,6 +36,14 @@
 			"type": "file",
 			"file": "./src/render.js"
 		},
+		"LANELINE_RENDER_JS": {
+			"type": "file",
+			"file": "./src/laneline-render.js"
+		},
+		"LANELINE_COMPONENT_JS": {
+			"type": "file",
+			"file": "./src/laneline-component.js"
+		},
 		"EASES_JS": {
 			"type": "file",
 			"file": "./src/ease.js"
@@ -86,6 +94,24 @@
 				"type": "find-replace",
 				"find": "\"render\",s9e",
 				"replace": "\"render\",${RENDER_JS}"
+			}
+		},
+		{
+			"slug": "inject-laneline-render-js",
+			"filename": "98913b44.js",
+			"action": {
+				"type": "find-replace",
+				"find": "\"render\",E7e",
+				"replace": "\"render\",${LANELINE_RENDER_JS}"
+			}
+		},
+		{
+			"slug": "inject-laneline-component-js",
+			"filename": "98913b44.js",
+			"action": {
+				"type": "find-replace",
+				"find": "const T7e=Je(g7e",
+				"replace": ";const $$lanelineComponent=${LANELINE_COMPONENT_JS};const T7e=Je($$lanelineComponent"
 			}
 		},
 		{

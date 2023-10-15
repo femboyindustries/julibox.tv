@@ -88,6 +88,8 @@ if ($$songPath !== "null") {
   $$audio = new Audio($$songPath);
 }
 
+let $$manager;
+
 function $$update(component) {
   const visualsLayer = document.querySelector('.visuals');
   if (!visualsLayer) return; // hasn't loaded yet!
@@ -114,6 +116,7 @@ function $$update(component) {
   }
 
   const manager = component.manager;
+  $$manager = manager;
   const beat = $$getBeat(manager, manager.now);
 
   $$m.update(beat);

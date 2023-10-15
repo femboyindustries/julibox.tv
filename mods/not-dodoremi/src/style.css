@@ -70,3 +70,8 @@
 .head, .hold {
   transform-style: preserve-3d;
 }
+
+.line[data-v-e8de279d] {
+  left: -150% !important;
+  width: 400% !important;
+}
