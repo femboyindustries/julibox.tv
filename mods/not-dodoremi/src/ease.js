@@ -26,6 +26,56 @@ e.blendease = (fn1, fn2) => (x) => {
   return (1 - mixFactor) * fn1(x) + mixFactor * fn2(x);
 }
 
+// Function for caching params
+// sorry! I don't know how to get around the "this" keyword, so the functions just. exist now
+function param1cache(param1) {
+  return this.cache[param1] = this.cache[param1] || ((x) => {
+    return this.fn(x, param1);
+  });
+}
+
+function param2cache(param1, param2) {
+  this.cache[param1] = this.cache[param1] || {};
+  return this.cache[param1][param2] = this.cache[param1][param2] || ((x) => {
+    return this.fn(x, param1, param2);
+  });
+}
+
+// is. is that how metatables work in javascripe. I feel like this is a tiny bit redundant but I'll keep it mirin-like
+let param1mt = {
+  call: function(x, param1) {
+    return this.fn(x, param1 || this.dp1);
+  },
+  param: param1cache,
+  params: param1cache
+}
+
+let param2mt = {
+  call: function(x, param1, param2) {
+    return this.fn(x, param1 || this.dp1, param2 || this.dp2);
+  },
+  param: param2cache,
+  params: param2cache
+}
+
+// Function for declaring an easing function with custom parameters
+function with1param(fn, defaultparam1) {
+  return Object.assign({
+    fn: fn,
+    dp1: defaultparam1,
+    cache: {}
+  }, param1mt);
+}
+
+function with2params(fn, defaultparam1, defaultparam2) {
+  return Object.assign({
+    fn: fn,
+    dp1: defaultparam1,
+    dp2: defaultparam2,
+    cache: {}
+  }, param2mt);
+}
+
 e.bounce = (t) => 4 * t * (1 - t)
 e.tri = (t) => 1 - abs(2 * t - 1);
 e.bell = (t) => inOutQuint(tri(t));
@@ -36,20 +86,35 @@ e.pulse = (t) => t < .5 ? e.tap(t * 2) : -e.pop(t * 2 - 1);
 e.spike = (t) => exp(-10 * abs(2 * t - 1));
 e.inverse = (t) => t * t * (1 - t) * (1 - t) / (0.5 - t);
 
-let popElasticInternal = (t, damp, count) =>
-	(1000 ^ -pow(t, damp) - 0.001) * sin(count * pi * t);
+let popElasticInternal = (t, damp, count) => {
+  return (Math.pow(1000, -(Math.pow(t, damp))) - 0.001) * sin(count * pi * t);
+}
 
-let tapElasticInternal = (t, damp, count) =>
-	(1000 ^ -(pow(1 - t, damp)) - 0.001) * sin(count * pi * (1 - t));
+let fofElasticInternal = (t, damp, count) => { // don't ask, I stole ease.lua from another file and felt importing it
+  return (Math.pow(1000, -(Math.pow(t, damp))) - 0.001) * cos(count * pi * t);
+}
 
-let pulseElasticInternal = (t, damp, count) =>
-	t < .5
-	  ? tapElasticInternal(t * 2, damp, count)
-	  : -popElasticInternal(t * 2 - 1, damp, count);
+let tapElasticInternal = (t, damp, count) => {
+  return (Math.pow(1000, -(Math.pow(1 - t, damp))) - 0.001) * sin(count * pi * (1 - t));
+}
 
-e.popElastic = (x) => popElasticInternal(x, 1.4, 6);
-e.tapElastic = (x) => tapElasticInternal(x, 1.4, 6);
-e.pulseElastic = (x) => pulseElasticInternal(x, 1.4, 6);
+let babElasticInternal = (t, damp, count) => {
+  return (Math.pow(1000, -(Math.pow(1 - t, damp))) - 0.001) * cos(count * pi * (1 - t));
+}
+
+let pulseElasticInternal = (t, damp, count) => {
+  if (t < 0.5) {
+    return tapElasticInternal(t * 2, damp, count);
+  } else {
+    return -popElasticInternal(t * 2 - 1, damp, count);
+  }
+}
+
+e.popElastic = with2params(popElasticInternal, 1.4, 6);
+e.tapElastic = with2params(tapElasticInternal, 1.4, 6);
+e.fofElastic = with2params(fofElasticInternal, 1.4, 6);
+e.babElastic = with2params(babElasticInternal, 1.4, 6);
+e.pulseElastic = with2params(pulseElasticInternal, 1.4, 6);
 
 let impulseInternal = (t, damp) => {
   t = pow(t, damp);
@@ -181,40 +246,54 @@ e.outInSine = (t) =>
 		? outSine(t * 2) * 0.5
 	  : inSine(t * 2 - 1) * 0.5 + 0.5;
 
-let outElasticInternal = (t, a, p) =>
-	a * pow(2, -10 * t) * sin((t - p / (2 * pi) * asin(1/a)) * 2 * pi / p) + 1;
-let inElasticInternal = (t, a, p) =>
-	1 - outElasticInternal(1 - t, a, p);
-let inOutElasticInternal = (t, a, p) =>
-	t < 0.5
-		? 0.5 * inElasticInternal(t * 2, a, p)
-		: 0.5 + 0.5 * outElasticInternal(t * 2 - 1, a, p);
-let outInElasticInternal = (t, a, p) =>
-	t < 0.5
-		? 0.5 * outElasticInternal(t * 2, a, p)
-		: 0.5 + 0.5 * inElasticInternal(t * 2 - 1, a, p);
+let outElasticInternal = (t, a, p) => {
+  return a * pow(2, -10 * t) * sin((t - p / (2 * pi) * asin(1 / a)) * 2 * pi / p) + 1;
+}
 
-e.inElastic = (x) => inElasticInternal(x, 1, 0.3);
-e.outElastic = (x) => outElasticInternal(x, 1, 0.3);
-e.inOutElastic = (x) => inOutElasticInternal(x, 1, 0.3);
-e.outInElastic = (x) => outInElasticInternal(x, 1, 0.3);
+let inElasticInternal = (t, a, p) => {
+  return 1 - outElasticInternal(1 - t, a, p);
+}
 
-e.inBackInternal = (t, a) => t * t * (a * t + t - a);
-e.outBackInternal = (t, a) => {
+let inOutElasticInternal = (t, a, p) => {
+  return t < 0.5
+    ? 0.5 * inElasticInternal(t * 2, a, p)
+    : 0.5 + 0.5 * outElasticInternal(t * 2 - 1, a, p);
+}
+
+let outInElasticInternal = (t, a, p) => {
+  return t < 0.5
+    ? 0.5 * outElasticInternal(t * 2, a, p)
+    : 0.5 + 0.5 * inElasticInternal(t * 2 - 1, a, p);
+}
+
+e.inElastic = with2params(inElasticInternal, 1, 0.3);
+e.outElastic = with2params(outElasticInternal, 1, 0.3);
+e.inOutElastic = with2params(inOutElasticInternal, 1, 0.3);
+e.outInElastic = with2params(outInElasticInternal, 1, 0.3);
+
+let inBackInternal = (t, a) => {
+  return t * t * (a * t + t - a);
+}
+
+let outBackInternal = (t, a) => {
   t = t - 1;
   return t * t * ((a + 1) * t + a) + 1;
-};
-e.inOutBackInternal = (t, a) =>
-	t < 0.5
-		? 0.5 * inBackInternal(t * 2, a)
-		: 0.5 + 0.5 * outBackInternal(t * 2 - 1, a);
-e.outInBackInternal = (t, a) =>
-	t < 0.5
-		? 0.5 * outBackInternal(t * 2, a)
-		: 0.5 + 0.5 * inBackInternal(t * 2 - 1, a);
+}
 
-e.inBack = (x) => inBackInternal(x, 1.70158);
-e.outBack = (x) => outBackInternal(x, 1.70158);
-e.inOutBack = (x) => inOutBackInternal(x, 1.70158);
-e.outInBack = (x) => outInBackInternal(x, 1.70158);
+let inOutBackInternal = (t, a) => {
+  return t < 0.5
+    ? 0.5 * inBackInternal(t * 2, a)
+    : 0.5 + 0.5 * outBackInternal(t * 2 - 1, a);
+}
+
+let outInBackInternal = (t, a) => {
+  return t < 0.5
+    ? 0.5 * outBackInternal(t * 2, a)
+    : 0.5 + 0.5 * inBackInternal(t * 2 - 1, a);
+}
+
+e.inBack = with1param(inBackInternal, 1.70158);
+e.outBack = with1param(outBackInternal, 1.70158);
+e.inOutBack = with1param(inOutBackInternal, 1.70158);
+e.outInBack = with1param(outInBackInternal, 1.70158);
 }
