@@ -131,6 +131,7 @@ function $$update(component) {
     node.style.fontSize = '16px';
     node.style.textAlign = 'left';
     node.style.fontFamily = 'monospace';
+    node.style.whiteSpace = 'pre-wrap';
     visualsLayer.appendChild(node);
     $$debug = node;
   }
@@ -151,8 +152,10 @@ function $$update(component) {
   $$m.update(beat);
 
   if ($$debug) {
-    $$debug.innerText = `B${Math.floor(beat * 100) / 100} T${Math.floor((manager.now / 1000) * 100) / 100}` + '\n' +
-      Object.entries($$m.modBuffer).map(([k, v]) => `${v}% ${k}`).join('\n');
+    $$debug.innerText =
+      `| beat ${beat.toFixed(2)}` + '\n' +
+      `| time ${(manager.now / 1000).toFixed(2)}` + '\n' +
+      Object.entries($$m.modBuffer).map(([k, v]) => `${v.toFixed(2).padStart(7, ' ')}% ${k}`).join('\n');
   }
 
   if ($$audio && manager.hasStarted && !$$audioStarted) {
