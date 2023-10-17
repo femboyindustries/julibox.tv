@@ -1,9 +1,15 @@
 drunk
 drunkoffset
+tandrunk
+tandrunkoffset
 tipsy
 tipsyoffset
+tantipsy
+tantipsyoffset
 bumpy
 bumpyoffset
+tanbumpy
+tanbumpyoffset
 movex[0-3]
 movey[0-3]
 movez[0-3]

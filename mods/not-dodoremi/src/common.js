@@ -10,7 +10,8 @@ let $$m = new $$Modfile();
 // outputs pixels
 function $$getNoteX(y, time, lane) {
   return (
-    $$m.get('drunk') / 100 * Math.cos(time + y * 2 + lane * 0.2 + $$m.get('drunkoffset') / 100 * Math.PI) * $$noteSize * 0.5 +
+    $$m.get('drunk') / 100    * Math.cos(time + y * 2 + lane * 0.2 + $$m.get('drunkoffset') / 100    * Math.PI) * $$noteSize * 0.5 +
+    $$m.get('tandrunk') / 100 * Math.tan(time + y * 2 + lane * 0.2 + $$m.get('tandrunkoffset') / 100 * Math.PI) * $$noteSize * 0.5 +
     $$m.get('movex') / 100 * $$laneWidth + 
     $$m.get(`movex${lane}`) / 100 * $$laneWidth +
     $$m.get('flip') / 100 * $$laneWidth * (3 - lane * 2) +
@@ -20,7 +21,8 @@ function $$getNoteX(y, time, lane) {
 // outputs pixels
 function $$getNoteY(y, time, lane) {
   return (
-    $$m.get('tipsy') / 100 * Math.cos(time * 1.2 + lane * 1.8 + $$m.get('tipsyoffset') / 100 * Math.PI) * $$noteSize * 0.4 +
+    $$m.get('tipsy') / 100    * Math.cos(time * 1.2 + lane * 1.8 + $$m.get('tipsyoffset') / 100    * Math.PI) * $$noteSize * 0.4 +
+    $$m.get('tantipsy') / 100 * Math.tan(time * 1.2 + lane * 1.8 + $$m.get('tantipsyoffset') / 100 * Math.PI) * $$noteSize * 0.4 +
     $$m.get('movey') / 100 * $$laneWidth + 
     $$m.get(`movey${lane}`) / 100 * $$laneWidth +
     $$m.get('wave') / 100 * Math.sin(y * 6) * $$noteSize * 0.7
@@ -29,7 +31,8 @@ function $$getNoteY(y, time, lane) {
 // outputs pixels
 function $$getNoteZ(y, time, lane) {
   return (
-    $$m.get('bumpy') / 100 * Math.sin(y * 6 + $$m.get('bumpyoffset') / 100 * Math.PI) * 40 +
+    $$m.get('bumpy') / 100    * Math.sin(y * 6 + $$m.get('bumpyoffset')    / 100 * Math.PI) * 40 +
+    $$m.get('tanbumpy') / 100 * Math.tan(y * 6 + $$m.get('tanbumpyoffset') / 100 * Math.PI) * 40 +
     $$m.get('movez') / 100 * $$laneWidth +
     $$m.get(`movez${lane}`) / 100 * $$laneWidth
   );
