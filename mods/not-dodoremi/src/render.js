@@ -89,16 +89,17 @@
         d.classes
       ]),
       viewBox: '0 0 110 110',
-      style: an(d.headStyles)
+      style: an(d.headStyles),
+      ['data-v-546beebe']: '' // idk why i have to do this manually but oh well
     }, [
       //V('circle', {
       //  cx: '55',
       //  cy: '55',
       //  r: '53'
       //}, null, - 1)
-      V('path', {
+      tN(() => V('path', {
         d: 'M 55,105 4,54 22,36 42,56 V 3 H 69 V 56 L 88,36 106,54 Z'
-      }, null, - 1)
+      }, null, - 1))
     ], 6))), 128))])], 4)]),
     V('div', {class : 'constrainer transforms preserve-3d'}, [(G(true), K(gt, null, wn(t.lanes, (d, p) => (G(), Ot(u, {
       key: p,

@@ -93,6 +93,21 @@ function $$getNoteSkewY(y, time, lane) {
     $$m.get(`noteskewy${lane}`)
   )
 }
+// assuming ldur, down sprite
+function $$getArrowOrientation(lane) {
+  switch(lane) {
+    case 0:
+      return 90;
+    case 1:
+      return 0;
+    case 2:
+      return 180;
+    case 3:
+      return -90;
+    default:
+      return 45 + 90 * lane; // hehe
+  }
+}
 
 let $$debug;
 
