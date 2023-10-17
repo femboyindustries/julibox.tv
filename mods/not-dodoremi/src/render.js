@@ -37,7 +37,7 @@
       ])
     }, [
       Y7e,
-      (G(true), K(gt, null, wn(t.lanes, (d, p) => (G(), wt(a, {
+      (G(true), K(gt, null, wn(t.lanes, (d, p) => (G(), Ot(a, {
         key: p,
         style: an(d.styles),
         feedback: d.feedback,
@@ -63,7 +63,7 @@
       ]),
       style: an(d.holdStyles)
     }, null, 6)) : De('', true)], 64))), 128))])], 4)]),
-    V('div', {class : 'constrainer transforms preserve-3d'}, [(G(true), K(gt, null, wn(t.lanes, (d, p) => (G(), wt(l, {
+    V('div', {class : 'constrainer transforms preserve-3d'}, [(G(true), K(gt, null, wn(t.lanes, (d, p) => (G(), Ot(l, {
       key: p,
       style: an(d.styles),
       feedback: d.feedback,
@@ -91,7 +91,7 @@
       viewBox: '0 0 110 110',
       style: an(d.headStyles)
     }, J7e, 6))), 128))])], 4)]),
-    V('div', {class : 'constrainer transforms preserve-3d'}, [(G(true), K(gt, null, wn(t.lanes, (d, p) => (G(), wt(u, {
+    V('div', {class : 'constrainer transforms preserve-3d'}, [(G(true), K(gt, null, wn(t.lanes, (d, p) => (G(), Ot(u, {
       key: p,
       style: an(d.styles),
       feedback: d.feedback
