@@ -1,9 +1,9 @@
 at({
   components: {
     Beatlines: QI,
-    LaneLine: T7e,
-    LaneRing: $7e,
-    LaneText: q7e
+    LaneLine: k8e,
+    LaneRing: V8e,
+    LaneText: z8e
   },
   props: {
     manager: {

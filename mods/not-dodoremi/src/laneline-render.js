@@ -57,7 +57,7 @@
     ring.style.transform = ringTransforms;
   });
 
-  return G(),
+  return V(),
   K(
     'div',
     {
@@ -71,7 +71,7 @@
     },
     [
       (
-        G(),
+        V(),
         K(
           'svg',
           {
@@ -79,7 +79,7 @@
             class : 'line'
           },
           [
-            V('path', {
+            G('path', {
               ref: 'dynamic',
               class : 'base straight',
               d: d
