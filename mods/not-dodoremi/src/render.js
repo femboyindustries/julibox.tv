@@ -15,20 +15,20 @@
   document.querySelectorAll('.transforms.constrainer').forEach(elem => elem.style.transform = transformsConstrainer);
   document.querySelectorAll('.transforms:not(.constrainer)').forEach(elem => elem.style.transform = transforms);
 
-  const o = We('Beatlines'), a = We('LaneLine'), l = We('LaneRing'), u = We('LaneText'), f = fn('t');
-  return V(), K('div', {class: 'visuals'}, [
-    G('div', {class : 'scroll-wrapper'}, [ze(o, {
+  const o = Ve('Beatlines'), a = Ve('LaneLine'), l = Ve('LaneRing'), u = Ve('LaneText'), f = fn('t');
+  return q(), Y('div', {class: 'visuals'}, [
+    U('div', {class : 'scroll-wrapper'}, [We(o, {
       class: 'scroll-container',
       guide: t.manager.guide,
       duration: t.manager.duration,
-      style: an(t.scrollStyles)
+      style: rn(t.scrollStyles)
     }, null, 8, [
       'guide',
       'duration',
       'style'
     ])]),
-    t.showCombo ? (V(), K('div', W7e)) : De('', true),
-    G('div', {
+    t.showCombo ? (q(), Y('div', OAe)) : Me('', true),
+    U('div', {
       class: nt([
         'constrainer',
         t.homeClasses,
@@ -36,10 +36,10 @@
         'preserve-3d'
       ])
     }, [
-      Y7e,
-      (V(true), K(gt, null, wn(t.lanes, (d, p) => (V(), Ot(a, {
+      CAe,
+      (q(true), Y(pt, null, vn(t.lanes, (d, p) => (q(), At(a, {
         key: p,
-        style: an(d.styles),
+        style: rn(d.styles),
         feedback: d.feedback,
         index: p,
         'is-active': d.isActive,
@@ -52,20 +52,20 @@
         'is-holding'
       ]))), 128))
     ], 2),
-    G('div', {class : 'scroll-wrapper clipped transforms preserve-3d'}, [G('div', {
+    U('div', {class : 'scroll-wrapper clipped transforms preserve-3d'}, [U('div', {
       class: 'scroll-container preserve-3d',
-      style: an(t.scrollStyles)
-    }, [G('div', {class : 'constrainer preserve-3d'}, [(V(true), K(gt, null, wn(t.inputs, d => (V(), K(gt, { key: d.key }, [d.holdStyles ? (V(), K('div', {
+      style: rn(t.scrollStyles)
+    }, [U('div', {class : 'constrainer preserve-3d'}, [(q(true), Y(pt, null, vn(t.inputs, d => (q(), Y(pt, { key: d.key }, [d.holdStyles ? (q(), Y('div', {
       key: 0,
       class: nt([
         'hold',
         d.classes
       ]),
-      style: an(d.holdStyles)
-    }, null, 6)) : De('', true)], 64))), 128))])], 4)]),
-    G('div', {class : 'constrainer transforms preserve-3d'}, [(V(true), K(gt, null, wn(t.lanes, (d, p) => (V(), Ot(l, {
+      style: rn(d.holdStyles)
+    }, null, 6)) : Me('', true)], 64))), 128))])], 4)]),
+    U('div', {class : 'constrainer transforms preserve-3d'}, [(q(true), Y(pt, null, vn(t.lanes, (d, p) => (q(), At(l, {
       key: p,
-      style: an(d.styles),
+      style: rn(d.styles),
       feedback: d.feedback,
       hotkey: d.hotkey,
       index: p,
@@ -79,41 +79,41 @@
       'is-active',
       'is-holding'
     ]))), 128))]),
-    G('div', {class : 'scroll-wrapper transforms preserve-3d'}, [G('div', {
+    U('div', {class : 'scroll-wrapper transforms preserve-3d'}, [U('div', {
       class: 'scroll-container preserve-3d',
-      style: an(t.scrollStyles)
-    }, [G('div', {class : 'constrainer preserve-3d'}, [(V(true), K(gt, null, wn(t.inputs, d => (V(), K('svg', {
+      style: rn(t.scrollStyles)
+    }, [U('div', {class : 'constrainer preserve-3d'}, [(q(true), Y(pt, null, vn(t.inputs, d => (q(), Y('svg', {
       key: d.key,
       class: nt([
         'head',
         d.classes
       ]),
       viewBox: '0 0 110 110',
-      style: an(d.headStyles),
+      style: rn(d.headStyles),
       ['data-v-546beebe']: '' // idk why i have to do this manually but oh well
     }, [
-      //G('circle', {
+      //U('circle', {
       //  cx: '55',
       //  cy: '55',
       //  r: '53'
       //}, null, - 1)
-      tN(() => G('path', {
+      uN(() => U('path', {
         d: 'M 55,105 4,54 22,36 42,56 V 3 H 69 V 56 L 88,36 106,54 Z'
       }, null, - 1))
     ], 6))), 128))])], 4)]),
-    G('div', {class : 'constrainer transforms preserve-3d'}, [(V(true), K(gt, null, wn(t.lanes, (d, p) => (V(), Ot(u, {
+    U('div', {class : 'constrainer transforms preserve-3d'}, [(q(true), Y(pt, null, vn(t.lanes, (d, p) => (q(), At(u, {
       key: p,
-      style: an(d.styles),
+      style: rn(d.styles),
       feedback: d.feedback
     }, null, 8, [
       'style',
       'feedback'
     ]))), 128))]),
-    ze(Ea, { name: 'cta' }, {
-      default: go(() => [t.showCta ? (V(), K('div', c9e, [G('div', l9e, [qe(G('p', u9e, null, 512), [[
+    We(Ea, { name: 'cta' }, {
+      default: go(() => [t.showCta ? (q(), Y('div', $Ae, [U('div', LAe, [qe(U('p', FAe, null, 512), [[
         f,
         'INFO.DISCRETE'
-      ]])])])) : De('', true)]),
+      ]])])])) : Me('', true)]),
       _: 1
     })
   ]);

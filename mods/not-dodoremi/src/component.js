@@ -1,9 +1,9 @@
-at({
+rt({
   components: {
-    Beatlines: QI,
-    LaneLine: k8e,
-    LaneRing: V8e,
-    LaneText: z8e
+    Beatlines: ak,
+    LaneLine: rAe,
+    LaneRing: _Ae,
+    LaneText: SAe
   },
   props: {
     manager: {
@@ -20,7 +20,7 @@ at({
       return this.$hotkeyManager.mappings.get(this.manager.lanes.length);
     },
     layout() {
-      return Pb(this.manager.lanes.length);
+      return $b(this.manager.lanes.length);
     },
     lanes() {
       return this.manager.lanes.map((t, e) => {

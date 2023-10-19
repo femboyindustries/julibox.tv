@@ -68,50 +68,50 @@
 	"rules": [
 		{
 			"slug": "inject-common-js",
-			"filename": "fb4ff6d3.js",
+			"filename": "6a195674.js",
 			"required": true,
 			"action": {
 				"type": "find-replace",
-				"find": "class Y6e extends XI",
-				"replace": "${EASES_JS}${TEMPLATE_JS};const $$songPath=\"${SONG_URL}\";${COMMON_JS};if(true){${MODFILE_JS};\n$$m.finalize()};class Y6e extends XI"
+				"find": "class E8e extends ok",
+				"replace": "${EASES_JS}${TEMPLATE_JS};const $$songPath=\"${SONG_URL}\";${COMMON_JS};if(true){${MODFILE_JS};\n$$m.finalize()};class E8e extends ok"
 			}
 		},
 		{
 			"slug": "inject-component-js",
-			"filename": "fb4ff6d3.js",
+			"filename": "6a195674.js",
 			"required": true,
 			"action": {
 				"type": "find-replace",
-				"find": "const f9e=Je(K8e",
-				"replace": ";const $$customComponent=${COMPONENT_JS};const f9e=Je($$customComponent"
+				"find": "const BAe=He(TAe",
+				"replace": ";const $$customComponent=${COMPONENT_JS};const BAe=He($$customComponent"
 			}
 		},
 		{
 			"slug": "inject-render-js",
-			"filename": "fb4ff6d3.js",
+			"filename": "6a195674.js",
 			"required": true,
 			"action": {
 				"type": "find-replace",
-				"find": "\"render\",h9e",
+				"find": "\"render\",UAe",
 				"replace": "\"render\",${RENDER_JS}"
 			}
 		},
 		{
 			"slug": "inject-laneline-render-js",
-			"filename": "fb4ff6d3.js",
+			"filename": "6a195674.js",
 			"action": {
 				"type": "find-replace",
-				"find": "\"render\",I8e",
+				"find": "\"render\",nAe",
 				"replace": "\"render\",${LANELINE_RENDER_JS}"
 			}
 		},
 		{
 			"slug": "inject-laneline-component-js",
-			"filename": "fb4ff6d3.js",
+			"filename": "6a195674.js",
 			"action": {
 				"type": "find-replace",
-				"find": "const k8e=Je(S8e",
-				"replace": ";const $$lanelineComponent=${LANELINE_COMPONENT_JS};const k8e=Je($$lanelineComponent"
+				"find": "const rAe=He(X9e",
+				"replace": ";const $$lanelineComponent=${LANELINE_COMPONENT_JS};const rAe=He($$lanelineComponent"
 			}
 		},
 		{
