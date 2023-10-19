@@ -76,8 +76,8 @@ module JuliboxTV
         "scorePerHighestCombo" => 100.0,
         "scorePoolPerDifficulty" => [100000,125000,150000,175000,200000],
         "successPercentage" => 0.8,
-        "timeAfterCountInBeforeSong" => 4000.0,
-        "timeAfterCountInDuringSong" => 2500.0
+        "timeAfterCountInBeforeSong" => 500.0,
+        "timeAfterCountInDuringSong" => 500.0
       })
     end
   end
