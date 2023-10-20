@@ -11,11 +11,16 @@ module JuliboxTV
     def call(context : HTTP::Server::Context)
       @mods.each do |mod|
         mod.assets.each do |asset|
-          if asset.enabled && context.request.path == asset.path
-            asset.asset_io do |io|
-              IO.copy(io, context.response)
+          if context.request.path == asset.path
+            if JuliboxTV.paranoid_reload
+              mod.reload!
             end
-            return
+            if asset.enabled
+              asset.asset_io do |io|
+                IO.copy(io, context.response)
+              end
+              return
+            end
           end
         end
       end

@@ -257,14 +257,18 @@ module JuliboxTV
       rules.any? &.matches_filepath(filepath)
     end
 
+    def reload!
+      @log.debug { "Reloading mod" }
+      initialize(@filepath, quiet: true)
+      @variables = {} of String => Variable
+      @user_config.not_nil!.evaluate!
+      set_config!(@user_config.not_nil!)
+      evaluate_variables!
+    end
+
     def process(filepath : String, body : String)
       if JuliboxTV.paranoid_reload
-        @log.debug { "Paranoidly reloading mod" }
-        initialize(@filepath, quiet: true)
-        @variables = {} of String => Variable
-        @user_config.not_nil!.evaluate!
-        set_config!(@user_config.not_nil!)
-        evaluate_variables!
+        reload!
       end
 
       rules.each do |rule|
