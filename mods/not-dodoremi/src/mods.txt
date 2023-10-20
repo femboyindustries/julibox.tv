@@ -46,3 +46,11 @@ notez[0-3]
 receptorx[0-3]
 receptory[0-3]
 receptorz[0-3]
+sillymovex[0-3]
+sillymovey[0-3]
+sillydrunk
+sillytandrunk
+sillytipsy
+sillytantipsy
+sillybumpy
+sillytanbumpy

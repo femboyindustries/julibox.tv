@@ -19,6 +19,15 @@ function $$getNoteX(y, time, lane) {
   );
 }
 // outputs pixels
+function $$getSillyNoteX(y, time, lane) {
+  return (
+    $$m.get('sillydrunk') / 100    * Math.cos(time + y * 2 + lane * 0.2 + $$m.get('sillydrunkoffset') / 100    * Math.PI) * $$noteSize * 0.5 +
+    $$m.get('sillytandrunk') / 100 * Math.tan(time + y * 2 + lane * 0.2 + $$m.get('sillytandrunkoffset') / 100 * Math.PI) * $$noteSize * 0.5 +
+    $$m.get('sillymovex') / 100 * $$laneWidth + 
+    $$m.get(`sillymovex${lane}`) / 100 * $$laneWidth
+  );
+}
+// outputs pixels
 function $$getNoteY(y, time, lane) {
   return (
     $$m.get('tipsy') / 100    * Math.cos(time * 1.2 + lane * 1.8 + $$m.get('tipsyoffset') / 100    * Math.PI) * $$noteSize * 0.4 +
@@ -29,12 +38,30 @@ function $$getNoteY(y, time, lane) {
   );
 }
 // outputs pixels
+function $$getSillyNoteY(y, time, lane) {
+  return (
+    $$m.get('sillytipsy') / 100    * Math.cos(time * 1.2 + lane * 1.8 + $$m.get('sillytipsyoffset') / 100    * Math.PI) * $$noteSize * 0.4 +
+    $$m.get('sillytantipsy') / 100 * Math.tan(time * 1.2 + lane * 1.8 + $$m.get('sillytantipsyoffset') / 100 * Math.PI) * $$noteSize * 0.4 +
+    $$m.get('sillymovey') / 100 * $$laneWidth + 
+    $$m.get(`sillymovey${lane}`) / 100 * $$laneWidth
+  );
+}
+// outputs pixels
 function $$getNoteZ(y, time, lane) {
   return (
     $$m.get('bumpy') / 100    * Math.sin(y * 6 + $$m.get('bumpyoffset')    / 100 * Math.PI) * 40 +
     $$m.get('tanbumpy') / 100 * Math.tan(y * 6 + $$m.get('tanbumpyoffset') / 100 * Math.PI) * 40 +
     $$m.get('movez') / 100 * $$laneWidth +
     $$m.get(`movez${lane}`) / 100 * $$laneWidth
+  );
+}
+// outputs pixels
+function $$getSillyNoteZ(y, time, lane) {
+  return (
+    $$m.get('sillybumpy') / 100    * Math.sin(y * 6 + $$m.get('sillybumpyoffset')    / 100 * Math.PI) * 40 +
+    $$m.get('sillytanbumpy') / 100 * Math.tan(y * 6 + $$m.get('sillytanbumpyoffset') / 100 * Math.PI) * 40 +
+    $$m.get('sillymovez') / 100 * $$laneWidth +
+    $$m.get(`sillymovez${lane}`) / 100 * $$laneWidth
   );
 }
 function $$getNoteScaleX(y, time, lane) {

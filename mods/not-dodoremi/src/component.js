@@ -26,9 +26,9 @@ rt({
       return this.manager.lanes.map((t, e) => {
         const time = this.manager.progress * this.manager.duration / 1000;
         const transforms = [
-          ['translateX', `${$$m.get('receptorx') / 100 * $$laneWidth + $$m.get(`receptorx${e}`) / 100 * $$laneWidth}px`],
-          ['translateY', `${$$m.get('receptory') / 100 * $$laneWidth + $$m.get(`receptory${e}`) / 100 * $$laneWidth}px`],
-          ['translateZ', `${$$m.get('receptorz') / 100 * $$laneWidth + $$m.get(`receptorz${e}`) / 100 * $$laneWidth}px`],
+          ['translateX', `${$$getNoteX(0, time, e) + $$m.get('receptorx') / 100 * $$laneWidth + $$m.get(`receptorx${e}`) / 100 * $$laneWidth}px`],
+          ['translateY', `${$$getNoteY(0, time, e) + $$m.get('receptory') / 100 * $$laneWidth + $$m.get(`receptory${e}`) / 100 * $$laneWidth}px`],
+          ['translateZ', `${$$getNoteZ(0, time, e) + $$m.get('receptorz') / 100 * $$laneWidth + $$m.get(`receptorz${e}`) / 100 * $$laneWidth}px`],
         ]
         const laneTransforms = $$transforms([['translate', '-50%'], ...transforms]);
         return {
@@ -38,8 +38,8 @@ rt({
           hotkey: this.hotkeys.keys[e],
           styles: {
             width: `${this.layout.hit}%`,
-            left: `calc(${this.layout.lanes[e].center}% + ${$$getNoteX(0, time, e)}px)`,
-            bottom: `calc(var(--judgement-position) - ${$$getNoteY(0, time, e)}px)`,
+            left: `${this.layout.lanes[e].center}%`,
+            bottom: 'var(--judgement-position)',
             transform: laneTransforms,
             ['transform-style']: 'preserve-3d'
           }
@@ -73,6 +73,9 @@ rt({
               ['rotateY', `${$$getNoteRotationY(y, time, r.lane)}deg`],
               ['scaleX', `${$$getNoteScaleX(y, time, r.lane)}`],
               ['scaleZ', `${$$getNoteScaleZ(y, time, r.lane)}`],
+              ['translateX', `${$$getSillyNoteX(y, time, r.lane)}px`],
+              ['translateY', `${$$getSillyNoteY(y, time, r.lane)}px`],
+              ['translateZ', `${$$getSillyNoteZ(y, time, r.lane)}px`],
             ];
             const lastTransforms = [
               ['translateX', `${$$getNoteX(y, time, r.lane) + $$m.get('notex') / 100 * $$laneWidth + $$m.get(`notex${r.lane}`) / 100 * $$laneWidth}px`],
