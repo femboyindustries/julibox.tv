@@ -31,3 +31,12 @@ wave
 noteskew[0-3]
 noteskewx[0-3]
 noteskewy[0-3]
+mini
+minix
+miniy
+x
+y
+z
+skew
+skewx
+skewy

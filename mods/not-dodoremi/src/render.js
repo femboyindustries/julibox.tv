@@ -2,10 +2,17 @@
   $$update(t);
 
   const transformObj = [
+    ['translateX', Math.floor($$m.get('x') * 1000) / 1000 + '%'],
+    ['translateY', Math.floor($$m.get('y') * 1000) / 1000 + '%'],
+    ['translateZ', Math.floor($$m.get('z') * 1000) / 1000 + 'px'],
+    ['skewX', Math.floor(($$m.get('skew') + $$m.get('skewx')) * 1000) / 1000 + 'deg'],
+    ['skewY', Math.floor(($$m.get('skewy')) * 1000) / 1000 + 'deg'],
+    ['scale', Math.floor(((1 - $$m.get('mini') / 200) * 1000)) / 1000],
+    ['scaleX', Math.floor(((1 - $$m.get('minix') / 200) * 1000)) / 1000],
+    ['scaleY', Math.floor(((1 - $$m.get('miniy') / 200) * 1000)) / 1000],
     ['rotateX', Math.floor($$m.get('rotationx') * 1000) / 1000 + 'deg'],
     ['rotateY', Math.floor($$m.get('rotationy') * 1000) / 1000 + 'deg'],
     ['rotateZ', Math.floor($$m.get('rotationz') * 1000) / 1000 + 'deg'],
-    ['scale', Math.floor(((1 - $$m.get('mini') / 200) * 1000)) / 1000],
   ];
 
   const transforms = $$transforms(transformObj);
