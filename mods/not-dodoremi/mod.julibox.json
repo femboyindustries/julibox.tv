@@ -63,6 +63,11 @@
 			"name": "song.ogg",
 			"assetFile": "${SONG_PATH}",
 			"storePathIn": "SONG_URL"
+		},
+		{
+			"name": "modfile.js",
+			"assetContent": "${MODFILE_JS}",
+			"storePathIn": "MODFILE_URL"
 		}
 	],
 	"rules": [
@@ -73,7 +78,7 @@
 			"action": {
 				"type": "find-replace",
 				"find": "class E8e extends ok",
-				"replace": "${EASES_JS}${TEMPLATE_JS};const $$songPath=\"${SONG_URL}\";${COMMON_JS};if(true){${MODFILE_JS};\n$$m.finalize()};class E8e extends ok"
+				"replace": "${EASES_JS}${TEMPLATE_JS};const $$songPath=\"${SONG_URL}\";const $$modfileURL=\"${MODFILE_URL}\"${COMMON_JS};if(true){${MODFILE_JS};\n$$m.finalize()};class E8e extends ok"
 			}
 		},
 		{

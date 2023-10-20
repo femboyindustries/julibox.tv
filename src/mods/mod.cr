@@ -134,8 +134,10 @@ module JuliboxTV
       getter name : String
 
       @cond_if : String?
-      @asset_file_str : String
+      @asset_file_str : String?
+      @asset_content_str : String?
       getter asset_file : String = ""
+      getter is_file : Bool = false
       getter path : String
       @store_path_in : String?
 
@@ -144,7 +146,19 @@ module JuliboxTV
       def initialize(json : Hash(String, JSON::Any), mod_name : String)
         @name = (json["name"]?.try &.as_s?) || Random::Secure.hex(8)
         @cond_if = json["if"]?.try &.as_s?
-        @asset_file_str = json["assetFile"].as_s
+        @asset_file_str = json["assetFile"]?.try &.as_s?
+        @asset_content_str = json["assetContent"]?.try &.as_s?
+
+        if @asset_file_str && @asset_content_str
+          raise "Only assetFile OR assetContent must be provided"
+        end
+        if !@asset_file_str && !@asset_content_str
+          raise "assetFile or assetContent must be provided"
+        end
+        if @asset_file_str
+          @is_file = true
+        end
+
         @store_path_in = json["storePathIn"]?.try &.as_s?
         @path = (json["path"]?.try &.as_s?) || "/#{mod_name}/#{@name}"
 
@@ -160,22 +174,32 @@ module JuliboxTV
 
         return if !@enabled
 
-        @asset_file = Mod.substitute_variables(@asset_file_str, variables)
+        @asset_file = Mod.substitute_variables((@asset_file_str || @asset_content_str).not_nil!, variables)
         if @store_path_in
           return {@store_path_in.not_nil!, @path}
         end
       end
 
-      def asset_io(&: IO ->)
+      def asset_io(& : IO ->)
         raise "Not enabled" if !enabled
-        File.open(@asset_file) do |io|
+        if is_file
+          File.open(@asset_file) do |io|
+            yield io
+          end
+        else
+          io = IO::Memory.new(@asset_file)
           yield io
+          io.close
         end
       end
 
       def asset_str
         raise "Not enabled" if !enabled
-        File.read(@asset_file)
+        if is_file
+          File.read(@asset_file)
+        else
+          @asset_file
+        end
       end
     end
 
