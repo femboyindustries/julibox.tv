@@ -84,11 +84,11 @@ rt({
             ];
             const noteTransforms = $$transforms([
               ['translate', '-50%,50%'],
-              ['rotateZ', `${$$getArrowOrientation(r.lane)}deg`],
               ...lastTransforms,
               ['skewX', `${$$getNoteSkewX(y, time, r.lane)}deg`],
               ['skewY', `${$$getNoteSkewY(y, time, r.lane)}deg`],
               ['rotateZ', `${$$getNoteRotationZ(y, time, r.lane)}deg`],
+              ['rotateZ', `${$$getArrowOrientation(r.lane)}deg`],
               ...transforms,
               ['scaleY', `${$$getNoteScaleY(y, time, r.lane)}`],
             ]);
