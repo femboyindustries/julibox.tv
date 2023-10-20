@@ -1,5 +1,5 @@
 (t, e, n, r, s, i) => {
-  if (!$$manager) return E7e(t, e, n, r, s, i);
+  if (!$$manager) return nAe(t, e, n, r, s, i);
 
   const screenHeight = document.querySelector('.recording').clientHeight;
 
@@ -13,15 +13,15 @@
 
   let points = [];
 
-  const baseX = $$getNoteX(0, time, t.index),
-        baseY = $$getNoteY(0, time, t.index)
+  const baseX = $$getNoteX(0, time, t.index) + $$getSillyNoteX(0, time, t.index),
+        baseY = $$getNoteY(0, time, t.index) + $$getSillyNoteY(0, time, t.index)
 
   for (let pxY = 0; pxY < height; pxY += 25) {
     let y = (pxY / scrollHeight) * $$manager.duration / 1000;
     //console.log(pxY, y, width, height, scrollHeight, $$manager.duration, document.querySelector('.recording').clientHeight);
     points.push([
-      viewHeight - (pxY + ($$getNoteY(y, time, t.index) - baseY)) / height * viewHeight,
-      ($$getNoteX(y, time, t.index) - baseX) / width * viewWidth
+      viewHeight - (pxY + ($$getNoteY(y, time, t.index) + $$getSillyNoteY(y, time, t.index) - baseY)) / height * viewHeight,
+      ($$getNoteX(y, time, t.index) + $$getSillyNoteX(y, time, t.index) - baseX) / width * viewWidth
     ]);
   }
 
@@ -48,7 +48,9 @@
       ['scaleX', `${$$getNoteScaleX(0, time, i)}`],
       ['scaleY', `${$$getNoteScaleY(0, time, i)}`],
       ['scaleZ', `${$$getNoteScaleZ(0, time, i)}`],
-      ['translateZ', `${$$getNoteZ(0, time, i)}px`]
+      ['translateX', `${$$getSillyNoteX(0, time, i)}px`],
+      ['translateY', `${$$getSillyNoteY(0, time, i)}px`],
+      ['translateZ', `${$$getSillyNoteZ(0, time, i)}px`],
     ];
     const ringTransforms = $$transforms([
       ['translateY', '50%'],
