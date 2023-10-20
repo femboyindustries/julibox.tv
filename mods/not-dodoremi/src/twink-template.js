@@ -211,6 +211,9 @@ class $$Modfile {
   }
   
   finalize() {
+    this.modBuffer = [];
+    this.#modValues = [];
+
     this.funcs = $$Modfile.sort(this.funcs);
     this.funcEases = $$Modfile.sort(this.funcEases);
     this.perframes = $$Modfile.sort(this.perframes);
@@ -218,7 +221,23 @@ class $$Modfile {
     
     this.#funcsQueue = [...this.funcs];
     this.#funcEasesInactive = [...this.funcEases];
+    this.#funcEasesActive = [];
     this.#perframesInactive = [...this.perframes];
+    this.#perframesActive = [];
     this.#easesInactive = [...this.eases];
+    this.#easesActive = [];
+  }
+
+  reset() {
+    this.modBuffer = [];
+    this.#modValues = [];
+    this.funcs = [];
+    this.funcEases = [];
+    this.perframes = [];
+    this.eases = [];
+    this.#funcsQueue = [];
+    this.#funcEasesInactive = [];
+    this.#perframesInactive = [];
+    this.#easesInactive = [];
   }
 }

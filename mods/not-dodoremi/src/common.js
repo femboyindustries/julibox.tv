@@ -140,6 +140,7 @@ function $$getArrowOrientation(lane) {
 }
 
 let $$debug;
+let $$keybindsRegistered = false;
 
 let $$audio;
 let $$audioStarted = false;
@@ -164,6 +165,22 @@ function $$update(component) {
     node.style.whiteSpace = 'pre-wrap';
     visualsLayer.appendChild(node);
     $$debug = node;
+  }
+
+  if (!$$keybindsRegistered) {
+    $$keybindsRegistered = true;
+
+    document.addEventListener('keypress', async (e) => {
+      if (e.key === 'r') {
+        const resp = await fetch($$modfileURL, {cache: "no-store"});
+        const js = await resp.text();
+        $$m.reset();
+        eval(js);
+        $$m.finalize();
+      } else if (e.key === '`') {
+        $$debug.style.display = $$debug.style.display === 'none' ? 'block' : 'none';
+      }
+    })
   }
 
   const constraner = document.querySelector('.constrainer');
