@@ -49,8 +49,14 @@ receptorz[0-3]
 sillymovex[0-3]
 sillymovey[0-3]
 sillydrunk
+sillydrunkoffset
 sillytandrunk
+sillytandrunkoffset
 sillytipsy
+sillytipsyoffset
 sillytantipsy
+sillytantipsyoffset
 sillybumpy
+sillybumpyoffset
 sillytanbumpy
+sillytanbumpyoffset
