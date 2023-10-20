@@ -40,3 +40,9 @@ z
 skew
 skewx
 skewy
+notex[0-3]
+notey[0-3]
+notez[0-3]
+receptorx[0-3]
+receptory[0-3]
+receptorz[0-3]

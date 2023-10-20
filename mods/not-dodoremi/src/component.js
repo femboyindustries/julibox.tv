@@ -26,8 +26,9 @@ rt({
       return this.manager.lanes.map((t, e) => {
         const time = this.manager.progress * this.manager.duration / 1000;
         const transforms = [
-          ['translateZ', `${$$getNoteZ(0, time, e)}px`],
-          ['rotateY', `${$$getNoteRotationY(0, time, e)}deg`]
+          ['translateX', `${$$m.get('receptorx') / 100 * $$laneWidth + $$m.get(`receptorx${e}`) / 100 * $$laneWidth}px`],
+          ['translateY', `${$$m.get('receptory') / 100 * $$laneWidth + $$m.get(`receptory${e}`) / 100 * $$laneWidth}px`],
+          ['translateZ', `${$$m.get('receptorz') / 100 * $$laneWidth + $$m.get(`receptorz${e}`) / 100 * $$laneWidth}px`],
         ]
         const laneTransforms = $$transforms([['translate', '-50%'], ...transforms]);
         return {
@@ -39,7 +40,7 @@ rt({
             width: `${this.layout.hit}%`,
             left: `calc(${this.layout.lanes[e].center}% + ${$$getNoteX(0, time, e)}px)`,
             bottom: `calc(var(--judgement-position) - ${$$getNoteY(0, time, e)}px)`,
-            //transform: laneTransforms,
+            transform: laneTransforms,
             ['transform-style']: 'preserve-3d'
           }
         }
@@ -72,24 +73,33 @@ rt({
               ['rotateY', `${$$getNoteRotationY(y, time, r.lane)}deg`],
               ['scaleX', `${$$getNoteScaleX(y, time, r.lane)}`],
               ['scaleZ', `${$$getNoteScaleZ(y, time, r.lane)}`],
-              ['translateZ', `${$$getNoteZ(y, time, r.lane)}px`]
+            ];
+            const lastTransforms = [
+              ['translateX', `${$$getNoteX(y, time, r.lane) + $$m.get('notex') / 100 * $$laneWidth + $$m.get(`notex${r.lane}`) / 100 * $$laneWidth}px`],
+              ['translateY', `${$$getNoteY(y, time, r.lane) + $$m.get('notey') / 100 * $$laneWidth + $$m.get(`notey${r.lane}`) / 100 * $$laneWidth}px`],
+              ['translateZ', `${$$getNoteZ(y, time, r.lane) + $$m.get('notez') / 100 * $$laneWidth + $$m.get(`notez${r.lane}`) / 100 * $$laneWidth}px`],
             ];
             const noteTransforms = $$transforms([
               ['translate', '-50%,50%'],
+              ...lastTransforms,
               ['skewX', `${$$getNoteSkewX(y, time, r.lane)}deg`],
               ['skewY', `${$$getNoteSkewY(y, time, r.lane)}deg`],
               ['rotateZ', `${$$getNoteRotationZ(y, time, r.lane) + $$getArrowOrientation(r.lane)}deg`],
               ...transforms,
               ['scaleY', `${$$getNoteScaleY(y, time, r.lane)}`],
             ]);
-            const holdTransforms = $$transforms([['translate', '-50%'], ...transforms]);
+            const holdTransforms = $$transforms([
+              ['translate', '-50%'],
+              ...lastTransforms,
+              ...transforms,
+            ]);
             const i = {
               classes: [`quant-${quant}`, 'preserve-3d'],
               key: r.key,
               headStyles: {
-                left: `calc(${s.center}% + ${$$getNoteX(y, time, r.lane)}px)`,
+                left: `${s.center}%`,
                 width: `${this.layout.hit}%`,
-                bottom: `calc(${n.y * 100}% - ${$$getNoteY(y, time, r.lane)}px)`,
+                bottom: `${n.y * 100}%`,
                 transform: noteTransforms
               }
             };
