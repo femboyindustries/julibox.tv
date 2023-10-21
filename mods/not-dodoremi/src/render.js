@@ -15,12 +15,12 @@
     ['rotateZ', Math.floor($$m.get('rotationz') * 1000) / 1000 + 'deg'],
   ];
 
-  const transforms = $$transforms(transformObj);
   const transformsConstrainer = $$transforms([['translate', '-50%'], ...transformObj]);
+  const transformsScrollWrapper = $$transforms([...transformObj, ['translateY', '-25%']]);
 
   document.querySelectorAll('.beatmap .visuals').forEach(elem => elem.style.perspective = `${$$m.get('fov')}px`);
   document.querySelectorAll('.transforms.constrainer').forEach(elem => elem.style.transform = transformsConstrainer);
-  document.querySelectorAll('.transforms:not(.constrainer)').forEach(elem => elem.style.transform = transforms);
+  document.querySelectorAll('.transforms.scroll-wrapper').forEach(elem => elem.style.transform = transformsScrollWrapper);
 
   const o = Ve('Beatlines'), a = Ve('LaneLine'), l = Ve('LaneRing'), u = Ve('LaneText'), f = fn('t');
   return q(), Y('div', {class: 'visuals'}, [

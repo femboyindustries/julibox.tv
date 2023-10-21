@@ -69,13 +69,13 @@ rt({
             const time = this.manager.progress * this.manager.duration / 1000;
             const quant = $$quantize($$getMeasure(this.manager, n.start));
             const transforms = [
-              ['rotateX', `${$$getNoteRotationX(y, time, r.lane)}deg`],
-              ['rotateY', `${$$getNoteRotationY(y, time, r.lane)}deg`],
               ['scaleX', `${$$getNoteScaleX(y, time, r.lane)}`],
               ['scaleZ', `${$$getNoteScaleZ(y, time, r.lane)}`],
               ['translateX', `${$$getSillyNoteX(y, time, r.lane)}px`],
               ['translateY', `${$$getSillyNoteY(y, time, r.lane)}px`],
               ['translateZ', `${$$getSillyNoteZ(y, time, r.lane)}px`],
+              ['rotateX', `${$$getNoteRotationX(y, time, r.lane)}deg`],
+              ['rotateY', `${$$getNoteRotationY(y, time, r.lane)}deg`],
             ];
             const lastTransforms = [
               ['translateX', `${$$getNoteX(y, time, r.lane) + $$m.get('notex') / 100 * $$laneWidth + $$m.get(`notex${r.lane}`) / 100 * $$laneWidth}px`],
@@ -87,10 +87,10 @@ rt({
               ...lastTransforms,
               ['skewX', `${$$getNoteSkewX(y, time, r.lane)}deg`],
               ['skewY', `${$$getNoteSkewY(y, time, r.lane)}deg`],
+              ['scaleY', `${$$getNoteScaleY(y, time, r.lane)}`],
+              ...transforms,
               ['rotateZ', `${$$getNoteRotationZ(y, time, r.lane)}deg`],
               ['rotateZ', `${$$getArrowOrientation(r.lane)}deg`],
-              ...transforms,
-              ['scaleY', `${$$getNoteScaleY(y, time, r.lane)}`],
             ]);
             const holdTransforms = $$transforms([
               ['translate', '-50%'],

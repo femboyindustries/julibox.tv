@@ -90,3 +90,6 @@
   left: -150% !important;
   width: 400% !important;
 }
+.beatmap .scroll-wrapper {
+  bottom: 0 !important;
+}
