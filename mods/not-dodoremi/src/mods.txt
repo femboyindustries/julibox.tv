@@ -64,3 +64,4 @@ arrowpathdrawsize
 arrowpathgrain
 hidearrowpath[0-3]
 arrowpathwidth[0-3]
+stealth

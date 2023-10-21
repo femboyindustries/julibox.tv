@@ -22,6 +22,11 @@
   document.querySelectorAll('.transforms.constrainer').forEach(elem => elem.style.transform = transformsConstrainer);
   document.querySelectorAll('.transforms.scroll-wrapper').forEach(elem => elem.style.transform = transformsScrollWrapper);
 
+  document.querySelectorAll('.head path').forEach(elem => {
+    elem.style.filter = `invert(${Math.min($$m.get('stealth') / 50, 1) * 0.5}) brightness(${100 + $$m.get('stealth') / 50 * 100}%)`;
+    elem.style.opacity = `${1 - Math.max($$m.get('stealth') - 50, 0) / 50}`;
+  });
+
   const o = Ve('Beatlines'), a = Ve('LaneLine'), l = Ve('LaneRing'), u = Ve('LaneText'), f = fn('t');
   return q(), Y('div', {class: 'visuals'}, [
     U('div', {class : 'scroll-wrapper'}, [We(o, {
