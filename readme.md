@@ -57,3 +57,15 @@ There are a few mods currently in `mods/` - if you wish to create your own, you 
 You'll want to configure `modfile` to point at a JS file (use [`misc/modfiles/test.js`](misc/modfiles/test.js) as an example), and optionally `song` to point at an OGG file.
 
 You'll be given a [Mirin](https://github.com/XeroOl/notitg-mirin/)-like template to work with; you can read the code for it in [`twink-template.js`](mods/not-dodoremi/src/twink-template.js). The list of mods is available [here](mods/not-dodoremi/src/mods.txt). Have fun!
+
+##### Dev keybinds
+
+
+| Key     | Action                  |
+| -       | -                       |
+| `       | Hide/show debug overlay |
+| ,       | Seek back 1 second      |
+| .       | Seek forward 1 second   |
+| r       | Reload modfile          |
+| p       | Pause/play from point   |
+| ;       | Set play point          |

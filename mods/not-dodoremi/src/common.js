@@ -142,6 +142,9 @@ function $$getArrowOrientation(lane) {
 let $$debug;
 let $$keybindsRegistered = false;
 
+/**
+ * @type { HTMLAudioElement }
+ */
 let $$audio;
 let $$audioStarted = false;
 if ($$songPath !== "null") {
@@ -149,6 +152,37 @@ if ($$songPath !== "null") {
 }
 
 let $$manager;
+let $$startPoint = 0;
+
+function $$resetChart() {
+  $$m.finalize(); // re-loop the variables
+  $$manager.inputs.forEach(input_ => {
+    let input = [...input_][0];
+    if (!input) return;
+    input.isAudible = false;
+    input.isCurrent = false;
+    input.isPassed = false;
+    input.isMissed = false;
+    input.isHolding = false;
+    input.isTaken = false;
+    input.isVisible = true;
+  });
+}
+
+function $$updateAudio() {
+  if (!$$audio) return;
+
+  if ($$manager.isRunning && !$$audioStarted) {
+    $$audio.play();
+    $$audioStarted = true;
+  }
+  if (!$$manager.isRunning && $$audioStarted) {
+    $$audio.pause();
+    $$audioStarted = false;
+  }
+
+  $$audio.currentTime = $$manager.now / 1000;
+}
 
 function $$update(component) {
   const visualsLayer = document.querySelector('.visuals');
@@ -179,6 +213,48 @@ function $$update(component) {
         $$m.finalize();
       } else if (e.key === '`') {
         $$debug.style.display = $$debug.style.display === 'none' ? 'block' : 'none';
+      } else if (e.key === '.') {
+        const now = $$manager.currentTime;
+        const offset = 1000;
+        $$manager.currentTime = now + offset;
+        $$manager.progress = $$manager.progress + offset / $$manager.duration;
+        $$manager.baseTime = $$manager.baseTime - offset;
+        $$updateAudio();
+      } else if (e.key === ',') {
+        const now = $$manager.currentTime;
+        const offset = -1000;
+        $$manager.currentTime = now + offset;
+        $$manager.progress = $$manager.progress + offset / $$manager.duration;
+        $$manager.baseTime = $$manager.baseTime - offset;
+
+        $$resetChart();
+        $$updateAudio();
+      } else if (e.key === 'p') {
+        if ($$manager.isComplete) {
+          $$manager.isComplete = false;
+          $$manager.isRunning = true;
+          $$manager.start($$startPoint);
+          $$resetChart();
+        } else {
+          $$manager.isRunning = false;
+          $$manager.isComplete = true;
+          $$manager.currentTime = $$manager.now;
+          $$manager.stop();
+          $$manager.emit({
+            now: $$manager.currentTime,
+            type: 'end'
+          })
+        }
+        $$updateAudio();
+      } else if (e.key === ';') {
+        $$startPoint = $$manager.currentTime;
+        if ($$manager.isComplete) {
+          $$manager.isComplete = false;
+          $$manager.isRunning = true;
+          $$manager.start($$startPoint);
+          $$resetChart();
+          $$updateAudio();
+        }
       }
     })
   }
@@ -194,20 +270,19 @@ function $$update(component) {
 
   const manager = component.manager;
   $$manager = manager;
-  const beat = $$getBeat(manager, manager.now);
+  const beat = $$getBeat(manager, manager.currentTime);
 
   $$m.update(beat);
 
   if ($$debug) {
     $$debug.innerText =
-      `| beat ${beat.toFixed(2)}` + '\n' +
-      `| time ${(manager.now / 1000).toFixed(2)}` + '\n' +
+      `| beat ${beat.toFixed(2)} ${$$manager.isRunning ? 'PLAYING' : 'STOPPED'}` + '\n' +
+      `| time ${(manager.currentTime / 1000).toFixed(2)}` + '\n' +
       Object.entries($$m.modBuffer).map(([k, v]) => `${v.toFixed(2).padStart(7, ' ')}% ${k}`).join('\n');
   }
 
   if ($$audio && manager.hasStarted && !$$audioStarted) {
-    $$audioStarted = true;
-    $$audio.play();
+    $$updateAudio();
   }
 }
 

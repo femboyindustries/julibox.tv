@@ -224,8 +224,10 @@ class $$Modfile {
     this.#funcEasesActive = [];
     this.#perframesInactive = [...this.perframes];
     this.#perframesActive = [];
-    this.#easesInactive = [...this.eases];
+    this.#easesInactive = [...this.eases.map(e => ({...e, mods: structuredClone(e.mods)}))];
     this.#easesActive = [];
+
+    console.info('%c[twink-template]', 'color:#aaf;background-color:#222', `loaded ${this.funcs.length} funcs, ${this.funcEases.length} func eases, ${this.perframes.length} perframes, ${this.eases.length} eases`)
   }
 
   reset() {
