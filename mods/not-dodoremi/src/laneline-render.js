@@ -1,12 +1,11 @@
 (t, e, n, r, s, i) => {
   if (!$$manager) return nAe(t, e, n, r, s, i);
 
+  const screenWidth = document.querySelector('.recording').clientWidth;
   const screenHeight = document.querySelector('.recording').clientHeight;
 
-  const viewWidth = 400;
-  const viewHeight = screenHeight;
-  const width = $$noteSize * 4;
-  const height = viewHeight / viewWidth * width;
+  const width = screenWidth;
+  const height = screenHeight * (1 + $$m.get('arrowpathdrawsize') / 200);
   const scrollHeight = ($$manager.duration * 0.05 / 100) * screenHeight;
 
   const time = $$manager.progress * $$manager.duration / 1000;
@@ -16,25 +15,31 @@
   const baseX = $$getNoteX(0, time, t.index) + $$getSillyNoteX(0, time, t.index),
         baseY = $$getNoteY(0, time, t.index) + $$getSillyNoteY(0, time, t.index)
 
-  for (let pxY = 0; pxY < height; pxY += 25) {
+  const step = 30 * (1 + $$m.get('arrowpathgrain') / 200);
+  for (let pxY = 0; pxY < (height + step); pxY += step) {
     let y = (pxY / scrollHeight) * $$manager.duration / 1000;
     //console.log(pxY, y, width, height, scrollHeight, $$manager.duration, document.querySelector('.recording').clientHeight);
     points.push([
-      viewHeight - (pxY + ($$getNoteY(y, time, t.index) + $$getSillyNoteY(y, time, t.index) - baseY)) / height * viewHeight,
-      ($$getNoteX(y, time, t.index) + $$getSillyNoteX(y, time, t.index) - baseX) / width * viewWidth
+      height - (pxY + ($$getNoteY(y, time, t.index) + $$getSillyNoteY(y, time, t.index) - baseY)),
+      $$getNoteX(y, time, t.index) + $$getSillyNoteX(y, time, t.index) - baseX
     ]);
   }
 
-  const d = points.map(([y,x], i) => `${i === 0 ? 'M' : 'L'}${Math.floor((viewWidth/2+x) * 100) / 100},${Math.floor(y * 100) / 100}`).join(' ');
-  const viewBox = `0 0 ${viewWidth} ${viewHeight}`;
+  const d = points.map(([y,x], i) => `${i === 0 ? 'M' : 'L'}${Math.floor((width/2+x) * 100) / 100},${Math.floor(y * 100) / 100}`).join(' ');
+  const viewBox = `0 0 ${width} ${height}`;
 
   const paths = document.querySelectorAll('path.base.straight');
   paths.forEach(path => {
     path.setAttribute('d', d);
+    path.style.strokeWdith = 8 * (1 + $$m.get('arrowpathwidth') / 100 + $$m.get(`arrowpathwidth${t.index}`))
   });
   const svgs = document.querySelectorAll('svg.line');
   svgs.forEach(svg => {
     svg.setAttribute('viewBox', viewBox);
+    svg.style.width = width + 'px';
+    svg.style.left = (-width / 2 + $$noteSize / 2) + 'px';
+    svg.style.height = height + 'px';
+    svg.style.opacity = 1 - $$m.get('hidearrowpath') / 100 - $$m.get(`hidearrowpath${t.index}`) / 100;
   });
 
   const rings = document.querySelectorAll('svg.ring');

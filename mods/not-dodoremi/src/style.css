@@ -34,14 +34,6 @@
   stroke:var(--category-color-dark);
   stroke-width:8
 }
-.missed .head path[data-v-546beebe] {
-  fill:#555;
-  stroke:#222
-}
-.head.missed path[data-v-546beebe] {
-  fill:#555;
-  stroke:#222
-}
 
 .quant-4.head path[data-v-546beebe] {
   fill: #ff4f60;
@@ -52,28 +44,33 @@
   border-color: #fd0018;
 }
 .quant-8.head path[data-v-546beebe] {
-  fill: #24aeff !important;
-  stroke: #0082ea !important;
+  fill: #24aeff;
+  stroke: #0082ea;
 }
 .quant-8.hold[data-v-546beebe] {
-  background-color: #24aeff !important;
-  border-color: #0082ea !important;
+  background-color: #24aeff;
+  border-color: #0082ea;
 }
 .quant-12.head path[data-v-546beebe] {
-  fill: #9165ef !important;
-  stroke: #6b3cdb !important;
+  fill: #9165ef;
+  stroke: #6b3cdb;
 }
 .quant-12.hold[data-v-546beebe] {
-  background-color: #9165ef !important;
-  border-color: #6b3cdb !important;
+  background-color: #9165ef;
+  border-color: #6b3cdb;
 }
 .quant-16.head path[data-v-546beebe] { 
-  fill: #ffe59a !important;
-  stroke: #ffcc2e !important;
+  fill: #ffe59a;
+  stroke: #ffcc2e;
 }
 .quant-16.hold[data-v-546beebe] {
-  background-color: #ffe59a !important;
-  border-color: #ffcc2e !important;
+  background-color: #ffe59a;
+  border-color: #ffcc2e;
+}
+
+.head.missed path[data-v-546beebe] {
+  fill:#555 !important;
+  stroke:#222 !important;
 }
 
 .home {
@@ -86,10 +83,6 @@
   transform-style: preserve-3d;
 }
 
-.line[data-v-e8de279d] {
-  left: -150% !important;
-  width: 400% !important;
-}
 .beatmap .scroll-wrapper {
   bottom: 0 !important;
 }
