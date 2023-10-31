@@ -73,7 +73,7 @@
 	"rules": [
 		{
 			"slug": "inject-common-js",
-			"filename": "6a195674.js",
+			"filename": "c87cbca9.js",
 			"required": true,
 			"action": {
 				"type": "find-replace",
@@ -83,7 +83,7 @@
 		},
 		{
 			"slug": "inject-component-js",
-			"filename": "6a195674.js",
+			"filename": "c87cbca9.js",
 			"required": true,
 			"action": {
 				"type": "find-replace",
@@ -93,7 +93,7 @@
 		},
 		{
 			"slug": "inject-render-js",
-			"filename": "6a195674.js",
+			"filename": "c87cbca9.js",
 			"required": true,
 			"action": {
 				"type": "find-replace",
@@ -103,7 +103,7 @@
 		},
 		{
 			"slug": "inject-laneline-render-js",
-			"filename": "6a195674.js",
+			"filename": "c87cbca9.js",
 			"action": {
 				"type": "find-replace",
 				"find": "\"render\",nAe",
@@ -112,7 +112,7 @@
 		},
 		{
 			"slug": "inject-laneline-component-js",
-			"filename": "6a195674.js",
+			"filename": "c87cbca9.js",
 			"action": {
 				"type": "find-replace",
 				"find": "const rAe=He(X9e",
@@ -120,12 +120,12 @@
 			}
 		},
 		{
-			"slug": "inject-style-css",
+			"slug": "inject-head",
 			"filename": "/",
 			"action": {
 				"type": "find-replace",
 				"find": "</head>",
-				"replace": "<style>${STYLE_CSS}</style></head>"
+				"replace": "<style>${STYLE_CSS}</style><script src=\"https://cdnjs.cloudflare.com/ajax/libs/dom-to-image-more/3.2.0/dom-to-image-more.min.js\" integrity=\"sha512uNCEHnjiVRcBeUW48zdeZ/niEz/rVu331t9Ho1vC4ho/s0mVqy447Z8Lvwoeq8hWGclUupV95CM1i8MODs0AUQ==\" crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\"></script></head>"
 			}
 		}
 	]
