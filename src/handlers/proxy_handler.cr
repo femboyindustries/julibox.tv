@@ -15,6 +15,7 @@ module JuliboxTV
     def rewrite_body(request : HTTP::Request, body : String) : String
       if request.path.ends_with?(".js")
         body = body.sub("https://bundles.jackbox.tv/", @source_url + "/bundles/")
+        body = body.sub("https://uuid.jackbox.tv/", @source_url + "/uuid/")
         body = body.sub("ecast.jackboxgames.com", @source_origin)
       end
 
@@ -46,6 +47,9 @@ module JuliboxTV
     def transform_req_path(path : String)
       if path.starts_with?("/bundles/")
         return "https://bundles.jackbox.tv/" + path.lchop("/bundles/")
+      end
+      if path.starts_with?("/uuid/")
+        return "https://uuid.jackbox.tv/image.png?origin=https://jackbox.tv" # hardcoded because me no care
       end
       if path.starts_with?("/api/v2")
         return "https://ecast.jackboxgames.com" + path
