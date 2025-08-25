@@ -7,6 +7,11 @@ require "./handlers/*"
 require "./mock/*"
 
 module JuliboxTV
+  class DummyHandler
+    def handler
+      HTTP::WebSocketHandler.new { }
+    end
+  end
 
   struct LogFormat < Log::StaticFormatter
     def severity_color(severity : Log::Severity) : Colorize::Object
@@ -152,7 +157,11 @@ module JuliboxTV
         ws_handler = WSMockHandler.new mocker
         LOG.notice { "Mocking #{mock_game.to_s.colorize(:cyan)}, join with any code" }
       else
-        raise "Proxy mode not implemented"
+        # let's ignore that tiny fact
+        # raise "Proxy mode not implemented"
+
+        # damn raise got hands
+        ws_handler = DummyHandler.new
       end
 
       asset_handler = AssetHandler.new(mods, disable_cache: disable_cache)
