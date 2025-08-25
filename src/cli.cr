@@ -165,7 +165,7 @@ module JuliboxTV
       end
 
       asset_handler = AssetHandler.new(mods, disable_cache: disable_cache)
-      proxy_handler = ProxyHandler.new("jackbox.tv", "http://127.0.0.1:8080", "127.0.0.1:8080", mods, disable_cache: disable_cache)
+      proxy_handler = ProxyHandler.new("jackbox.tv", mods, disable_cache: disable_cache)
 
       server = HTTP::Server.new [
         HTTP::ErrorHandler.new(verbose: true),
@@ -176,7 +176,11 @@ module JuliboxTV
         proxy_handler
       ]
 
-      address = server.bind_tcp 8080
+      address = server.bind_tcp("::1", 8080)
+
+      proxy_handler.source_url = "http://#{address}"
+      proxy_handler.source_origin = address.to_s
+
       LOG.info { "Listening on #{"http://#{address}".colorize(:cyan)}" }
       server.listen
     else

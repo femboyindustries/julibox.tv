@@ -5,7 +5,10 @@ module JuliboxTV
   class ProxyHandler
     include HTTP::Handler
 
-    def initialize(@target : String, @source_url : String, @source_origin : String, @mods : Array(Mod), @disable_cache : Bool = false)
+    setter source_url : String = "" 
+    setter source_origin : String = ""
+
+    def initialize(@target : String, @mods : Array(Mod), @disable_cache : Bool = false)
     end
 
     def should_intercept_body?(request : HTTP::Request)
@@ -79,6 +82,10 @@ module JuliboxTV
 
     def call(context)
       req = context.request.dup
+      @source_url = "http://#{req.headers["Host"]}"
+      @source_origin = req.headers["Host"]
+
+      Log.debug {@source_url}
 
       # redirect
       orig_url = transform_req_path(req.path)
