@@ -176,11 +176,7 @@ module JuliboxTV
         proxy_handler
       ]
 
-      address = server.bind_tcp("::1", 8080)
-
-      proxy_handler.source_url = "http://#{address}"
-      proxy_handler.source_origin = address.to_s
-
+      address = server.bind_tcp 8080
       LOG.info { "Listening on #{"http://#{address}".colorize(:cyan)}" }
       server.listen
     else

@@ -17,9 +17,10 @@ module JuliboxTV
 
     def rewrite_body(request : HTTP::Request, body : String) : String
       if request.path.ends_with?(".js")
-        body = body.sub("https://bundles.jackbox.tv/", @source_url + "/bundles/")
-        body = body.sub("https://uuid.jackbox.tv/", @source_url + "/uuid/")
-        body = body.sub("ecast.jackboxgames.com", @source_origin)
+        body = body.sub("https://bundles.jackbox.tv/", "/bundles/")
+        body = body.sub("https://uuid.jackbox.tv/", "/uuid/")
+        body = body.sub("https://cdn.jackboxgames.com/", "/cdn/")
+        # body = body.sub("ecast.jackboxgames.com", "/ecast") # this is called differently
       end
 
       @mods.each do |mod|
@@ -54,8 +55,11 @@ module JuliboxTV
       if path.starts_with?("/uuid/")
         return "https://uuid.jackbox.tv/image.png?origin=https://jackbox.tv" # hardcoded because me no care
       end
-      if path.starts_with?("/api/v2")
-        return "https://ecast.jackboxgames.com" + path
+      if path.starts_with?("/cdn/")
+        return "https://cdn.jackboxgames.com" + path.lchop("/cdn/")
+      end
+      if path.starts_with?("/ecast/")
+        return "https://ecast.jackboxgames.com" + path.lchop("/ecast/")
       end
       "https://#{@target}#{path}"
     end
@@ -82,10 +86,6 @@ module JuliboxTV
 
     def call(context)
       req = context.request.dup
-      @source_url = "http://#{req.headers["Host"]}"
-      @source_origin = req.headers["Host"]
-
-      Log.debug {@source_url}
 
       # redirect
       orig_url = transform_req_path(req.path)
