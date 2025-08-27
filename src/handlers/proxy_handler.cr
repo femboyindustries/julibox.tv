@@ -4,23 +4,21 @@ require "http/server/handler"
 module JuliboxTV
   class ProxyHandler
     include HTTP::Handler
-
-    setter source_url : String = "" 
+  
     setter source_origin : String = ""
 
     def initialize(@target : String, @mods : Array(Mod), @disable_cache : Bool = false)
     end
-
+  
     def should_intercept_body?(request : HTTP::Request)
       request.path.ends_with?(".js") || request.path.starts_with?("/api/") || request.path.ends_with?(".html") || request.path == "/" || @mods.any? &.should_process(request.path)
     end
-
+  
     def rewrite_body(request : HTTP::Request, body : String) : String
       if request.path.ends_with?(".js")
         body = body.sub("https://bundles.jackbox.tv/", "/bundles/")
         body = body.sub("https://uuid.jackbox.tv/", "/uuid/")
-        body = body.sub("https://cdn.jackboxgames.com/", "/cdn/")
-        # body = body.sub("ecast.jackboxgames.com", "/ecast") # this is called differently
+        body = body.sub("ecast.jackboxgames.com", @source_origin)
       end
 
       @mods.each do |mod|
@@ -55,11 +53,8 @@ module JuliboxTV
       if path.starts_with?("/uuid/")
         return "https://uuid.jackbox.tv/image.png?origin=https://jackbox.tv" # hardcoded because me no care
       end
-      if path.starts_with?("/cdn/")
-        return "https://cdn.jackboxgames.com" + path.lchop("/cdn/")
-      end
-      if path.starts_with?("/ecast/")
-        return "https://ecast.jackboxgames.com" + path.lchop("/ecast/")
+      if path.starts_with?("/api/v2")
+        return "https://ecast.jackboxgames.com" + path
       end
       "https://#{@target}#{path}"
     end
@@ -83,10 +78,11 @@ module JuliboxTV
         end
       end
     end
-
+  
     def call(context)
       req = context.request.dup
-
+      @source_origin = req.headers["X-Forwarded-Host"]? || req.headers["Host"]
+  
       # redirect
       orig_url = transform_req_path(req.path)
       # we don't want to look stupid walking up to jackbox and going "hey is this 127.0.0.1:8080"
@@ -97,25 +93,25 @@ module JuliboxTV
       if @disable_cache
         req.headers["Cache-Control"] = "no-cache"
       end
-
+  
       # should we intercept the body?
       if should_intercept_body?(req)
         req.headers["Accept-Encoding"] = "" # too lazy to ungzip
-
+  
         response = HTTP::Client.exec(req.method, orig_url, req.headers, req.body)
-
+        
         # proxy everything but the body
         context.response.status = response.status
         context.response.headers.merge!(response.headers)
 
         fix_response_headers(context.response.headers, true)
-
+  
         # intercept the body
         new_body = rewrite_body(req, response.body)
         # DON'T FORGET
         context.response.content_length = new_body.bytesize
         context.response << new_body
-
+  
         context.response.close
       else
         HTTP::Client.exec(req.method, orig_url, req.headers, req.body) do |response|
@@ -124,9 +120,9 @@ module JuliboxTV
           context.response.headers.merge!(response.headers)
 
           fix_response_headers(context.response.headers)
-
+  
           IO.copy(response.body_io, context.response) if response.body_io?
-
+  
           context.response.close
         end
       end
